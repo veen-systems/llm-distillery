@@ -19,20 +19,7 @@ metadata:
 > 06:00–10:00 UTC, **Monday–Friday**, all other hours off-peak — so the weekend rule and
 > the whole scheduling section below still stand as written.
 >
-> ✅ **RATES NOW VERIFIED ON THE VENDOR PAGE — 2026-09-10, after the 04:00 UTC cutover.**
-> `https://api-docs.deepseek.com/quick_start/pricing/` carries the **0.15 cache-miss**
-> card, so the email-only caveat that stood here is **DISCHARGED**: quote these rates as
-> established. ⚠️ **Keep the lesson, not the caveat** — on 2026-09-09 the same page still
-> showed the **V4** card *because the cut had not taken effect yet*, so an announced rate
-> is not a verified one until its effective time has passed; check the clock before
-> concluding a page disagrees with an announcement. The 2026-08-23 lesson applies in
-> reverse. A **second** announcement email (2026-09-10 12:46 +0800, DKIM/SPF/DMARC pass)
-> restates the identical table — two independent emails and the page now agree.
-> ⛔ **That second `.eml` was deliberately NOT archived** (owner, 2026-09-10: *"we do not
-> need to save the eml, just ingest the info for decision making"*) — it added no rate this
-> file did not already carry. Decoded body + headers of the FIRST email remain frozen in
-> `docs/evidence/2026-09-09-deepseek-v41-price-cut/` — ⚠️ not the original `.eml`, which had
-> vanished from `~/Downloads` ten minutes after it was read. That README says so on its face.
+> *The vendor-page verification narrative (2026-09-09/10: two announcement emails; the page agreed only after the 04:00 UTC cutover; the second `.eml` deliberately not archived; the first frozen in `docs/evidence/2026-09-09-deepseek-v41-price-cut/`) — MOVED to [`archive/oracle-pricing-scheduling-archive.md`](archive/oracle-pricing-scheduling-archive.md) (2026-10-19). ⚠️ Lesson kept: an announced rate is not a verified one until its effective time has passed.*
 > <!-- verify: P=$(curl -sL --max-time 30 https://api-docs.deepseek.com/quick_start/pricing/ 2>/dev/null) || { echo "CANNOT VERIFY: pricing page unreachable"; exit 0; }; if echo "$P" | grep -q '0\.15'; then echo "page still carries 0.15 cache-miss input — V4.1 card HOLDS"; elif echo "$P" | grep -q '0\.22'; then echo "page has REVERTED to the V4 0.22 card — every rate in this block is now wrong, re-read by hand"; else echo "CANNOT VERIFY: page shape changed, read it by hand"; fi -->
 >
 > ⭐⭐ **THE RATIO ARGUMENT IS MOOT — not re-derived, ABOLISHED.** DeepSeek's cache-miss
@@ -99,31 +86,7 @@ metadata:
 > V4-vs-V4.1 label-parity run exists or can exist until the model does. **UNMEASURED.** Any
 > oracle run spanning the cutover mixes two models’ labels into one dataset. → **#157**.
 >
-> ⛔ **Two stale facts below, corrected 2026-09-09 against the live API and the page.**
-> (a) *"`GET /models` returns exactly two IDs"* (verified 2026-08-14) is **no longer true** —
-> it now returns **three**: `deepseek-v4-flash`, `deepseek-v4-pro`, and
-> `deepseek-v4-flash-vision-exp`. The substantive claim it supported — **no lighter tier to
-> retreat to** — still holds; vision-exp is priced identically to flash. (b) Pro is
-> **exactly 3× flash** on every line (0.022 / 0.66 / 1.98), not the *"~3.1×"* recorded below.
->
-> ⚠️⚠️ **(a) WENT STALE AGAIN WITHIN A DAY — re-read 2026-09-10, and this is the second
-> correction to the same line in 24 hours.** `GET /models` now returns **two** ids again, but
-> **not the 2026-08-14 pair**: **`deepseek-flash`** and **`deepseek-v4-pro`**. The flash line was
-> **RENAMED** — `deepseek-v4-flash` and `deepseek-v4-flash-vision-exp` are both gone from the
-> listing (the former still resolves if sent). ⭐ **Treat this row as a WINDOW, not a fact**: it
-> has now been right, wrong, right and wrong again in four weeks. Re-query before quoting it.
->
-> ⛔ **THE SERVED VERSION IS NOT OBSERVABLE THROUGH THIS API — measured, 6 calls, 2026-09-10.**
-> The response `model` field reads **`deepseek-flash`** whatever you send (the `deepseek-chat`
-> alias, the new literal, or the retired `deepseek-v4-flash`); no response header carries a
-> version; and there is **no versioned flash id to pin**. So the model behind our oracle can be
-> swapped again exactly as it was this morning, and **stamping the response `model` field would
-> record the TIER, not the version** — it would not have distinguished V4 from V4.1. This closes
-> both options #157 proposed. → **#157**, `memory/gotcha-log.md` (2026-09-10 addendum).
->
-> 🔒 **The rename also walked past our guard, now fixed.** `score_ollama_oracle.py`'s
-> `startswith("deepseek-v4")` denylist did not match `deepseek-flash`, and the other two DeepSeek
-> entry points had no guard at all. Replaced by an allowlist in `ground_truth/deepseek_models.py`.
+> *Two `GET /models` corrections (2026-09-09 and 09-10 — ⭐ the listing is a WINDOW, not a fact: re-query before quoting it), the 6-call measurement that the served version is not observable (response `model` = the tier; now stamped per #157, above), and the denylist→allowlist guard fix (`ground_truth/deepseek_models.py`) — MOVED to [`archive/oracle-pricing-scheduling-archive.md`](archive/oracle-pricing-scheduling-archive.md) (2026-10-19).*
 > ⚠️ **The cost consequence belongs in this file:** under the production request shape the literal
 > id returns *valid JSON* and bills **~34.7× the output tokens** (208 vs 6, n=1, one trivial
 > prompt — direction only). ⛔ **Every $/article figure in this file assumes the alias.**
@@ -178,30 +141,11 @@ metadata:
 >
 > *Two 2026-08-23 corrections ("cache-hit 0% measured" had NO instrument — a dead field; "n=45" was 15 articles × k=3) and the superseded ~1,174-token back-solve — MOVED to [`archive/oracle-pricing-scheduling-archive.md`](archive/oracle-pricing-scheduling-archive.md) (2026-10-12).*
 >
-> **Provenance of the challenge (2026-08-23):** an outside GitHub account
-> (`xyzs996`, `author_association: NONE`, **not** DeepSeek) posted the
-> back-solve-to-a-dead-heat argument on
-> [#103](https://github.com/veen-systems/llm-distillery/issues/103#issuecomment-5382743370).
-> Its rate table and its input arithmetic check out against the vendor page; its
-> conclusion differs from ours *only* because it anchored on our rounded $0.0011
-> rather than the cd v5 invoice. ⚠️ **Two of its claims remain UNVERIFIED and are
-> not adopted here:** (a) that the weekend rule took effect
-> 2026-08-22T16:00Z / 00:00 Beijing 2026-08-23 — the vendor page carries **no
-> effective date**; and (b) that the Mon–Fri boundary is read in Beijing
-> `+08:00`, making the weekend 16:00 Fri → 16:00 Sun UTC — the page fixes the
-> *windows* in UTC and says nothing about the weekday. Its argument that the two
-> readings cannot disagree *today* is arithmetically sound (both peak windows lie
-> outside 16:00–24:00 UTC, the only band where a UTC and a +08:00 weekday reading
-> differ), so this is a latent trap, not a live error: **it bites the day DeepSeek
-> moves a window.**
+> *Provenance of the 2026-08-23 outside challenge on #103 (the back-solve-to-a-dead-heat) — MOVED to [`archive/oracle-pricing-scheduling-archive.md`](archive/oracle-pricing-scheduling-archive.md) (2026-10-19). ⚠️ Latent trap kept: whether DeepSeek reads the Mon–Fri boundary in UTC or Beijing `+08:00` is UNVERIFIED (the page fixes only the windows, in UTC, and carries no effective date); the readings cannot disagree today, and it bites the day DeepSeek moves a window.*
 >
 > *The Gemini AI Studio Postpay → Prepay deadline (2026-10-12) — MOVED to [`archive/oracle-pricing-scheduling-archive.md`](archive/oracle-pricing-scheduling-archive.md) (2026-10-16). DONE: owner switched to Prepay the week before (owner-reported).*
 >
-> 🚫 **There is NO lighter DeepSeek tier to retreat to.** Verified 2026-08-14
-> against the live API with our key: `GET https://api.deepseek.com/models`
-> returns exactly two IDs — `deepseek-v4-flash` and `deepseek-v4-pro` (~3.1×
-> flash on input-cache-miss). No lite/mini tier, and the V3-era models are gone
-> as distinct IDs. Flash is the floor, and the floor is what is rising.
+> 🚫 **There is NO lighter DeepSeek tier to retreat to.** Flash is the floor (verified 2026-08-14 against the live API; that check's ID listing and Pro ratio — MOVED to [`archive/oracle-pricing-scheduling-archive.md`](archive/oracle-pricing-scheduling-archive.md) (2026-10-19), stale twice since).
 > ⚠️ **And do NOT "pin" the model name** — see the banner above and `ground_truth/deepseek_models.py`.
 > The real levers are Gemini Batch (~$0.0018/article), local judges on b650 at
 > $0 (`scripts/score_ollama_oracle.py`),

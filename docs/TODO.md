@@ -3,7 +3,7 @@
 ## ▶️ START HERE — the ordered queue, as of 2026-10-19
 
 *▶ **NEXT SESSION (set 2026-10-19 close; `/curate` done, all pushed). "continue" = these, in order:**
-**(1) #163 round 10, THINNING (owner 10-19: "start pruning, thinning, mechanizing, retiring").** Date-retirement is
+**(1) ✅ DONE 2026-10-19 (round 10, below in item 2: 472,366 → 444,103).** ~~#163 round 10, THINNING (owner 10-19: "start pruning, thinning, mechanizing, retiring").~~ Date-retirement is
 exhausted (nothing in the gotcha log or sessions predates 10-01; ledger rows left are open or carry ⚠️). The surface lives
 in the standing topic files: `working-rules` 26.0K, `stamp-contract-integrity` 25.5K, `score-batch-shape-noise` 25.4K,
 `nexusmind-data-sources` 24.2K, `oracle-pricing-scheduling` 24.0K, `calibration-history` 22.1K (`wc -m`, 10-19). Per file:
@@ -89,6 +89,15 @@ Item 2 (#163, the read surface): keep pruning (owner 2026-10-14 and 10-15: "prun
    NexusMind's session runs it; ours is to tell them. LD#52 and LD#86 are closed.
 
 2. **THE READ SURFACE (#163). "prune, thin, mechanize, retire".** Rounds 1–3 landed 2026-10-12: 758,893 → 514,588 chars (519,680 at close, after the session's new records).
+   ✅ **Round 10 (2026-10-19, thinning): 472,366 → 444,103**, ceiling 478,386 → 452,985. The six standing files,
+   VERBATIM moves to their `archive/*-archive.md` (two new: `score-batch-shape-noise`, `calibration-history`), each
+   `comm` lossless (C locale) + 1-line mutant reports 1: working-rules 25,995 → 20,546, stamp-contract 25,532 → 21,550,
+   score-batch 25,353 → 21,196, nexusmind-data-sources 24,159 → 20,832, oracle-pricing 23,972 → 20,836,
+   calibration-history 22,055 → 13,602 (each Dead End keeps title + full "Don't retry" verdict live, narrative
+   elided with `…` + archive link — an excerpt, every kept fragment verbatim). −28.3K, short of the 30K target:
+   what remains is operative or shares lines with a rule. No cross-file dedup done (rules' homes are within the set).
+   Two stale claims corrected: `score_ollama_oracle.py` DOES stamp `prompt_hash` since #157; score-batch's "FOUR".
+   ⚠️ `comm` under the default locale gives false 'missing' lines — use `LC_ALL=C`.
    ✅ **Round 9 (2026-10-19): 474,995 → 472,012** (headroom 3,391 → 6,374; ceiling unchanged — +2% would raise it).
    Verbatim: 10 Mechanized rows (`live`, 0 occurrences, 09-17..09-26) → gotcha archive § *Mechanized rows moved
    2026-10-19*, pointer left in the table. Ledger: nothing movable (H-JO1/BV6/BB4/BB7/ND1 still carry ⚠️ or rulings).

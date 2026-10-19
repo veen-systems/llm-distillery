@@ -214,3 +214,80 @@ Effective mid-July 2026 with 24h advance email notice. See [[cd-v5-reference-sta
 > Phi4:14b". It does not.** #109's body names **no** judge model — that omission is
 > precisely its blocking gap #1. The two names come from the **cd v5 multi-oracle
 > precedent**, where they were actually run. Cite the precedent, not the issue.
+
+
+## Moved 2026-10-19 (#163 round 10)
+
+*Moved VERBATIM from `memory/oracle-pricing-scheduling.md` (#163 the read surface, round 10): closed measurements, resolved incidents, provenance narrative and a stale listing. Blockquote `>` prefixes kept; the live file carries a one-line pointer (with any still-operative rule restated) where each block stood.*
+
+### Vendor-page verification of the V4.1 card (2026-09-09/10; top banner)
+
+> ✅ **RATES NOW VERIFIED ON THE VENDOR PAGE — 2026-09-10, after the 04:00 UTC cutover.**
+> `https://api-docs.deepseek.com/quick_start/pricing/` carries the **0.15 cache-miss**
+> card, so the email-only caveat that stood here is **DISCHARGED**: quote these rates as
+> established. ⚠️ **Keep the lesson, not the caveat** — on 2026-09-09 the same page still
+> showed the **V4** card *because the cut had not taken effect yet*, so an announced rate
+> is not a verified one until its effective time has passed; check the clock before
+> concluding a page disagrees with an announcement. The 2026-08-23 lesson applies in
+> reverse. A **second** announcement email (2026-09-10 12:46 +0800, DKIM/SPF/DMARC pass)
+> restates the identical table — two independent emails and the page now agree.
+> ⛔ **That second `.eml` was deliberately NOT archived** (owner, 2026-09-10: *"we do not
+> need to save the eml, just ingest the info for decision making"*) — it added no rate this
+> file did not already carry. Decoded body + headers of the FIRST email remain frozen in
+> `docs/evidence/2026-09-09-deepseek-v41-price-cut/` — ⚠️ not the original `.eml`, which had
+> vanished from `~/Downloads` ten minutes after it was read. That README says so on its face.
+
+### `GET /models` corrections, the served-version measurement and the guard fix (2026-09-09/10; top banner)
+
+> ⛔ **Two stale facts below, corrected 2026-09-09 against the live API and the page.**
+> (a) *"`GET /models` returns exactly two IDs"* (verified 2026-08-14) is **no longer true** —
+> it now returns **three**: `deepseek-v4-flash`, `deepseek-v4-pro`, and
+> `deepseek-v4-flash-vision-exp`. The substantive claim it supported — **no lighter tier to
+> retreat to** — still holds; vision-exp is priced identically to flash. (b) Pro is
+> **exactly 3× flash** on every line (0.022 / 0.66 / 1.98), not the *"~3.1×"* recorded below.
+>
+> ⚠️⚠️ **(a) WENT STALE AGAIN WITHIN A DAY — re-read 2026-09-10, and this is the second
+> correction to the same line in 24 hours.** `GET /models` now returns **two** ids again, but
+> **not the 2026-08-14 pair**: **`deepseek-flash`** and **`deepseek-v4-pro`**. The flash line was
+> **RENAMED** — `deepseek-v4-flash` and `deepseek-v4-flash-vision-exp` are both gone from the
+> listing (the former still resolves if sent). ⭐ **Treat this row as a WINDOW, not a fact**: it
+> has now been right, wrong, right and wrong again in four weeks. Re-query before quoting it.
+>
+> ⛔ **THE SERVED VERSION IS NOT OBSERVABLE THROUGH THIS API — measured, 6 calls, 2026-09-10.**
+> The response `model` field reads **`deepseek-flash`** whatever you send (the `deepseek-chat`
+> alias, the new literal, or the retired `deepseek-v4-flash`); no response header carries a
+> version; and there is **no versioned flash id to pin**. So the model behind our oracle can be
+> swapped again exactly as it was this morning, and **stamping the response `model` field would
+> record the TIER, not the version** — it would not have distinguished V4 from V4.1. This closes
+> both options #157 proposed. → **#157**, `memory/gotcha-log.md` (2026-09-10 addendum).
+>
+> 🔒 **The rename also walked past our guard, now fixed.** `score_ollama_oracle.py`'s
+> `startswith("deepseek-v4")` denylist did not match `deepseek-flash`, and the other two DeepSeek
+> entry points had no guard at all. Replaced by an allowlist in `ground_truth/deepseek_models.py`.
+
+### Provenance of the 2026-08-23 challenge on #103
+
+> **Provenance of the challenge (2026-08-23):** an outside GitHub account
+> (`xyzs996`, `author_association: NONE`, **not** DeepSeek) posted the
+> back-solve-to-a-dead-heat argument on
+> [#103](https://github.com/veen-systems/llm-distillery/issues/103#issuecomment-5382743370).
+> Its rate table and its input arithmetic check out against the vendor page; its
+> conclusion differs from ours *only* because it anchored on our rounded $0.0011
+> rather than the cd v5 invoice. ⚠️ **Two of its claims remain UNVERIFIED and are
+> not adopted here:** (a) that the weekend rule took effect
+> 2026-08-22T16:00Z / 00:00 Beijing 2026-08-23 — the vendor page carries **no
+> effective date**; and (b) that the Mon–Fri boundary is read in Beijing
+> `+08:00`, making the weekend 16:00 Fri → 16:00 Sun UTC — the page fixes the
+> *windows* in UTC and says nothing about the weekday. Its argument that the two
+> readings cannot disagree *today* is arithmetically sound (both peak windows lie
+> outside 16:00–24:00 UTC, the only band where a UTC and a +08:00 weekday reading
+> differ), so this is a latent trap, not a live error: **it bites the day DeepSeek
+> moves a window.**
+
+### No lighter tier — the 2026-08-14 ID listing
+
+> 🚫 **There is NO lighter DeepSeek tier to retreat to.** Verified 2026-08-14
+> against the live API with our key: `GET https://api.deepseek.com/models`
+> returns exactly two IDs — `deepseek-v4-flash` and `deepseek-v4-pro` (~3.1×
+> flash on input-cache-miss). No lite/mini tier, and the V3-era models are gone
+> as distinct IDs. Flash is the floor, and the floor is what is rising.

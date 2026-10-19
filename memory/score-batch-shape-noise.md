@@ -1,6 +1,6 @@
 ---
 name: score-batch-shape-noise
-description: A student score is not a function of the article alone — batch composition moves it up to 0.16, flipping 7-9% of near-boundary surfacing decisions (#95); cycles are replayable since 2026-08-03 but scores are not stable. FOUR noise populations now, and the fourth is not a floor at all: human_thriving v8's scope gate is a STEP FUNCTION (13% of identical re-runs flip a binary verdict worth a median 3.75, while gate-stable rows move 0.100) — so 1/sqrt(k) averaging does not touch it and "noise floor" language misleads
+description: A student score is not a function of the article alone — batch composition moves it up to 0.16, flipping 7-9% of near-boundary surfacing decisions (#95); cycles are replayable since 2026-08-03 but scores are not stable. FOUR measured noise populations plus a FIFTH candidate term (the program: dtype/loader/batch, unisolated), and the fourth is not a floor at all: human_thriving v8's scope gate is a STEP FUNCTION (13% of identical re-runs flip a binary verdict worth a median 3.75, while gate-stable rows move 0.100) — so 1/sqrt(k) averaging does not touch it and "noise floor" language misleads
 metadata:
   type: project
 ---
@@ -60,11 +60,7 @@ cause.
 (a) declare a noise margin, (b) test the fixed-length-padding hypothesis first,
 (c) both. Chosen: **(a), no experiment.** The padding test stays unrun.
 
-Note the option that was *not* available: "pin a batch size in production."
-`DEFAULT_BATCH_SIZE = 16` (`filters/common/filter_base_scorer.py:50`) is already
-fixed and never varies in production — the variable is batch *composition*, which
-is what the seeding addressed. #95's own "suggested next steps" text offered
-pinning as a live option; it was not one.
+*The "pin a batch size" option that was never available (2026-08-06) → [archive](archive/score-batch-shape-noise-archive.md) § Moved 2026-10-19.*
 
 **The rule, as shipped:** an article predicted within **0.16** of the surfacing
 threshold is *indeterminate* — the batch decided it, not the model. Every metric
@@ -95,23 +91,7 @@ something needs batch-invariant scores.
   the movement measured here. Pin `batch_size` for that test, or treat the
   boundary as fuzzy to ±0.08.
 
-## Does it change a decision? Yes — measured 2026-08-03
-
-The first pass (120 articles) found 0 tier flips **and 0 articles within 0.05 of
-the op-point**, so it could not have found one. Re-run against the band where a
-flip is possible (`scripts/diagnostics/measure_batch_shape_flips.py`):
-
-| filter | op-point | in ±0.30 band | flipped | share of band | share of corpus |
-|---|---|---|---|---|---|
-| solutions v6 | 2.252 | 28 | 2 | **7.1%** | 0.07% |
-| uplifting v7 | 4.0 | 33 | 3 | **9.1%** | 0.32% |
-
-```
-solutions [3]  bs1=2.1745(low)  bs4=2.3398(medium)  bs8=2.3080(medium)  bs16=2.1745(low)
-uplifting [9]  bs1=4.0390(medium)  bs4=3.9193(low)   bs8=3.9012(low)     bs16=4.0390(medium)
-```
-
-Flips occur within 0.077 (solutions) / 0.039 (uplifting) of the op-point.
+*§ "Does it change a decision?" (2026-08-03 re-run on the ±0.30 band; flips within 0.077 / 0.039 of the op-point) → [archive](archive/score-batch-shape-noise-archive.md) § Moved 2026-10-19.*
 
 ## Not measured
 
@@ -138,27 +118,7 @@ not measured. The production-relevant number is therefore an estimate.
   ⚠️ **That 0.1956 is CPU→CUDA on a 3090 Ti, which b650 no longer has.** Its
   Blackwell replacement measures **0.1572** — see the ⭐ block below before
   quoting either, and note the sub-floor one still flips verdicts.
-  ⚠️ Everything below was measured 2026-08-09 with the **stack unmatched**, so read
-  it as the stack term, not a box term.
-  **NOW MEASURED FOR THE GEMMA STUDENT TOO (2026-08-09 night)**, and it is the
-  same order as this floor rather than smaller: uplifting v7's 660 held-out rows,
-  b650 vs gpu-server's serving venv, model weights + all filter/`common/` code +
-  split md5-identical, CPU both sides — **max calibrated |Δ| 0.2008, i.e. ABOVE
-  the 0.16 floor**, p99 0.1198, p90 0.0345, p50 0.0000, only 2.3% of rows
-  bit-identical, signed mean +0.00018 (noise, not a shift). **Decision impact is
-  threshold-dependent: 0 verdict flips at the 4.0 op-point (identical confusion
-  matrix — ⚠️ **but 4.0 has not been the op-point since 2026-08-11, #102**, so that
-  reassurance no longer describes the deployed cut) and 3 flips at 4.5,
-  splitting specificity 0.9730 vs 0.9662.** So the two noise sources *stack*, and
-  **a box is cleared at a threshold, never in general**. The e5 probe's clean
-  4.2e-6 result does NOT transfer to the student. Beware the p50 of exactly
-  0.0000 — raw logits are bf16-quantised (~0.03 steps), so most disagreements are
-  hidden, not absent. Harness: `scripts/verification/box_parity.py` +
-  `diff_box_parity.py`; record:
-  `docs/evidence/2026-08-09-cross-box-parity-uplifting-v7.md`.
-  ⛔ *That last line read "still unmeasured for the student: CPU vs CUDA" until
-  2026-08-29. It was measured the NEXT DAY at **0.1956**, 1 flip at 4.0 and 3 at
-  4.5 — see the correction block above.*
+  → The 2026-08-09 measurement behind the **0.2008** stack term (p99 0.1198; 0 flips @4.0, 3 @4.5; bf16 hides most p50 disagreements; the e5 probe's 4.2e-6 does NOT transfer; record `docs/evidence/2026-08-09-cross-box-parity-uplifting-v7.md`) → [archive](archive/score-batch-shape-noise-archive.md) § Moved 2026-10-19.
   ⭐ **THE DEVICE TERM IS HARDWARE-SPECIFIC, AND b650'S WAS RE-MEASURED
   2026-09-17 WHEN ITS GPU WAS SWAPPED** (3090 Ti / Ampere → RTX 5090 / Blackwell;
   `docs/evidence/2026-09-17-b650-gpu-swap-parity/`, EXP-038). Same box, same pins,
@@ -177,11 +137,7 @@ not measured. The production-relevant number is therefore an estimate.
   Reach for this run whenever someone (including me) argues a sub-floor term can
   be ignored.
 
-  ⚠️ Two confounds were ruled out rather than assumed: the 5090 is
-  **self-deterministic run-to-run** (byte-identical 660/660, so none of the 0.2357
-  is the GPU failing to repeat itself) — though that is one process shape on one
-  box, **not** stability across batch size or composition — and the stored
-  `_meta` stack fingerprints are identical across all dumps.
+  → Two confounds ruled out on the 5090 (self-determinism, `_meta` fingerprints) → [archive](archive/score-batch-shape-noise-archive.md) § Moved 2026-10-19.
   ⛔ **Stored b650-CUDA dumps predate the swap and may NOT be diffed against new
   ones.** The CPU-side terms (host 0.0000, stack 0.2008) are untouched: both were
   measured with the device held at CPU, and the control re-proves the CPU arm.
@@ -226,16 +182,7 @@ what varied — batch composition (0.16), the **library stack** (0.2008), the
 one that varied in *your* comparison. ⛔ **"The machine" is not on that list**: with
 pins and device matched, two machines are bit-identical.
 
-⛔ **AND THE POPULATION TRAVELS WITH IT — a shipped artifact got this wrong on
-2026-09-11.** `harm_detector/v1`'s `inference.py` stated the **0.2008** "was taken on
-exactly this architecture (mpnet + sklearn MLP, differing sentence-transformers
-versions)". It was not: 0.2008 is the **Gemma-3-1B student's**, measured on `uplifting
-v7`'s 660 held-out rows, b650 vs gpu-server's serving venv, CPU both sides. The
-mpnet + sklearn-MLP architecture's stack term is **UNMEASURED**. The claim had reached
-**five** places in the package — two docstrings, a README, a test docstring, and the
-`RuntimeWarning` **emitted into production logs on every off-pin load** — and the first
-correction pass fixed one of them, because I worked from a list instead of grepping the
-files. Corrected in `bb5a52d` (llm-distillery) and NM#474.
+⛔ The 2026-09-11 `harm_detector/v1` occurrence (0.2008 asserted for mpnet + sklearn MLP, whose stack term is UNMEASURED; fixed `bb5a52d`, NM#474) → [archive](archive/score-batch-shape-noise-archive.md) § Moved 2026-10-19.
 
 ⭐ **Two lessons, and the second is the one that generalises.** A floor belongs to a
 population AND a mechanism, so an inherited one must say whose it is — carrying it as an
@@ -323,28 +270,7 @@ it is enough to change the re-score design and not enough to quote as a rate.
 
 ## A FIFTH candidate term, unisolated: the PROGRAM (dtype / loader / batch), 2026-09-06
 
-⛔ **Not a floor, and not yet a term — a candidate with two rivals excluded.** `EXP-026`
-found `human_thriving v8`'s raw recall differing by **one article** between two ways of
-scoring the same 660 rows with the same weights: `eval_ht_v8.py` <!-- placeholder --> gives **18 TP**, the
-production inference path **17**.
-
-Excluded by measurement:
-
-- **the device** — CPU vs CUDA, same box, same dumps: **0 verdict flips on both arms**,
-  max \|Δ\| **0.1428** calibrated / **0.0508** raw, the same 17 and 26 surfaced
-  (`docs/evidence/2026-09-06-v8-deploy-gate/device_delta.py`). ⛔ Note that 0.1428 is
-  **below** the #95 batch floor of 0.16, so zero flips is the expected outcome here, not a
-  surprising one — this measurement bounds the device term for THIS population, it does not
-  overturn the 0.1956 measured on `uplifting v7`.
-- **the gatekeeper and the clamp** — applying or removing them moves **0 rows** across 4.5
-  on either device (`why_18_not_17.py`).
-
-Still confounded, all three at once: **dtype** (production holds 342 bfloat16 parameters
-against 364 float32, score head in bf16; the other path forces `torch_dtype=torch.float32`),
-**adapter loading** (`load_lora_local` → `get_peft_model` + a hand-rolled remap vs
-`PeftModel.from_pretrained`) and **batch size** (16 vs 8 — itself a #95 composition term).
-The quantisation signature is real — 3,960 logits taking **1,161 distinct values** — but it
-shows bf16 is present, not that it is the cause.
+⛔ **Not a floor, and not yet a term.** EXP-026's one-article gap (18 vs 17 TP, same 660 rows and weights); device and gatekeeper/clamp excluded, dtype / adapter loading / batch size still confounded → [archive](archive/score-batch-shape-noise-archive.md) § Moved 2026-10-19; `H-V8-23` in [hypothesis-ledger](hypothesis-ledger.md).
 
 ⚠️ **The lesson this file exists for applies to itself here.** *A floor belongs to a
 population and a mechanism*: naming this "the dtype term" and giving it a magnitude would
@@ -397,9 +323,6 @@ been measured. The ~860-of-6,590 figure inherits the panel's weighting either wa
 neither number was measured on the v7 corpus, which is a third population again.
 
 ⛔ **And one more thing that is not noise at all, found in the same run: PROMPT POSITION.**
-*(Deliberately un-numbered: this file and the memory index were counting the same list from
-two different bases — "a fifth" here against "a sixth" there. A hand-maintained ordinal in
-two files disagrees the moment one is edited.)*
 Moving the article from char 617 to char 40,626 of the same prompt — content-preserving to
 one `---` — shifts the score by **−0.239** on the production mix (95% CI [−0.409, −0.080];
 sign-flip permutation p=0.0049, source-clustered [−0.410, −0.078] — but ⛔ **NOT

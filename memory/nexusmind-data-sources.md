@@ -44,14 +44,7 @@ detection window undercounts fabrication. See
 
 ## WHICH length field to check, and at which stage (measured 2026-08-11)
 
-**Measured**: matched every filtered batch (84 files, back to 2026-07-28) against
-`ovr.db` — **4,319 matched, 4,295 identical (99.4%), 24 different (0.6%)**.
-
-**⚠️ Do NOT read that as "ovr.news does not enrich". IT DOES, and I concluded
-otherwise from this number — wrongly.** The ovr.news session read the code:
-`summarize.ts:453` calls `enrichArticles`, which mutates `.content` in place;
-:459–464 keeps the longer of the two; `upsertArticle` (:845) persists it. Google News
-redirect resolution lives *inside* that path (`enrichment.ts:154–155`).
+**ovr.news DOES enrich, narrowly (below)** — the 99.4% identity measurement and the code trace that refuted "ovr does not enrich": MOVED to [`archive/nexusmind-data-sources-archive.md`](archive/nexusmind-data-sources-archive.md) (2026-10-19).
 
 **It is narrowly gated** (`summarize.ts:441–448`): `content.length < 500`
 **AND NOT** `wasEnrichedUpstream(article)`. So ovr yields whenever NexusMind claims
@@ -88,11 +81,7 @@ Three fields, three stages:
 
 ## Post-scoring enrichment does not propagate across lenses (0.1%, real)
 
-`global_news_euronews_0111e7cdda7d`, one cycle, six lens batches inside 8 minutes:
-`uplifting` scored it **6.20** — above `pipeline.enrichment.min_score: 4.0` — so
-`enrich_articles` fetched the body, **294 → 14,963 chars**. The four lenses scored
-*after* it in the same cycle still saw **294**. Others: `investment_risk` 7,991 vs 200
-for the other five; 10,238 vs 199; 2,526 vs 300.
+**The euronews instance (294 → 14,963 chars, four later lenses still saw 294) and three others** — MOVED to [`archive/nexusmind-data-sources-archive.md`](archive/nexusmind-data-sources-archive.md) (2026-10-19).
 
 **Scale: 11 of 21,437 articles seen by 2+ lenses over the last 8 cycles — 0.1%.**
 Small, but a genuine correctness issue: *which* lens gets the real article is decided
@@ -101,8 +90,7 @@ systematically lose. Interacts with NM#319 — a filter whose distribution sits 
 4.0 (`solutions v6` scored 0 of 56 above it) never triggers enrichment for any
 article, so it is permanently on the stub side.
 
-Reproduce: `/tmp/trace_one.py` and `/tmp/cross_lens_len.py` on sadalsuud; sources in
-this session's scratchpad.
+**Reproduce scripts** (`/tmp` on sadalsuud, not kept) — MOVED to [`archive/nexusmind-data-sources-archive.md`](archive/nexusmind-data-sources-archive.md) (2026-10-19).
 
 ## ⭐⭐ THE LIVE WINDOW ROLLS. THE DATA DOES NOT — there are MONTHLY archives (2026-09-01)
 
@@ -119,11 +107,7 @@ bytes the live `data/filtered/` cycle files carry. ⚠️ Those members are *ins
 and resolve to no path on disk; the exact member layout is in
 `scripts/dataset/rehydrate_adverse.py`, which reads them.
 
-**Demonstrated, not asserted (2026-09-01):** all 18 rows of `datasets/adverse/uplifting.jsonl`
-had been reduced to 300-char excerpts and were believed lost. **18 of 18 recovered** — 3 from
-the live window, 15 from `nexusmind_2026-08.tar.gz` — every one matching its recorded
-`content_original_length` exactly. Tool: `scripts/dataset/rehydrate_adverse.py`.
-Record: `docs/evidence/2026-09-01-v8-phase-b-preflight/` §4.
+**Demonstrated 2026-09-01: 18 of 18 adverse rows recovered** (tool `scripts/dataset/rehydrate_adverse.py`) — MOVED to [`archive/nexusmind-data-sources-archive.md`](archive/nexusmind-data-sources-archive.md) (2026-10-19).
 
 ### ⛔ But the FluxusSource archive is NOT a substitute — it holds PRODUCER bytes
 
@@ -174,18 +158,7 @@ treatment changed are exactly the rows that appear or disappear from it. Use the
 pipeline's own excluded counts per cycle, or
 `NexusMind/scripts/validate_shadow_exclusions.py`.
 
-**A sixth excluded type SHIPPED 2026-08-08 (LD#101): `eval_aggregator`.**
-*(Live in all 6 filters on sadalsuud, `shadow_mode: false`. Verified by executing
-`apply_source_filter` against the deployed config: `eval_aggregator` →
-`passed_prefilter False`, `news_regional` → `True`, `excluded_count 1`. Cycle-log
-confirmation still pending.)* FluxusSource's three FS#120 evaluation arms
-(`gnews_eval`, `newsdata_eval`, `gdelt_constructive`) are an A/B measurement rig,
-not a content source — but the stamp had **zero consumers**, so they were scored
-by every filter and **published**: 30 rows in `ovr.news/data/ovr.db`, including a
-funeral/murder story at tier `high` and Taiwanese local news under a Madagascar
-query. They now join the population below: **scored, then dropped, absent from
-`filtered/`.** The exclusion stops new ones; it does not retract the 30 already
-published.
+**`eval_aggregator` excluded since 2026-08-08 (LD#101)** — shipping story and the 30 eval rows already published: MOVED to [`archive/nexusmind-data-sources-archive.md`](archive/nexusmind-data-sources-archive.md) (2026-10-19).
 
 Two traps this creates, live now:
 
@@ -199,33 +172,10 @@ Two traps this creates, live now:
   `metadata.quality.type_classification == 'eval_aggregator'`, which is verified
   to survive end-to-end into `ovr.db`.
 
-*Why post-scoring exclusion rather than a publish-time gate in ovr.news: because
-`apply_source_filter` **already is** a publish-time gate — it runs on
-already-scored articles. A first version of this decision proposed building the
-same behaviour in a third repo, on the mistaken premise that
-`excluded_source_types` prevents scoring. It does not.*
-
-Measured 2026-08-02 over 4 cycles:
-
-| filter | scored | written to `filtered/` | excluded |
-|---|---|---|---|
-| the five common filters | 8,759 | 8,283 | **476** (`code_repo`, `developer_aggregator`, `firehose_aggregator`) |
-| investment_risk | 8,765 | 6,572 | **2,193** (also `academic`, `social`) |
+**Why post-scoring exclusion, and the 2026-08-02 four-cycle measurement (476 / 2,193 excluded)** — MOVED to [`archive/nexusmind-data-sources-archive.md`](archive/nexusmind-data-sources-archive.md) (2026-10-19).
 
 Consequence: **log-derived and file-derived denominators are different sets.**
-For investment_risk the logged 0.642 and the written-set 0.770 differ by 0.129.
-
-⚠️ **Treat 0.129 as an upper bound on the discrepancy, not a measured bias**
-(corrected 2026-08-02 by adversarial review). The excluded rows' actual pass
-rate is **unmeasured**: reconstructing them from `data/raw/` gave 0.008, which
-is invalid for the reason in the next section, and the only other estimate
-(0.647, as a residual) is derived from the reconciliation it would support.
-Measuring it properly means instrumenting the pipeline, not replaying a file.
-
-A related trap: two numbers computed over these two different populations may
-*agree* closely and that agreement proves nothing. The replay's 0.5901 and the
-shadow's 0.5934 for uplifting look like harness validation and are not — the
-extra 476 rows simply happen to pass at a rate near the overall one.
+**investment_risk's 0.642 vs 0.770 (an upper bound, not a bias) and the 0.5901/0.5934 agreement that proves nothing** — MOVED to [`archive/nexusmind-data-sources-archive.md`](archive/nexusmind-data-sources-archive.md) (2026-10-19).
 
 > Reconcile the two explicitly before diffing them. Sum the per-batch `n` from
 > the scorer log for one cycle and compare against `wc -l` of that cycle's
@@ -265,13 +215,7 @@ looks reasonable is not evidence that its parts are.
 
 - **Cheap detector:** a violation whose key starts with `_` is ours, not theirs.
 
-⚠️ **CORRECTED the same day — the trap is real, the discovery was a REDISCOVERY.**
-NexusMind's contract validator **already strips these stamps** and reports clean:
-`scripts/validate_production_contract.py:130`, `NEXUSMIND_STAMP_PREFIXES = ("_commerce_",
-"_obituary_", "_violence_")`, merged 2026-08-14 — *before* this was "found". It was hit by
-writing an ad-hoc validator instead of running the existing one. **So do not cite this as a
-defect in their tooling.** It remains a live trap for **anyone hand-rolling a check over
-`data/raw`**, which is the case this file exists for.
+**CORRECTED: a rediscovery** — NexusMind's `validate_production_contract.py` already strips `_commerce_`/`_obituary_`/`_violence_` stamps; the trap is for hand-rolled checks over `data/raw`. Story MOVED to [`archive/nexusmind-data-sources-archive.md`](archive/nexusmind-data-sources-archive.md) (2026-10-19).
 
 **The canary's real constraint is corpus VINTAGE, not contamination:** local `data/raw`
 predates `source_group`, so a check run there misses the emitted-undeclared class entirely
@@ -300,15 +244,7 @@ populations.
 
 ### ⛔ `live_articles` is NOT the reader population — corrected 2026-08-16
 
-**This file said it was, from 2026-08-11 to 2026-08-16, and CLAUDE.md carried the
-same line.** The view is **legacy and off the build path**. The site reads
-`getArticlesForBuild` (`src/lib/db-articles.ts:270`, called at
-`src/lib/data/pipeline.ts:83`) — a join over `article_filter_scores` + `articles` +
-`summaries`, windowed on `ranking.maxAgeDays`, **returning only articles that have
-been summarised**. Two comments inside ovr warn about this, one written after a
-script made exactly this error. Verified here by grepping every `live_articles`
-reference in `src/` and `scripts/`: outside the schema DDL there is one, a function
-the build never calls.
+**The site reads `getArticlesForBuild`** (`src/lib/db-articles.ts:270`; only summarised articles, windowed on `ranking.maxAgeDays`). How this file got it wrong 2026-08-11 → 08-16: MOVED to [`archive/nexusmind-data-sources-archive.md`](archive/nexusmind-data-sources-archive.md) (2026-10-19).
 
 **The `live_articles` view drift** — MOVED to [`archive/nexusmind-data-sources-archive.md`](archive/nexusmind-data-sources-archive.md) (2026-10-16). FIXED 2026-08-16 by ovr#325; the view self-heals.
 
@@ -361,13 +297,7 @@ per collection**, **800–1,000 distinct articles never scored per fortnight**. 
 cycles: like the `too_old` population these rows are never marked processed, so the same
 ones are re-dropped every load rather than the loss accumulating.
 
-The two corpora give 9.85 and 12.5 per collection respectively — they differ only in rows
-per day (13,016 vs 15,101), and the **rates agree to within 0.06pp**, which is the part
-that carries. A single number from either side is false precision across two corpora at
-different points in the pipeline. ⚠️ NexusMind's first per-day figure was **2× too high**
-because the corpus span was read off a **file mtime** (`find_input_files` sorts by mtime)
-rather than the `content_items_*` stamps — 07-12 → 07-26, 15 days, not 30. *Two orderings
-in one head, one quoted as the other.*
+**Why a point estimate is false precision (9.85 vs 12.5 per collection; a 2× mtime error)** — MOVED to [`archive/nexusmind-data-sources-archive.md`](archive/nexusmind-data-sources-archive.md) (2026-10-19).
 
 **Prefer the reader-window form when this travels**: *"roughly eight hundred to a thousand
 distinct articles never scored, and therefore never available to ovr.news, in any given

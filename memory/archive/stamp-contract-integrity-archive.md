@@ -174,3 +174,121 @@ UTC value and wrong by the host offset, unrecoverable. The same defect as
 **a redesign cannot ship incrementally under the current shape** — the shared-envelope
 question arrives as a hard blocker rather than a design choice. Full invalidation list
 (6 items, ranked by how quietly each breaks) is in the proposal.
+
+## Moved 2026-10-19 (#163 round 10)
+
+*Moved VERBATIM; each block repeats its source section heading (a whole moved section carries its own). Reason: dated 2026-08-08..08-26 occurrence stories and status snapshots whose operative rule stays live (rules 1–15, the instrument traps, the `x-rare` / subtree rules).*
+
+## What validates what
+
+**Worse, until 2026-08-08 it had never been run against a production row.**
+NexusMind's `tests/unit/test_contracts.py` validates `tests/fixtures/`. First run against
+2,400 live rows: **908 violations**, one field —
+`image_analysis.image_confidence`, declared `0..1`, actually a **raw logit**
+(range −12.330..6.365, median −2.696, **68.4%** outside the bound). The producer
+was self-consistent all along (`ml_confidence_threshold` default **2.944**,
+stated in `src/preprocessing/image_analysis.py:546,575`); the **contract** was
+wrong from the day it was written.
+
+*Why fixtures could never have caught it:* the `url_pattern` layer emits `1.0`
+and `domain_duplicate` emits `0.9`, so every hand-written example looked like a
+probability. **A fixture encodes the author's belief about the data; a test over
+fixtures can only confirm that belief.** Filed as **NM#303** (add production
+validation). Contract B is now **1.15.0**.
+
+## What validates what
+
+**A THIRD limit, found 2026-08-08 — check A false-positives on rare fields.**
+`--cycles 2` reported `enriched` / `enriched_at` as "assigned in a writer, but
+present on 0 of 32,040 rows", and I read that as a dead branch. It is not: the
+branch fires and works. Post-scoring enrichment succeeds **0–3 times per filter
+per cycle**, so two cycles can legitimately contain zero. Verified by pairing
+the log line with the row — `Enrichment complete: 3 fetched, 3 replaced` at
+12:51 → `enriched=True` on exactly **3** of 1,843 investment_risk rows.
+
+## What validates what
+
+Of the six fields check A flagged that day: three were real
+(`content_length`, `stage_used`, `stage1_estimate` — all NM#300's allowlists),
+one was config-off by design (`short_content_cap_applied`), and **two were false
+positives**.
+
+## Unprompted findings from the first census run (15,118 rows)
+
+- `stage_used`, `stage1_estimate` — assigned by a writer, on **no** row. This was
+  **LD#88 item 1**; ~~open~~ **fixed and verified the same day** (100% populated
+  from the 17:10 cycle), LD#88 closed. Kept as the worked example of check A
+  finding a real defect unprompted.
+- `short_content_cap_applied` — never observed; LD#93's cap is off on every
+  filter by config (expected, but now visible).
+- `normalization_method` constant `percentile`; `passed_prefilter` constant
+  `True` (the latter is NM#284's fingerprint plus the survivors-only bias).
+- Five fields stamped on every row and declared in no contract:
+  `raw_weighted_average`, `normalization_method`, `content_length`,
+  `original_content_length`, `obit_pattern_count`. **`raw_weighted_average` is
+  the one that matters** — ADR-022 says visibility keys on it while
+  `weighted_average` is rank-in-batch, and it being undeclared while
+  `weighted_average` was declared is plausibly how the two got conflated.
+
+# ⭐ REDIRECTED 2026-08-14 — the contract is being REDESIGNED, not patched
+
+**Read `docs/proposals/contract-a-redesign.md` before anything below.** The owner
+stopped the incremental work: a day across five sessions produced **four corrected
+values in one schema file** plus a large amount of verification process. Everything
+below remains true as *measurement* and is superseded as *plan*.
+
+## ⚠️ Instrument traps — read before quoting any number above
+
+   **Fix built** on branch `fix/357-contract-validator-grouping` (`b8a191c`,
+   NM#357) — keyed on the missing property via an anchored regex with an explicit
+   fallback to the parent key, and reporting `"N error(s) on M row(s)"`. **Not
+   merged; main has none of it.**
+
+## ✅ CONTRACT A IS IMPLEMENTED (2026-08-15 evening → 08-16 morning)
+
+**17 of 18 declared fields ride on delivered rows**, four consecutive deliveries, **0
+validation errors against both schemas**, measured by this session and by FluxusSource
+independently with identical results. Detail and the per-block counts:
+`docs/TODO.md` and `docs/CONTRACTS_PLAN-rounds-archive.md` § *Round 4*. The 18th,
+`content_meta.error`, is correctly absent — it exists only on a derivation fault.
+
+### ⭐⭐ THE GAP THE WHOLE CONTRACT COULD NOT SEE — and it is a documented class
+
+**So a block that STOPPED being emitted was invisible — which is exactly what production
+looked like for the week the contract was fully declared and the producer emitted none of
+it.** This is a named failure mode in the data-quality literature (*"when all fields are
+optional, validation cannot detect missing fields that should have been present"*), not a
+local quirk.
+
+### Rules this added
+
+    The live counter-example: the 08:10 delivery emitted **no** `charset_detected` at all
+    because every body decoded as strict UTF-8 — a *healthy* cycle any floor would have
+    reddened, and a check that cries wolf on healthy data is ignored on the run that
+    matters.
+
+## The Article Record register (2026-08-25)
+
+⛔ **Two ghosts the old instrument could not report**, both found the day the register
+was built: `_corroboration` and its three children are **declared in Contract B and on
+0 of 164,572 rows** (the dict is popped at `scripts/main.py:2028`, deliberately), and a
+nullable object's population used to be *the count of its own absence*.
+
+### A ghost is a question — so the census now records the ANSWERS (2026-08-26)
+
+Both of that run's ghosts turned out to have answers, and neither was a corpse. The
+answers are stored as machine-readable schema annotations, because **prose was exactly
+what the instrument could not read**: `_corroboration`'s description had said
+"Intermediate field" from the start and check A reported it as a ghost anyway.
+
+### A ghost is a question — so the census now records the ANSWERS (2026-08-26)
+
+**The first real answer — `source_unreliable`, and it is not about code at all.** It
+needs `source_tier == "override"` AND `credibility_score < 3.0`. `override` means a
+curator entry in FluxusSource `config/domains/credibility.yaml`: 733 entries, exactly 5
+below 3.0 (infowars 1.0, rt.com / sputniknews / sputnikglobe / tass 2.0), of which 3
+are configured feeds and **all 3 are `enabled: false` on editorial grounds** (unblock =
+NM#253) while the other 2 are in no source config. Over **237,132 distinct articles**
+(510 files, 08-11 .. 08-25) `override`'s minimum credibility is **3.8**, and all **204**
+sub-3.0 articles are `verified` tier, which the predicate excludes. **The two halves of
+the AND are anti-correlated by policy, two repos upstream.**

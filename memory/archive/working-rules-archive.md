@@ -99,3 +99,123 @@ switching to a population the tool already emits — the pipeline's own per-sour
 ### pgrep / pkill — September stories, occurrences 7–8 (2026-09-05)
 
 *(⚠️ **7th AND 8th occurrences 2026-09-05, FORTY MINUTES APART, THE SECOND ONE AFTER I HAD WRITTEN UP THE FIRST.** Both were `ssh b650-gpu 'while pgrep -f "<script> --arm ..."; do sleep 5; done'`, both exit **143**, both waiting on a job that had already finished — the remote shell carrying the loop contains the pattern, so the loop waits for itself. ⭐ **Articulating the rule is not applying it: the gap between logging the mechanism and repeating it was under an hour.** The remedy is already written down and was not used either time — **wait on the ARTIFACT the job produces, never on the job.** Detail: **AND IT WAS A WAIT-LOOP AGAIN, INSIDE AN EXPERIMENT ABOUT INSTRUMENTS THAT CANNOT SAY WHAT THEY CLAIM.** Waiting on a remote benchmark with `ssh b650-gpu 'while pgrep -f "bench_devices.py --arm student-gpu"; do sleep 5; done'`: the remote shell carrying the loop contains the pattern, so the loop waited for **itself** and was killed at the timeout (**exit 143**) while the job had finished minutes earlier. No data lost — the result was already on disk and was read directly. ⭐ **The general form is this rule's own: I asked "is it still running?" of an instrument that had to answer yes.** ⚠️ **The tell was available and unused** — an earlier command in the same session had already listed the job with `ps -eo pid,etime,args`, which shows the loop and the job as separate lines; `pgrep` collapses exactly the distinction that matters. Prefer waiting on the ARTIFACT the job produces over waiting on the job.*
+
+
+## Moved 2026-10-19 (#163 round 10) — thinning the live file
+
+*Verbatim, line for line; the live file carries a one-line pointer where each block stood. The rules themselves (title, imperative, occurrence count) stay live.*
+
+### How this file came to exist (2026-08-12 move note)
+
+Moved here 2026-08-12 by `/audit-context`: the block was 6,136 chars of an
+auto-loaded 38.7k file (38,743 bytes), against a 40k tool warning. Nothing was cut — the rules
+stay in `CLAUDE.md`, their justification lives here.
+
+### A FAILING CHECK MAY BE THE CONTROL WORKING — the 2026-08-15 `source_group` story
+
+**Added 2026-08-15, from my own error, caught by NexusMind declining it.**
+
+I found that validating 788 live producer rows against Contract A gave **788/788
+violations, all one field (`source_group`) unexpected at a closed root** — verified, and
+the facts were right. I inferred that declaring the field was therefore a **prerequisite**
+for the canary, and recorded the resequencing. **The inference was the error.**
+
+`source_group` is the production contract check's **only non-circular acceptance control**:
+an independent field, on 100% of rows, **that the check was never shown** — and therefore
+the only evidence the check *can fail at all*. It was already a recorded decision (NM#304,
+NexusMind `contracts/CHANGELOG.md` 1.18.0) guarded by a test whose name says so, which failed by
+design the moment someone tried it.
+
+### A FAILING CHECK — the NexusMind three-tests parenthetical
+
+*(Also from the same exchange, and the reason this was caught at all: NexusMind hit three
+pre-existing tests, reverted twice, and modified none of them. **A failing test is a
+finding, not an obstacle.**)*
+
+### HAND-BUILT POPULATION — provenance note
+
+*(Added to CLAUDE.md 2026-08-12; its evidence was in `gotcha-log.md` only, which made
+this file's own "full text of each rule" contract false for one rule — caught by
+`/review-changes` the same day.)*
+
+### HAND-BUILT POPULATION — the eight instances
+
+Instances, all independent: a rate whose numerator and denominator had different
+exclusion lists; a six-filter union masking a 33-point single-filter exclusion; a
+counterfactual replay over stored rows reported as observed attrition; `ls docs/adr/`
+run in the wrong repo; a per-filter field (`stage_used`, 82% disagreement) read as
+article-level; a sliding `[-N:]` glob evaluated twice, measuring two different file
+sets; a `sorted(glob(...))[-40:]` that sorted by path and so sampled one filter only;
+and a character class hand-written for latin-1 that was blind to cp1252 — 83% of its
+population.
+
+### Bullet list provenance (2026-08-06 move from MEMORY.md)
+
+Moved here from `memory/MEMORY.md` on 2026-08-06: they are always-needed
+constraints, and the memory index is navigational. Each was promoted only after
+repeating.
+
+### Pointer-row cap and no guard inside CLAUDE.md — full text (#133, 2026-08-27; #138, 2026-08-29)
+
+- **A pointer row is capped at 250 chars, and a new lesson goes in the file the row
+  points at.** *(#133, owner decision 2026-08-27.)* `CLAUDE.md` refilled at **~486
+  bytes/day** — 35,094 → 39,955 between 2026-08-16 and 08-26, measured over 25 commits —
+  while every `/audit-context` trimmed it back to the wall. ⛔ **The audit-time headroom
+  figure is what hid this**: two audits both reporting ~45 bytes free describe a file that
+  grew by whatever the trim removed, not one that did not grow. **A quantity sampled only
+  when it is reset cannot show a trend, and it reads as stability.** A byte budget loses
+  that race by construction; a per-row cap makes the table unable to grow at all.
+  ⭐ **The stronger argument is not size — it is rot.** All three stale claims found on
+  2026-08-27 were in the always-loaded layer and each restated a number living elsewhere
+  ("109 owned fields" when the generated register said 125; "the filters were never
+  assessed" three weeks after they were; a spec headed "NOT yet deployed" three days after
+  going live). The table is the surface that goes stale *because* it restates.
+  ⚠️ **The carve-out is the honest part of the rule, not a loophole:** a pointer does not
+  fire without opening its target, so a prohibition that prevents SPENDING MONEY or
+  PUBLISHING A WRONG NUMBER loses its whole value as a pointer. Four rows may reach 400.
+  The exemption is bounded and checked three ways — count (≤5), ceiling (400), and
+  **staleness**: a carve-out matching no row fails, because a dead exemption hides growth.
+  ⛔ A missing table header is **CANNOT VERIFY, never a pass** — renaming it would
+  otherwise retire the check while reporting success.
+  → `python3 scripts/verification/check_index_budget.py --target pointers`;
+  `tests/unit/test_pointer_row_cap.py` (11 cases, each seeding the failure it claims).
+
+  ⛔ **AND NO GUARD MAY LIVE INSIDE `CLAUDE.md`.** *(2026-08-29, llm-distillery#138.)*
+  Four `<!-- verify: -->` shell one-liners sat in the file, checking claims it
+  restates from `memory/working-rules.md` and `memory/filter-status.md`. They
+  measured **2,047 bytes — 5.5% of a file that was 2,555 bytes from its 40,000-byte
+  wall**: the guards were spending the budget they policed, and each one made the
+  next trim harder. The same argument had already moved `check_index_budget.py` out
+  of `memory/MEMORY.md` on 2026-08-17, when adding a stage inline would have
+  tripped the guard on landing — **it just took two weeks to notice the argument
+  applied one file over.** A new claim check on `CLAUDE.md` is now a function in
+  `scripts/verification/check_doc_claims.py` plus a row in its `CHECKS`,
+  annotated from `memory/MEMORY.md`. ⚠️ Note what these checks are worth: they
+  prove two layers AGREE, never that either is true — a consolation prize for a
+  restatement nobody has removed yet.
+  → `python3 scripts/verification/check_doc_claims.py`;
+  `tests/unit/test_doc_claims.py` (17 cases; `test_no_verify_block_has_crept_back_into_claude_md`
+  is the one that stops the reversal).
+
+### MENTION IS NOT USE — occurrences 3–5 (2026-08-29 → 2026-09-05)
+
+  *(⛔ **5th occurrence 2026-09-05 (third session) — TWICE IN ONE FILE, AND THE FIRST
+  VIOLATION WAS THE DECLARATION EXPLAINING THE RULE.** `check_design_weights` asks whether
+  an analysis reads `inclusion_probability`. **4th:** a substring test, and the first
+  `# design-weights:` declaration written under it explained the gap by *naming* the field —
+  so the check read the confession as compliance, and passed. **5th:** excluding docstrings
+  fixed that instance and not the question; a review then deleted the **only** real weight
+  read from `phase_c_outcome.py` and the check still PASSED, because the field's name
+  survived in an error message and a JSON label — while this file's docstring claimed
+  *mention is not use* was fixed and a unit test claimed to pin it. ⭐ **The generalisable
+  part is the SHAPE OF THE FIX, not the matcher: each version answered "does this file
+  contain the string" one shape more narrowly, rather than switching to "does it USE it".**
+  A fix applied to one shape of a problem and named after all of them reads as complete.
+  Now three AST shapes — a `Subscript` constant key, or a constant-string call argument
+  (an f-string is a `JoinedStr`, so an interpolated error message does not count) — with the
+  false-FAIL direction disclosed and safe. ⛔ **This rule was in `CLAUDE.md`'s always-loaded
+  layer and in this file throughout, and was violated twice anyway; the promotion has not
+  taken.** Records: `EXP-025`, commit `347a239`, `scripts/verification/check_claim_shapes.py`,
+  `tests/unit/test_claim_shapes.py`.)* *(**3rd occurrence 2026-08-29**, all three inside ONE
+  session, on three different matchers — and the third was inside the guard written after the
+  second.)*

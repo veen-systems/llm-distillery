@@ -24,8 +24,10 @@ Contract because it looks like a stamp. Their integrity question is different an
 *can this row be attributed to the prompt and model that produced it?* — which is why
 `prompt_hash` exists (`scripts/score_deepseek_production.py`,
 `ground_truth/batch_scorer.py`). ⚠️ `scripts/score_ollama_oracle.py` writes the two verdict
-fields at the **record root** rather than inside the analysis field, and carries **no**
-`prompt_hash` — read the writer before joining outputs from two scorers.
+fields at the **record root** rather than inside the analysis field, and its #157 stamps
+(`prompt_sha256`, `prompt_hash`; since 2026-10-16) sit there too — and the scorers hash the
+prompt file differently (stripped vs raw), so never join across scorers on the hash. Read the
+writer before joining outputs from two scorers.
 
 An article carries **~40+ numbers**: 6 lenses × 6–7 dimensional scores, plus
 per-lens flags, plus 12 top-level model stamps (`_commerce_*`, `_obituary_*`,
@@ -52,20 +54,7 @@ them is a shape error**, so none is catchable by a schema:
 at `source_quality`; only **five** lens fields are `required`. It can catch
 *present-but-wrong*. It is structurally blind to absent, constant and unread.
 
-**Worse, until 2026-08-08 it had never been run against a production row.**
-NexusMind's `tests/unit/test_contracts.py` validates `tests/fixtures/`. First run against
-2,400 live rows: **908 violations**, one field —
-`image_analysis.image_confidence`, declared `0..1`, actually a **raw logit**
-(range −12.330..6.365, median −2.696, **68.4%** outside the bound). The producer
-was self-consistent all along (`ml_confidence_threshold` default **2.944**,
-stated in `src/preprocessing/image_analysis.py:546,575`); the **contract** was
-wrong from the day it was written.
-
-*Why fixtures could never have caught it:* the `url_pattern` layer emits `1.0`
-and `domain_duplicate` emits `0.9`, so every hand-written example looked like a
-probability. **A fixture encodes the author's belief about the data; a test over
-fixtures can only confirm that belief.** Filed as **NM#303** (add production
-validation). Contract B is now **1.15.0**.
+**The first production run (2026-08-08: 908 violations, `image_confidence` a raw logit) and why fixtures could not catch it** — MOVED to [archive](archive/stamp-contract-integrity-archive.md) (2026-10-19); the rule is #8 below.
 
 **`scripts/stamp_census.py` (NexusMind, `e64a45f`) — POPULATION and CONSUMERS.**
 Three checks: (A) declared-but-never-observed, by scanning writers for
@@ -89,38 +78,14 @@ only**, so a 0% can mean "stamped only on rows this file never sees"; and the
 reader count is textual, so it cannot see dynamic access and 0 readers is a
 question, not a verdict.
 
-**A THIRD limit, found 2026-08-08 — check A false-positives on rare fields.**
-`--cycles 2` reported `enriched` / `enriched_at` as "assigned in a writer, but
-present on 0 of 32,040 rows", and I read that as a dead branch. It is not: the
-branch fires and works. Post-scoring enrichment succeeds **0–3 times per filter
-per cycle**, so two cycles can legitimately contain zero. Verified by pairing
-the log line with the row — `Enrichment complete: 3 fetched, 3 replaced` at
-12:51 → `enriched=True` on exactly **3** of 1,843 investment_risk rows.
+**A THIRD limit, found 2026-08-08 — check A false-positives on rare fields** (the `enriched` occurrence) — MOVED to [archive](archive/stamp-contract-integrity-archive.md) (2026-10-19).
 
 **A rare-but-working field is indistinguishable from a never-written one at
 small `--cycles`.** Before calling anything from check A dead, either raise
 `--cycles` or find the writer's log line and match its count against the rows.
-Of the six fields check A flagged that day: three were real
-(`content_length`, `stage_used`, `stage1_estimate` — all NM#300's allowlists),
-one was config-off by design (`short_content_cap_applied`), and **two were false
-positives**.
+(The tally of the six fields check A flagged that day — MOVED to [archive](archive/stamp-contract-integrity-archive.md), 2026-10-19.)
 
-## Unprompted findings from the first census run (15,118 rows)
-
-- `stage_used`, `stage1_estimate` — assigned by a writer, on **no** row. This was
-  **LD#88 item 1**; ~~open~~ **fixed and verified the same day** (100% populated
-  from the 17:10 cycle), LD#88 closed. Kept as the worked example of check A
-  finding a real defect unprompted.
-- `short_content_cap_applied` — never observed; LD#93's cap is off on every
-  filter by config (expected, but now visible).
-- `normalization_method` constant `percentile`; `passed_prefilter` constant
-  `True` (the latter is NM#284's fingerprint plus the survivors-only bias).
-- Five fields stamped on every row and declared in no contract:
-  `raw_weighted_average`, `normalization_method`, `content_length`,
-  `original_content_length`, `obit_pattern_count`. **`raw_weighted_average` is
-  the one that matters** — ADR-022 says visibility keys on it while
-  `weighted_average` is rank-in-batch, and it being undeclared while
-  `weighted_average` was declared is plausibly how the two got conflated.
+## Unprompted findings from the first census run (15,118 rows, 2026-08-08) — MOVED to [archive](archive/stamp-contract-integrity-archive.md) (2026-10-19)
 
 ## VERIFIED FIXED — 17:10 cycle, 2026-08-08
 
@@ -167,12 +132,7 @@ Related: `nexusmind-data-sources.md` (what each artefact excludes),
 
 ---
 
-# ⭐ REDIRECTED 2026-08-14 — the contract is being REDESIGNED, not patched
-
-**Read `docs/proposals/contract-a-redesign.md` before anything below.** The owner
-stopped the incremental work: a day across five sessions produced **four corrected
-values in one schema file** plus a large amount of verification process. Everything
-below remains true as *measurement* and is superseded as *plan*.
+# Contract A design rule (the 2026-08-14 REDIRECT notice above it — MOVED to [archive](archive/stamp-contract-integrity-archive.md), 2026-10-19)
 
 **The design rule:** a field belongs in Contract A **iff** only the collector can know
 it **and** it is destroyed if not recorded now. Today's contract fails both ways — it
@@ -209,10 +169,7 @@ keys that can break a consumer. ⛔ **Never derive a share from a single-run met
    violating value into one group carrying one example, so on a corpus with both
    `social` and `data` violations the report names **one of them**. Trust the totals;
    never trust the named example, for any validator. *(NexusMind, measured.)*
-   **Fix built** on branch `fix/357-contract-validator-grouping` (`b8a191c`,
-   NM#357) — keyed on the missing property via an anchored regex with an explicit
-   fallback to the parent key, and reporting `"N error(s) on M row(s)"`. **Not
-   merged; main has none of it.**
+   (NM#357 fix-branch status as of 2026-08-14 — MOVED to [archive](archive/stamp-contract-integrity-archive.md), 2026-10-19.)
 2. **`format` is declared and never asserted — and the obvious fix silently
    no-ops.** Contract A declares `format: "date-time"` on all three timestamp
    fields; RFC 3339 requires an offset, so 99.4% of rows violate a declaration it
@@ -252,11 +209,7 @@ keys that can break a consumer. ⛔ **Never derive a share from a single-run met
 
 ## ✅ CONTRACT A IS IMPLEMENTED (2026-08-15 evening → 08-16 morning)
 
-**17 of 18 declared fields ride on delivered rows**, four consecutive deliveries, **0
-validation errors against both schemas**, measured by this session and by FluxusSource
-independently with identical results. Detail and the per-block counts:
-`docs/TODO.md` and `docs/CONTRACTS_PLAN-rounds-archive.md` § *Round 4*. The 18th,
-`content_meta.error`, is correctly absent — it exists only on a derivation fault.
+(The 2026-08-16 delivery measurement — 17 of 18 fields, 0 errors — MOVED to [archive](archive/stamp-contract-integrity-archive.md), 2026-10-19; read a delivered row instead.)
 
 **Verify (the script is in-repo now, not a loose file on the box):**
 
@@ -276,11 +229,7 @@ a row with no Contract A blocks at all        VALIDATES CLEAN
 the same row + one undeclared key             REJECTED (additionalProperties)
 ```
 
-**So a block that STOPPED being emitted was invisible — which is exactly what production
-looked like for the week the contract was fully declared and the producer emitted none of
-it.** This is a named failure mode in the data-quality literature (*"when all fields are
-optional, validation cannot detect missing fields that should have been present"*), not a
-local quirk.
+(Why it went unseen for a week, and the literature name for the class — MOVED to [archive](archive/stamp-contract-integrity-archive.md), 2026-10-19.)
 
 Closed by two classes in NexusMind's check (their #382, merged `9cf2861`, deployed):
 `emission.structural_block_absent` and `freshness.input_stale`.
@@ -302,10 +251,7 @@ Closed by two classes in NexusMind's check (their #382, merged `9cf2861`, deploy
     the last five runs"*. On this corpus `origin` swung **12.2% → 38.8%** between two
     consecutive deliveries purely by which shelves were due. **A share moves with
     composition; zero on a structurally-total block cannot be produced by composition.**
-    The live counter-example: the 08:10 delivery emitted **no** `charset_detected` at all
-    because every body decoded as strict UTF-8 — a *healthy* cycle any floor would have
-    reddened, and a check that cries wolf on healthy data is ignored on the run that
-    matters.
+    (The live counter-example, the 08:10 `charset_detected` delivery — MOVED to [archive](archive/stamp-contract-integrity-archive.md), 2026-10-19.)
 12. **An unmeasurable population is NOT ASSERTED, never clean** — a delivery with no RSS
     rows says nothing about whether `content_meta` works. With a deliberate precedence: a
     **proven** absence outranks an unmeasurable one, so a delivery that both proves one
@@ -347,17 +293,11 @@ only, because the census reads a WINDOW. Proven by three seeded mutations agains
 real 12-cycle census (a deleted entry, an invalid `status`, a `record_path` the record
 schema does not declare): all three caught.
 
-⛔ **Two ghosts the old instrument could not report**, both found the day the register
-was built: `_corroboration` and its three children are **declared in Contract B and on
-0 of 164,572 rows** (the dict is popped at `scripts/main.py:2028`, deliberately), and a
-nullable object's population used to be *the count of its own absence*.
+(The two ghosts found the day the register was built — MOVED to [archive](archive/stamp-contract-integrity-archive.md), 2026-10-19.)
 
 ### A ghost is a question — so the census now records the ANSWERS (2026-08-26)
 
-Both of that run's ghosts turned out to have answers, and neither was a corpse. The
-answers are stored as machine-readable schema annotations, because **prose was exactly
-what the instrument could not read**: `_corroboration`'s description had said
-"Intermediate field" from the start and check A reported it as a ghost anyway.
+(Why the answers are schema annotations, not prose — MOVED to [archive](archive/stamp-contract-integrity-archive.md), 2026-10-19.)
 
 | annotation | means | check A prints |
 |---|---|---|
@@ -382,15 +322,7 @@ key names scraped from the writers; suppressing those by leaf is the trap that l
 top-level ghost hide behind an identically-named lens field. Two instruments, two
 matching rules, and an annotation on one is not evidence about the other.
 
-**The first real answer — `source_unreliable`, and it is not about code at all.** It
-needs `source_tier == "override"` AND `credibility_score < 3.0`. `override` means a
-curator entry in FluxusSource `config/domains/credibility.yaml`: 733 entries, exactly 5
-below 3.0 (infowars 1.0, rt.com / sputniknews / sputnikglobe / tass 2.0), of which 3
-are configured feeds and **all 3 are `enabled: false` on editorial grounds** (unblock =
-NM#253) while the other 2 are in no source config. Over **237,132 distinct articles**
-(510 files, 08-11 .. 08-25) `override`'s minimum credibility is **3.8**, and all **204**
-sub-3.0 articles are `verified` tier, which the predicate excludes. **The two halves of
-the AND are anti-correlated by policy, two repos upstream.**
+**The first real answer — `source_unreliable`** (anti-correlated by policy, two repos upstream) — MOVED to [archive](archive/stamp-contract-integrity-archive.md) (2026-10-19).
 
 ⛔ **And the defect that answer surfaced is the transferable one.** The record schema's
 `corroboration` section is `additionalProperties: false`, and the flag was declared in
