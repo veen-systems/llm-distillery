@@ -2,6 +2,13 @@
  "lab_root": "$LD_LAB (default ~/lab/llm-distillery, on situla)",
  "entries": [
   {
+   "path": "experiments/2026-10-19-scaleway-oracle-trial/models/v1_models_2026-10-19.json",
+   "sha256": "51597a30b6b1b887443faf18288db8cd1da3e213e90b4231416a1f622f4b6e1f",
+   "size": 2155,
+   "origin": "local:/tmp/claude-1000/-home-jeroen-repos-veen-systems-llm-distillery/733a6458-f3ba-4c29-aa67-06dc4ceb5596/scratchpad/scw_models/v1_models_2026-10-19.json",
+   "pulled_at": "2026-10-19T12:22:41+02:00"
+  },
+  {
    "path": "experiments/2026-10-19-scaleway-oracle-trial/raw/scw_ds_none_R1.jsonl",
    "sha256": "00cc97115ab7043fabdeac44dfb5fb770ac7897e68bea3d62b12ed63a14fb31b",
    "size": 75422,

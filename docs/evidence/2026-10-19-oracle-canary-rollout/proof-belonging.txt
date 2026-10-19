@@ -15,4 +15,3 @@ REFUSED by the oracle canary (#177): the latest PASS was already used by a label
 ### 3. the DeepSeek scorer with belonging's prompt -> refused (another oracle)
 REFUSED by the oracle canary (#177): prompt 27dc05910154… is guarded for oracle 'batch_scorer|gemini-flash', and this run uses 'https://api.deepseek.com/v1/chat/completions|deepseek-chat' — no canary covers it.
   Override: --skip-canary "<reason>" (stamped on every label)
-ls: cannot access '/tmp/claude-1000/-home-jeroen-repos-veen-systems-llm-distillery/733a6458-f3ba-4c29-aa67-06dc4ceb5596/scratchpad/proof_belonging/run3.jsonl': No such file or directory

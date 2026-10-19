@@ -1,14 +1,16 @@
 """Oracle canary CLI (#177). Library and rules: ground_truth/oracle_canary.py.
 
-  baseline  python scripts/oracle/canary.py baseline --filter human_thriving --runs B1.jsonl ... B6.jsonl --k-ship 3 \
-                --op 4.5 [--base-url batch_scorer --model gemini-flash]
+  baseline  python scripts/oracle/canary.py baseline --filter human_thriving --runs B1.jsonl ... B6.jsonl \
+                --config filters/human_thriving/v9/config.yaml --prompt filters/human_thriving/v9/prompt-compressed.md \
+                --k-ship 1 --op 4.5 [--base-url batch_scorer --model gemini-flash]
             -> config/canary/<filter>.baseline.json (per-item mean score + the noise bar; commit it)
             --op is the filter's op-point; it must match the package's normalization.json raw_min (within 0.01).
             --base-url batch_scorer: the baseline is for ground_truth.batch_scorer (Gemini), not the DeepSeek scorer.
   evaluate  python scripts/oracle/canary.py evaluate --filter human_thriving --runs X1.jsonl [X2 X3]
             -> prints flips / shift / PASS|FAIL against the bar for k = number of runs; writes nothing
   run       python scripts/oracle/canary.py run --filter human_thriving
-            -> scores the frozen set k_ship times with the baseline's prompt, evaluates, writes a pass record
+            -> scores the frozen set k_ship times with the baseline's prompt (batch_scorer: the package's own prompt,
+               stamp-checked), evaluates, writes a pass record (NO-VERDICT on any way it fails to finish)
                under datasets/canary/<filter>/passes/; exit 0 PASS, 1 FAIL. This is what a scorer's gate reads.
 """
 import argparse, hashlib, json, subprocess, sys, tempfile
@@ -22,8 +24,13 @@ from ground_truth import oracle_canary as oc  # noqa: E402
 import yaml  # noqa: E402
 
 MAX_PASSES = 4
+
 BATCH_SCORER = "batch_scorer"     # the oracle key's endpoint half for ground_truth.batch_scorer (its own gate's name)
 OP_TOLERANCE = 0.01               # cd v5's raw_min is 4.0006 against TIER_THRESHOLDS' 4.0
+
+
+class NoVerdict(SystemExit):
+    """Raised once NO-VERDICT is on record; every other way out of a canary run records one first."""
 
 
 def prompt_digests(text):
@@ -119,8 +126,28 @@ def cmd_run(a):
     def no_verdict(reason):
         # A canary that cannot reach a verdict must not leave an OLDER PASS standing (review 2026-10-16).
         oc.write_record(a.filter, b["prompt_sha256"], {"verdict": "NO-VERDICT", "reason": reason}, set())
-        raise SystemExit(f"FATAL: {reason}; recorded NO-VERDICT, so no labelling run is admitted")
+        raise NoVerdict(f"FATAL: {reason}; recorded NO-VERDICT, so no labelling run is admitted")
 
+    try:
+        res, stamps = _score_and_evaluate(a, b, endpoint, model, no_verdict)
+    except NoVerdict:
+        raise
+    except BaseException as e:   # review 2026-10-19: a crash or an incomplete set left an older PASS admitting
+        no_verdict(f"the canary did not finish ({type(e).__name__}: {e})")
+    if not {s for s, _ in stamps} <= {b["prompt_sha256"], b.get("prompt_sha256_stripped")}:
+        no_verdict("the canary scored a different prompt than its baseline")
+    served = {m for _, m in stamps}
+    if served != {b["served_model"]}:
+        # Flips cannot see a reroute that happens to score alike; the served model is checked directly.
+        res = dict(res, verdict="FAIL", reason=f"served {sorted(served)} != baseline {b['served_model']!r}")
+    rec = oc.write_record(a.filter, b["prompt_sha256"], res, stamps)
+    print(f"CANARY {res['verdict']}: flips {res['flips']}, shift {res['shift']:+.4f}, k={res['k']}"
+          + (f" ({res['reason']})" if res.get("reason") else "") + f"; record {rec['record']}")
+    sys.exit(0 if res["verdict"] == "PASS" else 1)
+
+
+def _score_and_evaluate(a, b, endpoint, model, no_verdict):
+    field = field_of(ROOT / b["config"])
     set_path, _ = oc.verify_set(a.filter)
     with tempfile.TemporaryDirectory() as td:
         paths = []
@@ -136,24 +163,15 @@ def cmd_run(a):
                     no_verdict("the scorer aborted the run (account or endpoint)")
                 if endpoint == BATCH_SCORER:
                     collect_batch_scorer(Path(td) / f"bs_{i}", out)
-                done = ({json.loads(l)["id"] for l in open(out) if "error" not in json.loads(l)}
-                        if out.exists() else set())
+                # Done = carries a scored analysis: an error row and a scrape-junk skip row are both not done.
+                done = ({r["id"] for r in map(json.loads, open(out)) if r.get(field)} if out.exists() else set())
                 if want <= done:
                     break
             else:
                 no_verdict(f"{len(want - done)} items still unscored after {MAX_PASSES} passes")
             paths.append(out)
         res, stamps, _ = evaluate(a.filter, paths)
-    if not {s for s, _ in stamps} <= {b["prompt_sha256"], b.get("prompt_sha256_stripped")}:
-        no_verdict("the canary scored a different prompt than its baseline")
-    served = {m for _, m in stamps}
-    if served != {b["served_model"]}:
-        # Flips cannot see a reroute that happens to score alike; the served model is checked directly.
-        res = dict(res, verdict="FAIL", reason=f"served {sorted(served)} != baseline {b['served_model']!r}")
-    rec = oc.write_record(a.filter, b["prompt_sha256"], res, stamps)
-    print(f"CANARY {res['verdict']}: flips {res['flips']}, shift {res['shift']:+.4f}, k={res['k']}"
-          + (f" ({res['reason']})" if res.get("reason") else "") + f"; record {rec['record']}")
-    sys.exit(0 if res["verdict"] == "PASS" else 1)
+    return res, stamps
 
 
 def scorer_argv(b, endpoint, model, set_path, out, bs_dir):

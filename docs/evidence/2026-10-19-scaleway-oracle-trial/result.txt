@@ -31,3 +31,10 @@ scw_ds_none_R1.jsonl: n 100  flips 4  shift +0.0212  median|d| 0.13  max|d| 1.17
    as a k=1 canary: PASS (bar flips > 5 + 1 or |shift| > 0.0693 + 0.15)
 scw_mistral_R1.jsonl: n 84  flips 21  shift +0.5061  median|d| 0.80  max|d| 4.68  pass>=4.5: model 38 / baseline 23  served ['mistral-medium-3.5-128b']
    calls 172  errors {'missing dims': 80, 'HTTP 429': 5, 'bad json': 3}  usage {'in': 2082213, 'out': 55399, 'cached': 0, 'reasoning': 14569}
+
+== /v1/models (saved 2026-10-19, after the runs)
+ids ['deepseek-v4-flash-0731', 'deepseek-v4.1-flash', 'mistral-medium-3.5-128b']
+
+== cost estimate (list price, no cache discount)
+all calls 298: EUR 2.31
+one 100-item DeepSeek canary here: EUR 0.78 = USD 0.91 = 30x DeepSeek API's $0.03

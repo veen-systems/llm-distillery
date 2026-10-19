@@ -47,3 +47,20 @@ for name in ("scw_ds_none_R1.jsonl", "scw_mistral_R1.jsonl"):
     if c["n"] == len(b["items"]):
         print(f"   as a k=1 canary: {oc.verdict(c, b['noise']['k1'])} (bar flips > {b['noise']['k1']['F']} + "
               f"{oc.FLIP_MARGIN} or |shift| > {b['noise']['k1']['S']} + {oc.SHIFT_MARGIN})")
+
+print("\n== /v1/models (saved 2026-10-19, after the runs)")
+models = json.load(open(RAW.parent / "models/v1_models_2026-10-19.json"))
+print("ids", sorted(m["id"] for m in models["data"] if "deepseek" in m["id"] or "mistral-medium" in m["id"]))
+
+# ESTIMATE, not billing: infra's reading of Scaleway's list price, no cache discount; USD/EUR assumed.
+EUR_IN, EUR_OUT, USD_PER_EUR, DEEPSEEK_CANARY_USD = 0.60, 1.80, 1.16, 0.03   # EXP-052 README: about $0.03 per canary
+print("\n== cost estimate (list price, no cache discount)")
+allrows = probe + [json.loads(l) for n in ("scw_ds_none_R1.jsonl", "scw_mistral_R1.jsonl") for l in open(RAW / n)]
+u = usage(allrows)
+eur = (u["in"] * EUR_IN + u["out"] * EUR_OUT) / 1e6
+ds = [json.loads(l) for l in open(RAW / "scw_ds_none_R1.jsonl")]
+ud = usage(ds)
+eur_canary = (ud["in"] * EUR_IN + ud["out"] * EUR_OUT) / 1e6
+print(f"all calls {len(allrows)}: EUR {eur:.2f}")
+print(f"one 100-item DeepSeek canary here: EUR {eur_canary:.2f} = USD {eur_canary * USD_PER_EUR:.2f} "
+      f"= {eur_canary * USD_PER_EUR / DEEPSEEK_CANARY_USD:.0f}x DeepSeek API's ${DEEPSEEK_CANARY_USD}")

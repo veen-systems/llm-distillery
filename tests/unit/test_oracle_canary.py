@@ -351,3 +351,76 @@ class TestBaselineOp:
         run = tmp_path / "r.jsonl"; run.write_text(json.dumps(_row("a", 1.0)) + "\n")
         with pytest.raises(KeyError):
             self._cli().evaluate("f", [run])
+
+
+# ---- review 2026-10-19 ------------------------------------------------------------------------------------------
+
+def test_a_junk_skip_row_is_not_done_so_the_older_PASS_cannot_stand(dirs, monkeypatch):
+    """A scrape-junk row ({"skipped": ...}) has no "error" key; counted as done, `evaluate` then raised
+    "incomplete" WITHOUT a record, and the older unused PASS kept admitting labelling runs."""
+    oc.write_record("f", SHA, {"verdict": "PASS", "flips": 0, "shift": 0.0}, set(), now=time.time() - 60)
+    code, calls = _run_cli(dirs, monkeypatch, [[_row("a", 6.0), {"id": "b", "skipped": "junk"}]])
+    assert "NO-VERDICT" in str(code) and len(calls) == 4
+    assert oc.latest_record("f", SHA)["verdict"] == "NO-VERDICT"
+    with pytest.raises(oc.CanaryRefused):
+        oc.gate(SHA, oracle=ORACLE)
+
+
+def test_a_canary_that_CRASHES_records_NO_VERDICT(dirs, monkeypatch):
+    sys.path.insert(0, str(ROOT / "scripts" / "oracle"))
+    import canary as cli
+
+    def boom(*a, **k):
+        raise KeyError("op")
+    monkeypatch.setattr(cli, "evaluate", boom)
+    oc.write_record("f", SHA, {"verdict": "PASS", "flips": 0, "shift": 0.0}, set(), now=time.time() - 60)
+    code, _ = _run_cli(dirs, monkeypatch, [[_row("a", 6.0), _row("b", 1.0)]])
+    assert "NO-VERDICT" in str(code) and "KeyError" in str(code)
+    assert oc.latest_record("f", SHA)["verdict"] == "NO-VERDICT"
+
+
+def test_a_thinking_budget_is_ANOTHER_oracle_for_batch_scorer(dirs, tmp_path, monkeypatch):
+    """A PASS for gemini-flash at the default budget 0 must not admit a run with --thinking-budget 8192."""
+    import hashlib
+    from ground_truth import batch_scorer as bs
+    prompt = tmp_path / "p.md"
+    prompt.write_text("Score this. [Paste the summary of the article here]\n")
+    raw = prompt.read_text()
+    sha = hashlib.sha256(raw.encode()).hexdigest()
+    _baseline(dirs[0], sha, stripped=hashlib.sha256(raw.strip().encode()).hexdigest(), oracle="batch_scorer|gemini-flash")
+    monkeypatch.setattr(bs.GenericBatchScorer, "_init_llm_client", lambda self, k: None)
+    kw = dict(prompt_path=str(prompt), llm_provider="gemini-flash", api_key="k", output_dir=str(tmp_path / "o"),
+              filter_name="f")
+    oc.write_record("f", sha, {"verdict": "PASS", "flips": 0, "shift": 0.0}, set(), now=time.time() - 60)
+    with pytest.raises(oc.CanaryRefused, match="no canary covers it"):
+        bs.GenericBatchScorer(thinking_budget=8192, **kw)
+    assert bs.GenericBatchScorer(**kw).canary_stamp["verdict"] == "PASS"     # positive control: budget 0 admitted
+
+
+BASELINES = sorted(Path(ROOT / "config/canary").glob("*.baseline.json"))
+
+
+@pytest.mark.parametrize("path", BASELINES, ids=[p.name.split(".")[0] for p in BASELINES])
+def test_each_committed_baseline_matches_its_package(path):
+    """`checked_op` runs only when a baseline is written; this catches an op-point, prompt or endpoint moving after."""
+    import hashlib
+    sys.path.insert(0, str(ROOT / "scripts"))
+    import score_deepseek_production as sdp
+    sys.path.insert(0, str(ROOT / "scripts" / "oracle"))
+    import canary as cli
+    b = json.loads(path.read_text())
+    raw_min = json.loads((ROOT / b["config"]).with_name("normalization.json").read_text())["stats"]["raw_min"]
+    assert abs(b["op"] - raw_min) <= cli.OP_TOLERANCE
+    assert hashlib.sha256((ROOT / b["prompt"]).read_bytes()).hexdigest() == b["prompt_sha256"]
+    endpoint, _ = b["oracle"].rsplit("|", 1)
+    assert endpoint in (cli.BATCH_SCORER, sdp.DEEPSEEK_URL)
+    if endpoint == cli.BATCH_SCORER:
+        # batch_scorer's gate looks the baseline up by ITS digest of the loaded template; a miss is `no-set`, unguarded
+        from ground_truth import batch_scorer as bs
+        s = object.__new__(bs.GenericBatchScorer)
+        s.prompt_path = ROOT / b["prompt"]
+        assert bs.prompt_sha256(s._load_prompt_template()) == b["prompt_sha256_stripped"]
+
+
+def test_the_baseline_census_is_not_empty():
+    assert len(BASELINES) >= 5
