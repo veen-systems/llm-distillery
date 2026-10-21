@@ -53,9 +53,12 @@ free-tier Gemini items a day into `~/lab/llm-distillery/inbox/situla/2026-10-21-
 
 **(4) Waiting on the OWNER (offer once, do not re-ask in a loop):**
 - (a) **#178: template APPROVED by the owner 2026-10-21** (v9's `DATASHEET.md`). ▶ Write the other five live
-  filters' datasheets (belonging v3, cultural_discovery v5, solutions v6, nature_recovery v4, uplifting v7), one
-  per session: name each one's split from its README and let `datasheet_facts.py` refuse a wrong one. Then add the
-  requirement to `docs/FILTER_PLAYBOOK.md` (#178 done-when).
+  filters' datasheets (~~belonging v3~~ DONE 2026-10-21, split `belonging_c2b`; cultural_discovery v5, solutions v6,
+  nature_recovery v4, uplifting v7), one per session: name each one's split from its README/STATUS and let
+  `datasheet_facts.py` refuse a wrong one. Then add the requirement to `docs/FILTER_PLAYBOOK.md` (#178 done-when).
+  ⚠️ **Owner question (belonging v3's Terms section):** the #174 ruling's scope named only v9's Claude labels;
+  belonging v3's demotions, hard-negative classes and harvest positives are Claude Opus 5.5 output too. Ask whether
+  the ruling covers it; do not assume.
 - (b) **#174: CLOSED.** Owner ruled 2026-10-21 "accept the risk", recorded next to the TDM decision. ⚠️ Not ruled:
   whether that meets the credit rule for future Claude labels. Ask first.
 - (c) **Claude panel seat (EXP-055 P2): DONE 2026-10-21, k = 2.** Both batches 100/100; $4.12 spent of
