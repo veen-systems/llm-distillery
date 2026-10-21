@@ -94,3 +94,27 @@ member would measure the prompt, not the family.
 - **L1, L2 and L3** run through `scripts/score_ollama_oracle.py --provider ollama`, k = 2 each.
 - Pull everything back with `lab.py pull`; cite with `lab.py cite`.
 - **Registry id: EXP-055**, if it is still free when the run starts.
+
+## Amendment 2026-10-21 (evening): P2, Claude Sonnet 5.5. Committed BEFORE any P2 call
+
+**Owner approval, 2026-10-21:** "Yes, Sonnet Batch, $5 cap", against the Anthropic promo credit (expires
+2026-10-28). Infra was sent the estimate in advance. P2 is EVALUATION ONLY: its outputs never become labels.
+
+**How P2 is scored:** `score_claude_batch.py` in this dir.
+- **Request:** the oracle's prompt template and `build_prompt` (`score_deepseek_production.py`), unchanged.
+  `claude-sonnet-5-5` via the Message Batches API, `max_tokens` 4096.
+- **Thinking:** `{"type": "between_tools"}`, which is Sonnet 5.5's thinking-off mode. The oracle (DeepSeek chat)
+  does not think either.
+- **Parsing:** the reply goes through the oracle's own `parse_response`, wrapped in the same envelope, so the
+  parse, the dims and the provenance checks are identical. The ONE difference: a reply wrapped in a ```json code
+  fence has the fence stripped first.
+- **Deviation: temperature.** Sonnet 5.5 rejects any non-default temperature (400). P2 therefore runs at the API
+  default, not the oracle's 0.3. The run-to-run noise of P2 is therefore NOT measured (k = 1).
+
+**Cost guard:**
+- The price was checked at the source on 2026-10-21: Batch, $1/M input and $5/M output.
+- Input tokens are counted with `count_tokens` on 3 items. The projection, at 100 × (counted input + 4,096 output
+  as the worst case), must be ≤ $5 or nothing is submitted.
+
+**Analysis:** P2 joins `analyse.py` as a fifth member under the same eligibility rules. The parse bar for a k = 1
+member is the share of items scored. It is reported both inside and outside the panel majority.
