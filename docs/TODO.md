@@ -11,12 +11,12 @@ exists for its own oracle key. (c) The cross-family panel (#177's issue body). A
 Anthropic API credit (Max plan, ~$100/month shared across projects, first credit ~10-26, no key yet) to named experiments
 he approves ONE BY ONE, production off it (infra `platform-watch.md` `e9ec4dc`). Before asking: read Anthropic's terms at
 the source under #174 (training on outputs) — evaluation-only, its outputs never become training labels. When (a)/(b) land, tell the pipeline-atlas session (veen-systems/pipeline-atlas#208, monitor row `ld-oracle-canary`; asked 10-19).
-**(2) b650 cleanup, after the FIRST restic snapshot later than 2026-10-21 09:00:** `~/llm-distillery/runs/canary_177b`
-(149 MB). ⚠️ The 10-20 backup FAILED (storage-box DNS lookup), so the newest snapshot is `6324912d` (10-19 12:19), which
-predates the `seeded_control/{cand,ctl}` pull (12:27): those 16 files are in no snapshot. Checked 10-21: all 39 host files
-except one `.pyc` have a byte-identical situla copy (lab `experiments/2026-10-19-oracle-canary-rollout/` + `ref_*` in lab
-`datasets/` / `inbox/` / repo `datasets/training/solutions_v6`). Then: `restic ls <new> --recursive` on seeded_control,
-re-hash, rm the whole dir (b650 rule: finished run, no ask).
+**(2) b650 cleanup: DONE 2026-10-21.** `runs/canary_177b` (149 MB) was removed after snapshot `361c72bd` (10-21 12:15)
+was confirmed to hold the seeded_control and frozen trees (27/27 files), and all 38 data files were re-hashed equal
+right before the rm. ⚠️ The backup unit reads `failed` since 10-21 because a stale restic lock (10-19 20:19) blocks its
+prune step, though snapshots still save. That's infra's to clear (told 10-21). **Also running: EXP-055** (the panel,
+#177 step 6). Gemini's free tier scores 20/day via `ld-exp055-p1.timer` through 10-25; then run `analyse.py` with all four
+members, `lab.py pull` P1 from the session scratchpad, and write the result + registry row (README in its evidence dir).
 **(3) #178 (datasheets per training dataset).** Start from `training/split_validator.py`'s summary (provenance known /
 unknown per split) and `scripts/analysis/split_prompt_lineage.py` (prompt mix) — v9's README § Label provenance is the
 first worked example.
