@@ -38,13 +38,18 @@ free-tier Gemini items a day into `~/lab/llm-distillery/inbox/situla/2026-10-21-
   requirement to `docs/FILTER_PLAYBOOK.md` (#178 done-when).
 - (b) **#174: CLOSED.** Owner ruled 2026-10-21 "accept the risk", recorded next to the TDM decision. ⚠️ Not ruled:
   whether that meets the credit rule for future Claude labels. Ask first.
-- (c) **Claude panel seat (EXP-055 P2): SUBMITTED 2026-10-21 15:41Z.** Batch `msgbatch_01D11etWXnHQh95BhnL6V36P`,
-  Sonnet 5.5, thinking off (`between_tools`), default temperature (the oracle's 0.3 is rejected; amendment
-  `b946af0`). Measured 18,151 input tokens per item; smoke call $0.04. Projected about $2.0–2.6, worst case $3.86,
-  cap $5. Infra was sent the revised estimate.
-  - ▶ If `P2.jsonl` is not yet in `~/lab/llm-distillery/inbox/situla/2026-10-21-exp055-P2-work/`, run
-    `score_claude_batch.py collect <that dir>`.
-  - Then send infra the ACTUAL spend (the collect line), and fold P2 into the final reading with P1 (item 3).
+- (c) **Claude panel seat (EXP-055 P2): DONE 2026-10-21, k = 2.** Both batches 100/100; $4.12 spent of
+  llm-distillery's $12 promo cap (infra told; credit expires 10-28). Interim 2: Claude passes 9/100, the strictest
+  member (oracle 30, locals 55–62); panel alpha 0.199. Lab `experiments/2026-10-21-cross-family-panel/P2-run{1,2}`.
+  About $7.9 remains, unassigned: any new use needs the owner's go and a line to infra first.
+- (d) **Repo survey 2026-10-21 (agent):** $0, no-ruling candidates, in order. #171/#175 is DONE (`cea4544`; it
+  found 3 accidental registry matches, now null). Next:
+  - #159: re-measure `max(title, full)` across the 5 seeds (H-DET5);
+  - H-OC4: count the rule shapes in v9's tail-prompt labels;
+  - #179 item 1: audit the agreement figures that are raw %;
+  - #146: add the device to the embedding cache key (tell NexusMind, `filters/common` syncs);
+  - H-OC5: the 350 vs 186.
+  #145 (prepare_data's unweighted mean) needs the owner first.
 
 **(5) #163 round 13 (the read surface; owner 2026-10-21 again: "pruning, thinning, mechanizing, retiring").**
 - Round 12: 431,803 → see the commit (H-BV moved as superseded).
