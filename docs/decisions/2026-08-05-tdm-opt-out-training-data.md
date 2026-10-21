@@ -332,3 +332,15 @@ evaluation only and does not need it.
 
 **Revisit trigger (ruled):** a vendor objects. *The session's suggested additions, NOT ruled:* a vendor changes its
 terms in a way someone notices; any model trained here is shared outside this pipeline.
+
+### Scope extended 2026-10-21 (later the same day): every PAST Claude label
+
+**Ruled (owner, 2026-10-21):** the risk acceptance above covers **every Claude output already inside a trained
+filter's labels**, not only human_thriving v9's. Prompted by belonging v3's datasheet: its 187 demotions, the class of
+its 135 hard negatives and the selection of its 236 harvest positives are Claude Opus 5.5 judge output, which the scope
+as first put did not name. The owner's reason, verbatim: "we are working on a project for the public good, that
+surpasses these companies".
+
+*Not ruled, the session's gloss:* the reason is why the risk is accepted, not evidence that the terms allow it; the
+ruling still makes no claim about what they say. It looks BACKWARD only: future Claude output as training labels
+still needs the owner's go (the credit rule above).

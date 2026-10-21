@@ -109,5 +109,6 @@ Rows by origin, all three splits (`build_report.json`):
   ACCEPTED that risk on 2026-10-21 (#174, closed; recorded beside the TDM decision).
 - **Labels, from Claude.** 187 demotions, the 135 hard negatives' class and the selection of the 236 harvest
   positives come from Claude Opus 5.5 subagent output on the owner's subscription. Which Anthropic terms govern that
-  was not read. ⚠️ **Not covered by name:** the #174 ruling's scope, as put to the owner, named only "the Claude
-  adjudication inside human_thriving v9's labels". Whether it extends to belonging v3 is the owner's to say.
+  was not read. The owner ACCEPTED that risk on 2026-10-21: the #174 ruling's scope was extended the same day to every past
+  Claude label inside a trained filter (`docs/decisions/2026-08-05-tdm-opt-out-training-data.md` § *Scope extended
+  2026-10-21*).
