@@ -21,8 +21,10 @@ session, in the order below. *The session's reasons, as put to the owner (gloss,
 this gate (2026-07-30, the only reason the #159 comment records); for a BLOCKER the reader-visible error is the miss;
 the worst seed blocks 21 more of about 1,215 clean heldout articles (~1.7%, computed from `result.txt`'s FP counts).
 The build touches THREE places:
-- (i) `filters/common/obituary_detector/v5/inference.py`: a title pass and max, behind a constructor flag defaulting
-  OFF, with tests. Re-pin `MANIFEST.json` (#165 integrity: the file's sha256 changes);
+- (i) ✅ DONE 2026-10-21: `ObituaryDetectorV5(title_max=False)` in `inference.py`. 4 stub tests, 3 mutants killed.
+  b650 real-model parity on 200 heldout rows: OFF is byte-identical to the old file; ON = max(full, title); 5 more
+  blocks at 0.85. An empty title gets no title score. ⚠️ `MANIFEST.json` is NOT re-pinned: it describes the bytes
+  production SERVES (ADR-024), so it is re-pinned AT deploy, from the served tree;
 - (ii) NexusMind's sync of `filters/common` (diff first; `.nexusmind-owns` is empty) and its `src/preprocessing/obituary.py`;
 - (iii) the GPU scorer (`gpu_client.predict_obituary` on the nexusmind-scorer image).
 Then: a flag flip in NexusMind config (ADR-022: one config flip), the RUNBOOK deploy, and a live-row check that

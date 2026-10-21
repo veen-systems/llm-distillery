@@ -16,6 +16,11 @@ Evidence: validation/artifacts/v5_eval_2026-07-30.json.
 Shadow-deployed via NexusMind NM#185: stamps _obituary_score / _is_obituary,
 drops nothing. Enforcement is a separate owner-signed-off step.
 
+title_max (#159, owner ruling 2026-10-21; OFF by default): also score the title alone and use
+max(title, full). Measured in EXP-057 (docs/evidence/2026-10-21-obituary-maxrule-multiseed/): +0.034..+0.059
+recall at 5/5 seeds for -0.006..-0.017 specificity at 0.85. An empty title has no title score (full only).
+With it on, results also carry score_full / score_title and rule = "max_title_full".
+
 Usage:
     from filters.common.obituary_detector.v5.inference import ObituaryDetectorV5
 
@@ -50,7 +55,8 @@ class ObituaryDetectorV5:
         self,
         threshold: float = 0.90,
         model_dir: Optional[Path] = None,
-        device: str = 'cpu'
+        device: str = 'cpu',
+        title_max: bool = False
     ):
         """
         Initialize the obituary detector.
@@ -63,6 +69,7 @@ class ObituaryDetectorV5:
         """
         self.threshold = threshold
         self.device = device
+        self.title_max = title_max
 
         # Set model directory
         if model_dir is None:
@@ -169,26 +176,12 @@ class ObituaryDetectorV5:
 
         start_time = time.perf_counter()
 
-        # Prepare text
-        text = self._prepare_text(article)
-
-        # Generate embedding
-        embedding = self._embedder.encode([text], show_progress_bar=False)
-
-        # Scale
-        embedding_scaled = self._scaler.transform(embedding)
-
-        # Predict
-        score = self._classifier.predict_proba(embedding_scaled)[0, 1]
+        score, parts = self._scores([article])
+        score = score[0]
 
         inference_time_ms = (time.perf_counter() - start_time) * 1000
 
-        return {
-            'is_obituary': bool(score >= self.threshold),
-            'score': float(score),
-            'inference_time_ms': inference_time_ms,
-            'version': 'v5'
-        }
+        return self._result(score, parts[0], inference_time_ms)
 
     def batch_predict(self, articles: list, batch_size: int = 32) -> list:
         """
@@ -208,35 +201,38 @@ class ObituaryDetectorV5:
 
         start_time = time.perf_counter()
 
-        # Prepare texts
-        texts = [self._prepare_text(a) for a in articles]
-
-        # Generate embeddings in batch
-        embeddings = self._embedder.encode(
-            texts,
-            batch_size=batch_size,
-            show_progress_bar=False
-        )
-
-        # Scale
-        embeddings_scaled = self._scaler.transform(embeddings)
-
-        # Predict
-        scores = self._classifier.predict_proba(embeddings_scaled)[:, 1]
+        scores, parts = self._scores(articles, batch_size)
 
         total_time_ms = (time.perf_counter() - start_time) * 1000
         avg_time_ms = total_time_ms / len(articles)
 
-        results = []
-        for score in scores:
-            results.append({
-                'is_obituary': bool(score >= self.threshold),
-                'score': float(score),
-                'inference_time_ms': avg_time_ms,
-                'version': 'v5'
-            })
+        return [self._result(sc, pt, avg_time_ms) for sc, pt in zip(scores, parts)]
 
-        return results
+    def _predict(self, texts, batch_size=32):
+        emb = self._embedder.encode(texts, batch_size=batch_size, show_progress_bar=False)
+        return self._classifier.predict_proba(self._scaler.transform(emb))[:, 1]
+
+    def _scores(self, articles, batch_size=32):
+        """(final scores, per-article parts). parts is None unless title_max is on."""
+        full = self._predict([self._prepare_text(a) for a in articles], batch_size)
+        if not self.title_max:
+            return full, [None] * len(articles)
+        titles = [((a.get('title') or '') if isinstance(a, dict) else '') for a in articles]
+        titles = [t if isinstance(t, str) else str(t) for t in titles]
+        idx = [i for i, t in enumerate(titles) if t.strip()]          # an empty title has no title score
+        tscore = [None] * len(articles)
+        if idx:
+            for i, v in zip(idx, self._predict([titles[i].strip() for i in idx], batch_size)):
+                tscore[i] = float(v)
+        final = [max(float(f), t) if t is not None else float(f) for f, t in zip(full, tscore)]
+        return final, [{'score_full': float(f), 'score_title': t} for f, t in zip(full, tscore)]
+
+    def _result(self, score, parts, ms):
+        r = {'is_obituary': bool(score >= self.threshold), 'score': float(score),
+             'inference_time_ms': ms, 'version': 'v5'}
+        if parts is not None:
+            r.update(parts, rule='max_title_full')
+        return r
 
     def get_score(self, article: Union[dict, str]) -> float:
         """
