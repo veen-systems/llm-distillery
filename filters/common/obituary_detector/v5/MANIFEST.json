@@ -27,8 +27,8 @@
   },
   {
    "path": "inference.py",
-   "sha256": "a9d868f2688a0f8fbc5b180308ac98ccfca571a811b8275bb7d94c070cbcef36",
-   "bytes": 8918,
+   "sha256": "7a4da7a52501a96ed9eb2c37b92538951f85ac86ab34bef640abf73100147e4b",
+   "bytes": 9829,
    "origin": "git"
   },
   {
@@ -68,5 +68,8 @@
    "was": "14964eceb811",
    "why": "owner ruling 2026-09-27: llm-distillery's copy is canonical (#164); it adds the #158 single_seed block"
   }
+ ],
+ "notes": [
+  "2026-10-21: inference.py re-pinned for #159 (title_max flag, default OFF, ffe6a4a). Weights unchanged; hub revision unchanged. Production still serves the previous inference.py until NexusMind deploys."
  ]
 }

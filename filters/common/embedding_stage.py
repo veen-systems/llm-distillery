@@ -200,35 +200,59 @@ class EmbeddingStage:
             f"(input_dim={config['input_dim']}, output_dim={config['output_dim']})"
         )
 
+    @staticmethod
+    def _on_device(embedder, device) -> bool:
+        """Is this cached embedder on the requested device? `cuda` matches `cuda:0`; an unreadable device is a no."""
+        try:
+            import torch
+            want, have = torch.device(device), torch.device(embedder.device)
+        except Exception:
+            return False
+        return want.type == have.type and (want.index is None or want.index == (have.index or 0))
+
     def _ensure_embedder_loaded(self):
-        """Lazy-load the embedding model (singleton per model name).
+        """Lazy-load the embedding model (singleton per model name AND device).
 
         Thread-safe using double-checked locking pattern.
+
+        #146: the cache was keyed on the model name alone, so whichever consumer loaded a model first fixed its
+        device for the process, and a later `device="cpu"` silently got the CUDA object. The bare-name key is kept
+        for the FIRST load, because NexusMind's `story_dedup.py` reads and writes `_embedding_models[model_name]`
+        directly. A request for a DIFFERENT device loads its own copy under `"<name>@<device>"`.
         """
         if self._embedder is not None:
             return
 
         model_name = self.embedding_model_name
 
-        # Fast path: already loaded by another instance
-        if model_name in self._embedding_models:
-            self._embedder = self._embedding_models[model_name]
+        def cached():
+            hit = self._embedding_models.get(model_name)
+            if hit is not None and self._on_device(hit, self.device):
+                return hit, model_name
+            key = f"{model_name}@{self.device}"
+            return self._embedding_models.get(key), (key if hit is not None else model_name)
+
+        # Fast path: already loaded by another instance on this device
+        hit, key = cached()
+        if hit is not None:
+            self._embedder = hit
             return
 
         # Slow path: need to load, acquire lock
         with self._embedding_models_lock:
             # Double-check after acquiring lock
-            if model_name in self._embedding_models:
-                self._embedder = self._embedding_models[model_name]
+            hit, key = cached()
+            if hit is not None:
+                self._embedder = hit
                 return
 
             from sentence_transformers import SentenceTransformer
 
-            logger.info(f"Loading embedding model: {model_name}")
+            logger.info(f"Loading embedding model: {model_name} on {self.device}")
             embedder = SentenceTransformer(model_name, device=self.device)
-            self._embedding_models[model_name] = embedder
+            self._embedding_models[key] = embedder
             self._embedder = embedder
-            logger.info(f"Embedding model loaded: {model_name}")
+            logger.info(f"Embedding model loaded: {model_name} (cache key {key!r})")
 
     @staticmethod
     def _prepare_text(article: Dict) -> str:

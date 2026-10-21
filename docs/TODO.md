@@ -23,16 +23,17 @@ the worst seed blocks 21 more of about 1,215 clean heldout articles (~1.7%, comp
 The build touches THREE places:
 - (i) ✅ DONE 2026-10-21: `ObituaryDetectorV5(title_max=False)` in `inference.py`. 4 stub tests, 3 mutants killed.
   b650 real-model parity on 200 heldout rows: OFF is byte-identical to the old file; ON = max(full, title); 5 more
-  blocks at 0.85. An empty title gets no title score. ⚠️ `MANIFEST.json` is NOT re-pinned: it describes the bytes
-  production SERVES (ADR-024), so it is re-pinned AT deploy, from the served tree;
+  blocks at 0.85. An empty title gets no title score. `MANIFEST.json`'s `inference.py` entry is re-pinned (`7a4da7a5…`, 9,829 B). CORRECTED: the deploy
+  tool STAGES from the committed manifest (`test_every_packaged_detector_is_stageable_from_git`), so the pin moves WITH
+  the source, not at deploy. `verify_detector_package.py verify` against NexusMind shows the expected one-file mismatch
+  until NM syncs;
 - (ii)+(iii) **NexusMind owns these (nexusmind-32, 2026-10-21).** One NM PR: sync `inference.py`; add the title pass to
   the GPU scorer's OWN code (`deploy/gpu-server/main.py` `predict_batch`, ~l.505–560); config
   `pipeline.obituary_detector.title_max` (default false), sent per request as `ObituaryRequest.title_max`; stamps
   `_obituary_score_full` / `_obituary_score_title` declared in Contract B; a parity test. Then a scorer image + pipeline
   image deploy, and the ON flip in a SEPARATE window. Queued behind NM's windows through about 10-27.
-  ▶ OURS: after NM's deploy, re-pin `filters/common/obituary_detector/v5/MANIFEST.json` with
-  `scripts/deployment/detector_manifest.py` from the SERVED tree (host:path), commit it, and send NM the hash. After
-  the ON flip: check live rows (`_obituary_score` = max of the two parts) and the block rate.
+  ▶ OURS: after NM's deploy, run `verify_detector_package.py verify obituary_detector/v5 --target sadalsuud:~/local_dev/NexusMind --strict`;
+  after the ON flip, check live rows (`_obituary_score` = max of the two parts) and the block rate.
 
 **(2) Item 0's dated steps:** ovr's rollback panel on **10-23**, then the normalization refit **≥ 10-24** (the details are in 0).
 
@@ -67,7 +68,7 @@ free-tier Gemini items a day into `~/lab/llm-distillery/inbox/situla/2026-10-21-
     `runs/maxrule159` and `runs/exp056` are finished runs: delete them after a snapshot later than 10-21 19:00;
   - H-OC4: count the rule shapes in v9's tail-prompt labels;
   - #179 item 1: audit the agreement figures that are raw %;
-  - #146: add the device to the embedding cache key (tell NexusMind, `filters/common` syncs);
+  - ~~#146~~ DONE 2026-10-21: a device-aware cache, backward-compatible with NM's `story_dedup.py` (bare-name key kept for the first load); NM told;
   - H-OC5: the 350 vs 186.
   #145 (prepare_data's unweighted mean) needs the owner first.
 
