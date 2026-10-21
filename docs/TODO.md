@@ -29,9 +29,14 @@ free-tier Gemini items a day into `~/lab/llm-distillery/inbox/situla/2026-10-21-
   After the review: the other five live filters, then the FILTER_PLAYBOOK requirement.
 - (b) **#174:** v9's labels include Claude adjudication output (553 caps, plus the in-scope calls behind the 186
   positives), made by Claude Code subagents. Which Anthropic terms apply is OPEN (posted on #174, 10-21).
-- (c) **Claude API credit:** the owner opened it 2026-10-21 to named experiments approved ONE BY ONE, production off
-  it, no key yet (infra `platform-watch.md` `e9ec4dc`). The candidate is a Claude member of the panel, evaluation
-  only. Ask only after (b).
+- (c) **Claude API credit: a $100 PROMO grant that EXPIRES 2026-10-28 UTC** (infra, 10-21; key
+  `~/.config/anthropic/api_key`, read per run, NEVER exported or printed). Named experiments only, approved by the
+  owner IN THIS SESSION; production off it. Infra has planned about $65 worst case, leaving ~$35 for others. The
+  candidate is a Claude member of EXP-055's panel, EVALUATION ONLY: its outputs never become labels, so #174 does
+  not block it (#174 gates training labels). Estimate, using infra's price card (not page-verified), at 100 items ×
+  ~12.5K input + ~1K output: Sonnet 5.5 ~$3.5, or ~$1.75 via the Batch API. Before any call, re-check the price
+  page and count tokens with the API. If the owner says go: send infra-49 a one-line estimate (experiment, model,
+  max $) BEFORE the run, so the shared $100 is not overrun.
 
 **(5) #163 round 13 (the read surface; owner 2026-10-21 again: "pruning, thinning, mechanizing, retiring").**
 - Round 12: 431,803 → see the commit (H-BV moved as superseded).
