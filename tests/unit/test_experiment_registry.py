@@ -157,3 +157,56 @@ class RegistryTest(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
+
+
+sys.path.insert(0, str(REPO / "scripts" / "verification"))
+import check_experiment_registry as cer  # noqa: E402
+
+
+class TraceableTokenTest(unittest.TestCase):
+    """#171 / #175 (2026-10-21): the substring test passed a one-digit metric against any artifact holding the digit.
+    Hardening it found three registry numbers that only matched by accident (EXP-015, -023, -025)."""
+
+    def assertNot(self, value, text):
+        self.assertFalse(cer.traceable(value, text)[0], f"{value!r} must NOT match {text!r}")
+
+    def assertYes(self, value, text):
+        self.assertTrue(cer.traceable(value, text)[0], f"{value!r} must match {text!r}")
+
+    def test_a_number_inside_a_DATE_ID_or_LONGER_number_does_not_count(self):
+        for t in ("labelled 2026-10-04", "see #41", "EXP-041 says", "v4 shipped", "v8-4 prompt", "1.40 shift",
+                  "112 rows", "111%", "11.68x", "run 20261004T1430Z", "at 4:14"):
+            self.assertNot(4 if "4" in t and "11" not in t else 11, t)
+        self.assertNot("0.65", '"mae": 0.6541358828544617')      # EXP-015's accidental match
+        self.assertNot("19", "publishing 19.0% and 4.798%")      # EXP-025's
+
+    def test_a_standalone_number_still_counts_including_with_a_UNIT(self):
+        for v, t in ((4, "checks added: 4"), (4, "**4** of 30"), ("26.46", "52%  26.46ms"), ("3.82", "3.82x slower"),
+                     ("3083.8", "handler 3083.8s"), ("4:14", "| **4:14** |"), (-0.27, "shift -0.27 median"),
+                     (1234, "1,234 rows")):
+            self.assertYes(v, t)
+
+    def test_a_ROUNDED_quote_counts_only_at_four_significant_digits(self):
+        self.assertYes("0.5715", '"best_val_mae": 0.5715025663375854,')
+        self.assertYes("0.01948", '"discordant_pair_share": 0.019484519046355227,')
+        self.assertNot("0.57", '"best_val_mae": 0.5715025663375854,')
+
+    def test_an_UNTRACKED_artifact_FAILS_even_though_it_exists_on_disk(self):
+        with tempfile.NamedTemporaryFile(dir=REPO / "docs" / "evidence", suffix=".md", delete=False) as f:
+            f.write(b"the number 7\n")
+        try:
+            rel = str(Path(f.name).relative_to(REPO))
+            e = entries()
+            e[0]["artifacts"] = e[0]["artifacts"] + [rel]
+            r = run_against(e)
+            self.assertNotEqual(r.returncode, 0)
+            self.assertIn("not tracked by git", r.stdout)
+        finally:
+            Path(f.name).unlink()
+
+    def test_a_path_naming_the_ROOT_FAILS(self):
+        e = entries()
+        e[0]["artifacts"] = e[0]["artifacts"] + ["."]
+        r = run_against(e)
+        self.assertNotEqual(r.returncode, 0)
+        self.assertIn("names the root", r.stdout)

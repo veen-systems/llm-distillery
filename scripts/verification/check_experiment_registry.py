@@ -5,8 +5,8 @@ of the file -- that every number an entry states is TRACEABLE to an artifact it 
 own EXP-031 was an audit that found 19 registry numbers untraceable to any artifact. A registry
 whose numbers drift is worse than no registry, because it reads authoritative.
 
-A metric value passes if its string form appears VERBATIM in at least one cited artifact (or in
-the commit message of a cited commit). `null` always passes -- an unrecoverable number should be
+A metric value passes if its string form appears VERBATIM, as a token of its own (dates and times removed
+first; #171/#175), in at least one git-TRACKED cited artifact (or in the commit message of a cited commit). `null` always passes -- an unrecoverable number should be
 null with an explanation in `notes`, never invented.
 
 Exit 0 = all checks pass. Exit 1 = at least one FAIL.
@@ -33,20 +33,27 @@ DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 LAB_RE = re.compile(r"^(experiments|datasets)/[^/]")
 
 
+TEXT_SUFFIXES = (".md", ".txt", ".json", ".py", ".jsonl", ".csv", ".tsv")
+
+
+def tracked(a):
+    """The git-tracked files an artifact path names: itself, or (a folder) every tracked file under it. #171/#175:
+    `exists()` passed a gitignored file on the one machine that had it."""
+    r = subprocess.run(["git", "-C", str(REPO), "ls-files", "-z", "--", a], capture_output=True, text=True)
+    return sorted(x for x in r.stdout.split("\0") if x) if r.returncode == 0 else []
+
+
 def artifact_text(entry, cache={}):
-    """Every byte the entry points at: the artifact files, plus the commit messages."""
+    """Every byte the entry points at: the TRACKED artifact files, plus the commit messages."""
     key = tuple(entry["artifacts"]) + tuple(entry["commits"])
     if key in cache:
         return cache[key]
     blobs = []
     for a in entry["artifacts"]:
-        p = REPO / a
-        if p.is_dir():
-            for f in sorted(p.rglob("*")):
-                if f.is_file() and f.suffix in (".md", ".txt", ".json", ".py", ".jsonl"):
-                    blobs.append(f.read_text(encoding="utf-8", errors="replace"))
-        elif p.is_file():
-            blobs.append(p.read_text(encoding="utf-8", errors="replace"))
+        for f in tracked(a):
+            fp = REPO / f
+            if fp.suffix in TEXT_SUFFIXES and fp.is_file() and not fp.is_symlink():
+                blobs.append(fp.read_text(encoding="utf-8", errors="replace"))
     for c in entry["commits"]:
         r = subprocess.run(["git", "-C", str(REPO), "log", "-1", "--format=%B", c],
                            capture_output=True, text=True)
@@ -68,10 +75,45 @@ def traceable(value, text):
         forms |= {f"{value:,}"}
     elif isinstance(value, int):
         forms |= {f"{value:,}"}
+    text = _strip_dates(text)
     for f in sorted(forms):
-        if f and f in text:
+        # #171/#175: the number must stand ALONE. Nothing that makes it part of a larger token may touch it: no
+        # digit, letter, `#`, `.`, `/`, `:` or `_` before it, and no id's `-` (EXP-041, v8-4); no digit, `.digit`,
+        # `:` or `/` after it. A trailing UNIT letter is allowed (26.46ms, 3.82x). So `4` no longer matches inside
+        # "#41", "EXP-041", "v4", "1.40" or "4:14", and dates are removed first.
+        if f and re.search(rf"(?<![0-9A-Za-z#./:_]){_lead(f)}{re.escape(f)}(?![0-9:/]|\.[0-9])", text):
             return True, f
+    num = value if isinstance(value, float) else (float(value) if isinstance(value, str)
+                                                    and re.fullmatch(r"-?\d+\.\d+", value) else None)
+    if num is not None and _sig(str(value)) >= 4:
+        # A rounded quote of a longer float in the evidence (0.5715 of 0.5715025663...), only at >= 4 significant
+        # digits: at two, a JSON full of floats would round to almost anything (EXP-015's 0.65 matched 0.6541...).
+        d = len(str(value).split(".")[1]) if "." in str(value) else 0
+        for m in re.finditer(r"(?<![0-9A-Za-z#./:_-])-?\d+\.\d{%d,}(?![0-9])" % (d + 1), text):
+            if round(float(m.group()), d) == num:
+                return True, m.group()
     return False, str(value)
+
+
+def _sig(s):
+    digits = s.lstrip("-").replace(".", "").lstrip("0")
+    return len(digits)
+
+
+def _lead(f):
+    """A non-negative value must not be the tail of an id like `EXP-041` / `v8-4`: a `-` preceded by a letter or digit."""
+    return "" if f.startswith("-") else r"(?<![0-9A-Za-z]-)"
+
+
+# Dates and timestamps only; a bare H:MM is kept (it can be a duration, EXP-018's 4:14), and `:` blocks a match.
+_DATE = re.compile(r"\b\d{4}-\d{2}-\d{2}(?:[T ]\d{2}:\d{2}(?::\d{2})?Z?)?\b|\b\d{8}T\d{4,6}Z?\b")
+
+
+def _strip_dates(text, cache={}):
+    k = id(text)
+    if k not in cache:
+        cache[k] = _DATE.sub(" ", text)
+    return cache[k]
 
 
 def main(argv=None):
@@ -108,6 +150,10 @@ def main(argv=None):
         for a in e.get("artifacts", []):
             if not (REPO / a).exists():
                 fails.append(f"{e.get('id')}: artifact does not exist: {a}")
+            elif Path(a).is_absolute() or ".." in Path(a).parts or a.strip("/") in ("", "."):
+                fails.append(f"{e.get('id')}: artifact path {a!r} is absolute, escapes the repo, or names the root")
+            elif not tracked(a):
+                fails.append(f"{e.get('id')}: artifact is not tracked by git (it would be missing in a clone): {a}")
         lab = e.get("lab", [])
         if not isinstance(lab, list) or not all(isinstance(x, str) for x in lab):
             fails.append(f"{e.get('id')}: `lab` must be a list of lab paths")
