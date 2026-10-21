@@ -31,18 +31,26 @@ PARSE_BAR = 0.95
 GOOGLE = {"L2", "P1"}      # gemma3 and gemini: one family, reported both ways
 
 
-def read_member(path, spec):
-    """{run: {id: score}}, plus the prompt digests seen. Error rows are absent."""
+def read_member(paths, spec):
+    """{run: {id: score}}, plus the prompt digests seen. Error rows are absent. `paths` is comma-separated: a
+    score_deepseek_production-format file is ONE run (its position = its run number; amendment 2, P2 at k = 2);
+    a score_ollama_oracle file carries its own `run` field."""
     g = oc._gate_module()
     runs, shas = defaultdict(dict), set()
+    for k, path in enumerate(paths.split(","), 1):
+        _read_one(path, k, spec, g, runs, shas)
+    return dict(runs), shas
+
+
+def _read_one(path, k, spec, g, runs, shas):
     for line in open(path, encoding="utf-8"):
         r = json.loads(line)
         if FIELD in r:
-            if r["id"] in runs[1]:
+            if r["id"] in runs[k]:
                 raise ValueError(f"{path}: {r['id']} scored twice (a resumed run must not re-score)")
             a = r[FIELD]
             dims = {d: (v["score"] if isinstance(v, dict) else v) for d, v in a.items() if d in spec["dims"]}
-            runs[1][r["id"]] = g._wa(dims, spec)
+            runs[k][r["id"]] = g._wa(dims, spec)
             shas.add(a.get("prompt_sha256"))
         elif r.get("dims"):
             run = r.get("run", 1)
@@ -50,7 +58,6 @@ def read_member(path, spec):
                 raise ValueError(f"{path}: {r['id']} scored twice in run {run}")
             runs[run][r["id"]] = g._wa({d: r["dims"][d] for d in spec["dims"]}, spec)
             shas.add(r.get("prompt_sha256"))
-    return dict(runs), shas
 
 
 def spec_recall(pred, truth, ids):
