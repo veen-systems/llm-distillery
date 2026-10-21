@@ -222,7 +222,7 @@ errors**. Its `H4` is a cross-reference, not a local hypothesis — do not cite 
 
 | id | claim | verdict |
 |---|---|---|
-| H-DET5 | `max(title, full)` recovers the body-dilution class at acceptable cost | ⏳ **OPEN — measured once, one model, one seed, NOT recommended.** Plain max +0.0494 recall / −0.0131 specificity; gated at 0.99, +0.0174 / −0.0016. **Recall-first (owner 2026-07-30) and ADR-023 point at different variants**, so it is an owner decision. Method to close it: re-measure across the `EXP-033` seed set before any config change. `EXP-035` |
+| H-DET5 | `max(title, full)` recovers the body-dilution class at acceptable cost | ✅ **EFFECT CONFIRMED ACROSS SEEDS (EXP-057, 2026-10-21); 'acceptable' is the owner's #159 call.** v5 retrained at 5 seeds, paired against full text at 0.85: plain max Δrecall +0.0342 to +0.0590 (5/5) for Δspec −0.0058 to −0.0173 (+7 to +21 FP); the 0.99 gate +0.0093 to +0.0248 (5/5) for −0.0049 to 0.0000 (0 to +6 FP). Recall-first → plain max; ADR-023 → the gate. `docs/evidence/2026-10-21-obituary-maxrule-multiseed/` |
 
 ### Cross-lens harm detector — `H-HD` (2026-09-10, `EXP-037`, `docs/evidence/2026-09-10-harm-detector/`)
 
