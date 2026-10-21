@@ -98,7 +98,8 @@ def main():
               f"{'ok' if shas == {PROMPT_SHA} else 'WRONG ' + str(shas):6s}  {'yes' if ok else 'NO'}")
 
     def units(ids_, who, binary):
-        return [[(members[m][i] >= op if binary else members[m][i]) if i in members[m] else None for m in who]
+        return [[(("pass" if members[m][i] >= op else "block") if binary else members[m][i]) if i in members[m]
+                 else None for m in who]
                 for i in ids_]
 
     print("\nKrippendorff alpha (nominal = pass/block at op; interval = weighted average)")
@@ -112,8 +113,9 @@ def main():
     print("\nPairwise (pass/block): AC1 / kappa / raw, n")
     for x, y in combinations(eligible + ["ORACLE"], 2):
         ids = [i for i in items if i in members[x] and i in members[y]]
-        ax, ay = [members[x][i] >= op for i in ids], [members[y][i] >= op for i in ids]
-        print(f"  {x:6s} {y:6s}  AC1 {gwet_ac1(ax, ay, [True, False]):.3f}  kappa {cohen_kappa(ax, ay):.3f}  "
+        ax = ["pass" if members[x][i] >= op else "block" for i in ids]
+        ay = ["pass" if members[y][i] >= op else "block" for i in ids]
+        print(f"  {x:6s} {y:6s}  AC1 {gwet_ac1(ax, ay, ['pass', 'block']):.3f}  kappa {cohen_kappa(ax, ay):.3f}  "
               f"raw {sum(p == q for p, q in zip(ax, ay)) / len(ids):.3f}  n={len(ids)}")
 
     print("\nOracle against the panel majority (eligible members, oracle left out)")
