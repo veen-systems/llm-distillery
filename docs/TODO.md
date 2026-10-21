@@ -16,6 +16,19 @@ worst day, qwen 9; tags NOT shown). ▶ When the owner returns 30 P/G letters:
 The b650 copy `~/llm-distillery/runs/exp056` is a finished run: delete it once a snapshot later than 10-21 17:30
 holds lab `experiments/2026-10-21-belonging-onsite-h/run` (b650 rule).
 
+**(1b) #159: the obituary title rule. RECOMMENDED plain `max(title, full)` (2026-10-21, EXP-057).** The owner asked
+"what do you recommend?" and, after the recommendation, said "pls continue". ⚠️ **That is the session's reading of a go,
+NOT an explicit ruling. Get a plain yes before building.** The reasons given: the owner's recall-first ruling for this
+gate (2026-07-30); for a BLOCKER, the reader-visible error is the miss (ADR-023's own logic inverted); at most 1.7%
+more clean articles blocked (seed 101).
+The build touches THREE places:
+- (i) `filters/common/obituary_detector/v5/inference.py`: a title pass and max, behind a constructor flag defaulting
+  OFF, with tests. Re-pin `MANIFEST.json` (#165 integrity: the file's sha256 changes);
+- (ii) NexusMind's sync of `filters/common` (diff first; `.nexusmind-owns` is empty) and its `src/preprocessing/obituary.py`;
+- (iii) the GPU scorer (`gpu_client.predict_obituary` on the nexusmind-scorer image).
+Then: a flag flip in NexusMind config (ADR-022: one config flip), the RUNBOOK deploy, and a live-row check that
+`_obituary_score` reflects the max. Coordinate with the NexusMind session BEFORE (ii)/(iii).
+
 **(2) Item 0's dated steps:** ovr's rollback panel on **10-23**, then the normalization refit **≥ 10-24** (the details are in 0).
 
 **(3) EXP-055, the cross-family panel (#177 step 6): finish ≥ 10-25 (morning).** `ld-exp055-p1b.timer` scores 20
