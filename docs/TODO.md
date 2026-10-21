@@ -44,7 +44,8 @@ free-tier Gemini items a day into `~/lab/llm-distillery/inbox/situla/2026-10-21-
   About $7.9 remains, unassigned: any new use needs the owner's go and a line to infra first.
 - (d) **Repo survey 2026-10-21 (agent):** $0, no-ruling candidates, in order. #171/#175 is DONE (`cea4544`; it
   found 3 accidental registry matches, now null). Next:
-  - #159: re-measure `max(title, full)` across the 5 seeds (H-DET5);
+  - ~~#159 multi-seed~~ DONE (EXP-057, `734a627`): both rules help at 5/5 seeds; the rule choice is the owner's. b650 copies
+    `runs/maxrule159` and `runs/exp056` are finished runs: delete them after a snapshot later than 10-21 19:00;
   - H-OC4: count the rule shapes in v9's tail-prompt labels;
   - #179 item 1: audit the agreement figures that are raw %;
   - #146: add the device to the embedding cache key (tell NexusMind, `filters/common` syncs);
