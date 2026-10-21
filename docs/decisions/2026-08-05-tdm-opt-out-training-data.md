@@ -315,3 +315,20 @@ done | paste -sd+ | bc
 **Not legal advice.** An engineering reading by the operator, written so it can be
 audited rather than merely asserted. Grounds 1–3 are arguments; none has been tested.
 Consult a qualified Dutch/EU lawyer before relying on this against a claim.
+
+## Owner ruling 2026-10-21: training on vendor OUTPUTS — risk accepted (#174)
+
+**Ruled (owner, 2026-10-21, verbatim choice):** "Accept the risk": record it like the TDM carve-out, the risk known
+and knowingly accepted, and revisit if a vendor objects. No terms reading now.
+
+**Scope, as put to the owner:** whether Gemini's and DeepSeek's terms (the oracle labels), and Anthropic's (the Claude
+adjudication inside human_thriving v9's labels, run as Claude Code subagents on the owner's subscription), allow
+training a model on their outputs. Nobody has read the current terms. This ruling makes no claim about what they say.
+
+*Not ruled, the session's gloss:* that this ruling also satisfies the 2026-10-21 Anthropic API credit rule ("settle
+#174 before any Claude output becomes training labels", infra `platform-watch.md` `e9ec4dc`). That rule is the
+owner's too, so ask before treating any FUTURE Claude output as training labels. The EXP-055 Claude seat is
+evaluation only and does not need it.
+
+**Revisit triggers:** a vendor objects; a vendor changes its terms in a way someone notices; any model trained here
+is shared outside this pipeline.

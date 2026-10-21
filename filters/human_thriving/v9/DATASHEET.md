@@ -79,9 +79,8 @@ by hand. Everything else is written by hand and cites where each fact is recorde
   (`docs/decisions/2026-08-05-tdm-opt-out-training-data.md`). Its open carve-out applies: the oracle ships the
   article text to the vendor, a risk the owner accepted (ovr.news `docs/compliance-register.md` §3). This split
   does not record a source per row, so no per-source licence list can be generated from it.
-- **Labels, from the oracle.** DeepSeek's terms on training a model from its outputs are **not assessed** (#174).
-- **Labels, from Claude.** ⚠️ **Not covered by #174 as filed, which names only Gemini and DeepSeek.** The 553
-  moved-out rows (capped at 2.0) and the in-scope calls behind the 186 new positives come from Claude output, and
-  ran through Claude Code subagents on the owner's subscription, not a metered API key. Which Anthropic terms
-  govern that use, and whether they allow training a model on it, is **open and unverified**. Owner question,
-  raised 2026-10-21.
+- **Labels, from the oracle.** DeepSeek's terms on training a model from its outputs were not read. The owner
+  ACCEPTED that risk on 2026-10-21 (#174, closed; recorded beside the TDM decision).
+- **Labels, from Claude.** The 553 moved-out rows (capped at 2.0) and the in-scope calls behind the 186 new positives
+  come from Claude output, run through Claude Code subagents on the owner's subscription. Which Anthropic terms
+  govern that was not read. The owner ACCEPTED the risk on 2026-10-21 under the same ruling (#174).

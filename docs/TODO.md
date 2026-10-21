@@ -5,12 +5,14 @@
 *▶ **NEXT SESSION (set 2026-10-21 close; `/curate` done, all pushed). "continue" = these, in order:***
 
 **(1) Item 0a: DONE 2026-10-21 (EXP-056). v3 almost certainly FAILS the bar on the live H page:** qwen weekly
-mean 7.86, every day 7–9, against ≤ 6 (`docs/evidence/2026-10-21-belonging-onsite-h/`, one review lens: counts
-reproduced). ▶ **OWNER, to decide:**
-- (a) give your own count on one page, which settles the floor caveat;
-- (b) ~~post on ducroq/ovr.news#391~~ POSTED 10-21 (owner go), with the floor caveat;
-- (c) the response itself: over 6 is NOT an automatic rollback. The training lever is CLOSED (c2c and c2d), so what
-  is left is ranking or editorial, or accepting it.
+mean 7.86, every day 7–9, against ≤ 6. Posted on ducroq/ovr.news#391. **Owner ruled 2026-10-21: "count a page
+first".** The blind worksheet is lab `experiments/2026-10-21-belonging-onsite-h/owner_count_20261018.md` (10-18, the
+worst day, qwen 9; tags NOT shown). ▶ When the owner returns 30 P/G letters:
+- score them against qwen (the agreement, and the owner's personal count against 6);
+- update EXP-056's README, the registry row and H-BB6;
+- post the owner's count on ovr.news#391;
+- THEN put the response question to the owner. The options laid out 10-21: ranking fix via ovr / accept / roll back
+  to v1 (⚠️ v1 is unmeasured against the bar).
 The b650 copy `~/llm-distillery/runs/exp056` is a finished run: delete it once a snapshot later than 10-21 17:30
 holds lab `experiments/2026-10-21-belonging-onsite-h/run` (b650 rule).
 
@@ -30,10 +32,12 @@ free-tier Gemini items a day into `~/lab/llm-distillery/inbox/situla/2026-10-21-
   behind a parity check, NOT to Mistral (EXP-054: 21 flips, +0.51).
 
 **(4) Waiting on the OWNER (offer once, do not re-ask in a loop):**
-- (a) **#178:** review `filters/human_thriving/v9/DATASHEET.md` (the generator is `scripts/analysis/datasheet_facts.py`).
-  After the review: the other five live filters, then the FILTER_PLAYBOOK requirement.
-- (b) **#174:** v9's labels include Claude adjudication output (553 caps, plus the in-scope calls behind the 186
-  positives), made by Claude Code subagents. Which Anthropic terms apply is OPEN (posted on #174, 10-21).
+- (a) **#178: template APPROVED by the owner 2026-10-21** (v9's `DATASHEET.md`). ▶ Write the other five live
+  filters' datasheets (belonging v3, cultural_discovery v5, solutions v6, nature_recovery v4, uplifting v7), one
+  per session: name each one's split from its README and let `datasheet_facts.py` refuse a wrong one. Then add the
+  requirement to `docs/FILTER_PLAYBOOK.md` (#178 done-when).
+- (b) **#174: CLOSED.** Owner ruled 2026-10-21 "accept the risk", recorded next to the TDM decision. ⚠️ Not ruled:
+  whether that meets the credit rule for future Claude labels. Ask first.
 - (c) **Claude panel seat: APPROVED by the owner 2026-10-21. Sonnet 5.5 via the Batch API, hard cap $5, before the
   promo credit EXPIRES 2026-10-28 UTC.** Infra was sent the estimate (EXP-055 P2, ~$1.75, cap $5) on 10-21.
   - Key: `~/.config/anthropic/api_key`. Read it per run; NEVER export it or print it (exporting it would move
@@ -49,8 +53,10 @@ free-tier Gemini items a day into `~/lab/llm-distillery/inbox/situla/2026-10-21-
 - Biggest files: `gotcha-log` ~37K (its Mechanized table is a KEEP; only `live`, 0-occurrence rows move),
   `hypothesis-ledger` ~38K, `stamp-contract` 21.7K, `score-batch` 21.3K, `nexusmind-data-sources` 20.8K,
   `oracle-pricing` 20.8K, `working-rules` 20.5K.
-- No mechanical lever is left. The next cuts need a CLOSE ruling (H-HD rows) or cross-file dedup of rules restated
-  in 2+ files. Propose the cuts to the owner as a list; don't re-measure.
+- **Owner ruled 2026-10-21: list the H-HD rows, and he rules row by row.** ▶ For each `H-HD*` row in
+  `memory/hypothesis-ledger.md`, write one line, "close because …" or "keep because …", put it to the owner as ONE
+  AskUserQuestion per row (or a short batch), and move only the ruled rows, verbatim. Then do the cross-file dedup
+  of rules restated in two or more files.
 
 *Done 2026-10-21 (detail in the commits): #177 (a)/(b) (atomic PASS claim, served-model check); the b650
 `canary_177b` cleanup; both #179 follow-ups; EXP-055 pre-registered and half-run. Item 1 below (the decision-0 sync)
