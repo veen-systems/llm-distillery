@@ -38,15 +38,13 @@ free-tier Gemini items a day into `~/lab/llm-distillery/inbox/situla/2026-10-21-
   requirement to `docs/FILTER_PLAYBOOK.md` (#178 done-when).
 - (b) **#174: CLOSED.** Owner ruled 2026-10-21 "accept the risk", recorded next to the TDM decision. ⚠️ Not ruled:
   whether that meets the credit rule for future Claude labels. Ask first.
-- (c) **Claude panel seat: APPROVED by the owner 2026-10-21. Sonnet 5.5 via the Batch API, hard cap $5, before the
-  promo credit EXPIRES 2026-10-28 UTC.** Infra was sent the estimate (EXP-055 P2, ~$1.75, cap $5) on 10-21.
-  - Key: `~/.config/anthropic/api_key`. Read it per run; NEVER export it or print it (exporting it would move
-    Claude Code itself onto the credit).
-  - Steps: (1) check the price page at the source, and count tokens with the API on 3 items; (2) score the 100
-    items with the oracle's prompt, temperature 0.3, JSON, through the Batch API; (3) stamp `served_model` and
-    `prompt_sha256`, plus `--skip-canary`-style evidence that it is evaluation only; (4) add P2 to the PREREGISTRATION
-    as an amendment BEFORE the call (D2 named it a possible later round), then fold it into the final reading.
-  - EVALUATION ONLY: its outputs never become labels.
+- (c) **Claude panel seat (EXP-055 P2): SUBMITTED 2026-10-21 15:41Z.** Batch `msgbatch_01D11etWXnHQh95BhnL6V36P`,
+  Sonnet 5.5, thinking off (`between_tools`), default temperature (the oracle's 0.3 is rejected; amendment
+  `b946af0`). Measured 18,151 input tokens per item; smoke call $0.04. Projected about $2.0–2.6, worst case $3.86,
+  cap $5. Infra was sent the revised estimate.
+  - ▶ If `P2.jsonl` is not yet in `~/lab/llm-distillery/inbox/situla/2026-10-21-exp055-P2-work/`, run
+    `score_claude_batch.py collect <that dir>`.
+  - Then send infra the ACTUAL spend (the collect line), and fold P2 into the final reading with P1 (item 3).
 
 **(5) #163 round 13 (the read surface; owner 2026-10-21 again: "pruning, thinning, mechanizing, retiring").**
 - Round 12: 431,803 → see the commit (H-BV moved as superseded).
