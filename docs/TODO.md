@@ -8,7 +8,7 @@
 mean 7.86, every day 7–9, against ≤ 6 (`docs/evidence/2026-10-21-belonging-onsite-h/`, one review lens: counts
 reproduced). ▶ **OWNER, to decide:**
 - (a) give your own count on one page, which settles the floor caveat;
-- (b) say whether to post it on ducroq/ovr.news#391, which closes on this count;
+- (b) ~~post on ducroq/ovr.news#391~~ POSTED 10-21 (owner go), with the floor caveat;
 - (c) the response itself: over 6 is NOT an automatic rollback. The training lever is CLOSED (c2c and c2d), so what
   is left is ranking or editorial, or accepting it.
 The b650 copy `~/llm-distillery/runs/exp056` is a finished run: delete it once a snapshot later than 10-21 17:30
@@ -34,14 +34,15 @@ free-tier Gemini items a day into `~/lab/llm-distillery/inbox/situla/2026-10-21-
   After the review: the other five live filters, then the FILTER_PLAYBOOK requirement.
 - (b) **#174:** v9's labels include Claude adjudication output (553 caps, plus the in-scope calls behind the 186
   positives), made by Claude Code subagents. Which Anthropic terms apply is OPEN (posted on #174, 10-21).
-- (c) **Claude API credit: a $100 PROMO grant that EXPIRES 2026-10-28 UTC** (infra, 10-21; key
-  `~/.config/anthropic/api_key`, read per run, NEVER exported or printed). Named experiments only, approved by the
-  owner IN THIS SESSION; production off it. Infra has planned about $65 worst case, leaving ~$35 for others. The
-  candidate is a Claude member of EXP-055's panel, EVALUATION ONLY: its outputs never become labels, so #174 does
-  not block it (#174 gates training labels). Estimate, using infra's price card (not page-verified), at 100 items ×
-  ~12.5K input + ~1K output: Sonnet 5.5 ~$3.5, or ~$1.75 via the Batch API. Before any call, re-check the price
-  page and count tokens with the API. If the owner says go: send infra-49 a one-line estimate (experiment, model,
-  max $) BEFORE the run, so the shared $100 is not overrun.
+- (c) **Claude panel seat: APPROVED by the owner 2026-10-21. Sonnet 5.5 via the Batch API, hard cap $5, before the
+  promo credit EXPIRES 2026-10-28 UTC.** Infra was sent the estimate (EXP-055 P2, ~$1.75, cap $5) on 10-21.
+  - Key: `~/.config/anthropic/api_key`. Read it per run; NEVER export it or print it (exporting it would move
+    Claude Code itself onto the credit).
+  - Steps: (1) check the price page at the source, and count tokens with the API on 3 items; (2) score the 100
+    items with the oracle's prompt, temperature 0.3, JSON, through the Batch API; (3) stamp `served_model` and
+    `prompt_sha256`, plus `--skip-canary`-style evidence that it is evaluation only; (4) add P2 to the PREREGISTRATION
+    as an amendment BEFORE the call (D2 named it a possible later round), then fold it into the final reading.
+  - EVALUATION ONLY: its outputs never become labels.
 
 **(5) #163 round 13 (the read surface; owner 2026-10-21 again: "pruning, thinning, mechanizing, retiring").**
 - Round 12: 431,803 → see the commit (H-BV moved as superseded).
