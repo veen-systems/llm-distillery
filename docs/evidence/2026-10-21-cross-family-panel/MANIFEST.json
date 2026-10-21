@@ -1,0 +1,103 @@
+{
+ "lab_root": "$LD_LAB (default ~/lab/llm-distillery, on situla)",
+ "entries": [
+  {
+   "path": "experiments/2026-10-21-cross-family-panel/L1/L1.log",
+   "sha256": "3a02659f32057e7b61713b59cd71fe127aaff9908d0b3e64a26634d7042ee690",
+   "size": 5168,
+   "origin": "local:/tmp/claude-1000/-home-jeroen-repos-veen-systems-llm-distillery/0debf55e-bc42-4689-a5ea-7f13704be231/scratchpad/exp055/L1/L1.log",
+   "pulled_at": "2026-10-21T16:05:31+02:00"
+  },
+  {
+   "path": "experiments/2026-10-21-cross-family-panel/L1/results.jsonl",
+   "sha256": "82094431b78a3343f85cf3970d94bbbebf2527cc379b778bf75c4e39b3ca68ed",
+   "size": 177277,
+   "origin": "local:/tmp/claude-1000/-home-jeroen-repos-veen-systems-llm-distillery/0debf55e-bc42-4689-a5ea-7f13704be231/scratchpad/exp055/L1/results.jsonl",
+   "pulled_at": "2026-10-21T16:05:31+02:00"
+  },
+  {
+   "path": "experiments/2026-10-21-cross-family-panel/L2/L2.log",
+   "sha256": "d771624102d886f71d1273a8bf22de5c5c9f4767a3ae2c044661d2babd1ca8ce",
+   "size": 3093,
+   "origin": "local:/tmp/claude-1000/-home-jeroen-repos-veen-systems-llm-distillery/0debf55e-bc42-4689-a5ea-7f13704be231/scratchpad/exp055/L2/L2.log",
+   "pulled_at": "2026-10-21T16:05:31+02:00"
+  },
+  {
+   "path": "experiments/2026-10-21-cross-family-panel/L2/results.jsonl",
+   "sha256": "d5ccb835e04a12febcf4a74862e82bf88c8d419900f439516a9ea0662bb1abf2",
+   "size": 177982,
+   "origin": "local:/tmp/claude-1000/-home-jeroen-repos-veen-systems-llm-distillery/0debf55e-bc42-4689-a5ea-7f13704be231/scratchpad/exp055/L2/results.jsonl",
+   "pulled_at": "2026-10-21T16:05:31+02:00"
+  },
+  {
+   "path": "experiments/2026-10-21-cross-family-panel/L3/L3.log",
+   "sha256": "b804affc618c8e5dbb9919b749c2384e7861ef282cca7dd0d44588b6907e9dd1",
+   "size": 2056,
+   "origin": "local:/tmp/claude-1000/-home-jeroen-repos-veen-systems-llm-distillery/0debf55e-bc42-4689-a5ea-7f13704be231/scratchpad/exp055/L3/L3.log",
+   "pulled_at": "2026-10-21T16:05:31+02:00"
+  },
+  {
+   "path": "experiments/2026-10-21-cross-family-panel/L3/results.jsonl",
+   "sha256": "a39a9c7a6d2a0394e782712ee089ae68384d9d67968d00277fb760beeb1ef936",
+   "size": 185819,
+   "origin": "local:/tmp/claude-1000/-home-jeroen-repos-veen-systems-llm-distillery/0debf55e-bc42-4689-a5ea-7f13704be231/scratchpad/exp055/L3/results.jsonl",
+   "pulled_at": "2026-10-21T16:05:31+02:00"
+  },
+  {
+   "path": "experiments/2026-10-21-cross-family-panel/P2-run1/P2.jsonl",
+   "sha256": "23faff37701805a41b5c61ae3fe08ac535c428277c6b17295de422bff3a3d1f0",
+   "size": 158140,
+   "origin": "local:/home/jeroen/lab/llm-distillery/inbox/situla/2026-10-21-exp055-P2-work/P2.jsonl",
+   "pulled_at": "2026-10-21T17:50:34+02:00"
+  },
+  {
+   "path": "experiments/2026-10-21-cross-family-panel/P2-run1/batch.json",
+   "sha256": "bd4d614fae3ab84e3ba7af3fffb98277c4520e2cdaaa82e1193e8b28cd448fc0",
+   "size": 93,
+   "origin": "local:/home/jeroen/lab/llm-distillery/inbox/situla/2026-10-21-exp055-P2-work/batch.json",
+   "pulled_at": "2026-10-21T17:50:34+02:00"
+  },
+  {
+   "path": "experiments/2026-10-21-cross-family-panel/P2-run1/collect.log",
+   "sha256": "decd70ec3cdb922bf6fb7cde2d830c2a9995c4bbd7968b39c2b6799fe83694d8",
+   "size": 83,
+   "origin": "local:/home/jeroen/lab/llm-distillery/inbox/situla/2026-10-21-exp055-P2-work/collect.log",
+   "pulled_at": "2026-10-21T17:50:34+02:00"
+  },
+  {
+   "path": "experiments/2026-10-21-cross-family-panel/P2-run1/count.json",
+   "sha256": "a6ad1792cd8758f038d437142fdc6608537ad30faad5715f618bcdf28520e884",
+   "size": 167,
+   "origin": "local:/home/jeroen/lab/llm-distillery/inbox/situla/2026-10-21-exp055-P2-work/count.json",
+   "pulled_at": "2026-10-21T17:50:34+02:00"
+  },
+  {
+   "path": "experiments/2026-10-21-cross-family-panel/P2-run2/P2.jsonl",
+   "sha256": "d55820325ef03c5aa0f7b1785d534abaa1549ab0fcb22ac832bbeb845cd6ef20",
+   "size": 157944,
+   "origin": "local:/home/jeroen/lab/llm-distillery/inbox/situla/2026-10-21-exp055-P2-run2-work/P2.jsonl",
+   "pulled_at": "2026-10-21T17:50:34+02:00"
+  },
+  {
+   "path": "experiments/2026-10-21-cross-family-panel/P2-run2/batch.json",
+   "sha256": "dca98ec830c1699870893fa3818edce998715992a6cb626dddd6aefaa7b340a7",
+   "size": 93,
+   "origin": "local:/home/jeroen/lab/llm-distillery/inbox/situla/2026-10-21-exp055-P2-run2-work/batch.json",
+   "pulled_at": "2026-10-21T17:50:34+02:00"
+  },
+  {
+   "path": "experiments/2026-10-21-cross-family-panel/P2-run2/collect.log",
+   "sha256": "6b1618cc010bf916744c93d18d46726801bb1aef0e3125f9a5de56a7362aedaf",
+   "size": 83,
+   "origin": "local:/home/jeroen/lab/llm-distillery/inbox/situla/2026-10-21-exp055-P2-run2-work/collect.log",
+   "pulled_at": "2026-10-21T17:50:34+02:00"
+  },
+  {
+   "path": "experiments/2026-10-21-cross-family-panel/P2-run2/count.json",
+   "sha256": "a6ad1792cd8758f038d437142fdc6608537ad30faad5715f618bcdf28520e884",
+   "size": 167,
+   "origin": "local:/home/jeroen/lab/llm-distillery/inbox/situla/2026-10-21-exp055-P2-run2-work/count.json",
+   "pulled_at": "2026-10-21T17:50:34+02:00"
+  }
+ ]
+}

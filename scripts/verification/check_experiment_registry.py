@@ -76,12 +76,14 @@ def traceable(value, text):
     elif isinstance(value, int):
         forms |= {f"{value:,}"}
     text = _strip_dates(text)
+    forms = {x.replace("\u2212", "-") for x in forms}       # the same normalisation as the text
     for f in sorted(forms):
-        # #171/#175: the number must stand ALONE. Nothing that makes it part of a larger token may touch it: no
-        # digit, letter, `#`, `.`, `/`, `:` or `_` before it, and no id's `-` (EXP-041, v8-4); no digit, `.digit`,
-        # `:` or `/` after it. A trailing UNIT letter is allowed (26.46ms, 3.82x). So `4` no longer matches inside
-        # "#41", "EXP-041", "v4", "1.40" or "4:14", and dates are removed first.
-        if f and re.search(rf"(?<![0-9A-Za-z#./:_]){_lead(f)}{re.escape(f)}(?![0-9:/]|\.[0-9])", text):
+        # #171/#175: the number must stand ALONE. Before it: no digit, letter, `#`, single `.`, `:` or `_`, and for a
+        # non-negative value no `-` at all (a dropped sign is a different number: review 2026-10-21). A range's `..`
+        # and a fraction's `/` are separators (0.034..0.059, 76/83). After it: no digit, `.digit`, `,digit` (4,000),
+        # `:`, or a letter run followed by a digit (4x4, 4e5); a trailing UNIT is allowed (26.46ms, 3.82x).
+        if f and re.search(rf"(?<![0-9A-Za-z#:_]){_lead(f)}(?<![^.]\.){re.escape(f)}"
+                           r"(?![0-9:]|[.,][0-9]|[A-Za-z]+[0-9])", text):
             return True, f
     num = value if isinstance(value, float) else (float(value) if isinstance(value, str)
                                                     and re.fullmatch(r"-?\d+\.\d+", value) else None)
@@ -101,8 +103,8 @@ def _sig(s):
 
 
 def _lead(f):
-    """A non-negative value must not be the tail of an id like `EXP-041` / `v8-4`: a `-` preceded by a letter or digit."""
-    return "" if f.startswith("-") else r"(?<![0-9A-Za-z]-)"
+    """A non-negative value must not be preceded by a `-` (a dropped sign, or the tail of an id like `EXP-041`)."""
+    return "" if f.startswith("-") else r"(?<!-)"
 
 
 # Dates and timestamps only; a bare H:MM is kept (it can be a duration, EXP-018's 4:14), and `:` blocks a match.
@@ -110,10 +112,11 @@ _DATE = re.compile(r"\b\d{4}-\d{2}-\d{2}(?:[T ]\d{2}:\d{2}(?::\d{2})?Z?)?\b|\b\d
 
 
 def _strip_dates(text, cache={}):
-    k = id(text)
-    if k not in cache:
-        cache[k] = _DATE.sub(" ", text)
-    return cache[k]
+    """Dates removed, the unicode minus normalised. Keyed by the TEXT, not id(): a freed string's id is reused
+    (review 2026-10-21 reproduced wrong results for temporary strings)."""
+    if text not in cache:
+        cache[text] = _DATE.sub(" ", text).replace("\u2212", "-")
+    return cache[text]
 
 
 def main(argv=None):

@@ -585,3 +585,13 @@ class RealTree(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def test_a_markdown_bold_host_label_is_not_a_host_path():
+    """2026-10-21: '**b650:** daytime only' was read as the host path 'b650:**'."""
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("clm_bold", Path(__file__).resolve().parents[2] / "scripts/verification/check_lab_manifests.py")
+    m = importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
+    cite, _ = m.patterns({"b650"})
+    assert not cite.search("- **b650:** daytime only")
+    assert cite.search("pulled from b650:~/llm-distillery/runs/x").group(2) == "~/llm-distillery/runs/x"

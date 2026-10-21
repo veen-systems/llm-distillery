@@ -1,8 +1,8 @@
 # LLM Distillery - TODO
 
-## ▶️ START HERE — the ordered queue, as of 2026-10-21
+## ▶️ START HERE — the ordered queue, as of 2026-10-21 (second close)
 
-*▶ **NEXT SESSION (set 2026-10-21 close; `/curate` done, all pushed). "continue" = these, in order:***
+*▶ **NEXT SESSION (set 2026-10-21 second close; `/curate` done, all pushed). "continue" = these, in order:***
 
 **(1) Item 0a: DONE 2026-10-21 (EXP-056). v3 almost certainly FAILS the bar on the live H page:** qwen weekly
 mean 7.86, every day 7–9, against ≤ 6. Posted on ducroq/ovr.news#391. **Owner ruled 2026-10-21: "count a page
@@ -17,9 +17,9 @@ The b650 copy `~/llm-distillery/runs/exp056` is a finished run: delete it once a
 holds lab `experiments/2026-10-21-belonging-onsite-h/run` (b650 rule).
 
 **(1b) #159: the obituary title rule. RULED by the owner 2026-10-21: plain `max(title, full)`** (EXP-057). ▶ BUILD next
-session, in the order below. The reasons given: the owner's recall-first ruling for this
-gate (2026-07-30); for a BLOCKER, the reader-visible error is the miss (ADR-023's own logic inverted); at most 1.7%
-more clean articles blocked (seed 101).
+session, in the order below. *The session's reasons, as put to the owner (gloss, NOT part of the ruling):* the owner's recall-first ruling for
+this gate (2026-07-30, the only reason the #159 comment records); for a BLOCKER the reader-visible error is the miss;
+the worst seed blocks 21 more of about 1,215 clean heldout articles (~1.7%, computed from `result.txt`'s FP counts).
 The build touches THREE places:
 - (i) `filters/common/obituary_detector/v5/inference.py`: a title pass and max, behind a constructor flag defaulting
   OFF, with tests. Re-pin `MANIFEST.json` (#165 integrity: the file's sha256 changes);
@@ -30,7 +30,8 @@ Then: a flag flip in NexusMind config (ADR-022: one config flip), the RUNBOOK de
 
 **(2) Item 0's dated steps:** ovr's rollback panel on **10-23**, then the normalization refit **≥ 10-24** (the details are in 0).
 
-**(3) EXP-055, the cross-family panel (#177 step 6): finish ≥ 10-25 (morning).** `ld-exp055-p1b.timer` scores 20
+**(3) EXP-055, the cross-family panel (#177 step 6): finish ≥ 10-25 (morning).** P2 (Claude, k = 2) is DONE (item 4c);
+only P1 (Gemini) remains. `ld-exp055-p1b.timer` scores 20
 free-tier Gemini items a day into `~/lab/llm-distillery/inbox/situla/2026-10-21-exp055-P1-work/P1.jsonl`; its log is
 `P1_daily.log` there.
 - Steps: when all 100 ids are scored, `lab.py pull` that dir to `experiments/2026-10-21-cross-family-panel/P1`;
@@ -56,7 +57,7 @@ free-tier Gemini items a day into `~/lab/llm-distillery/inbox/situla/2026-10-21-
   About $7.9 remains, unassigned: any new use needs the owner's go and a line to infra first.
 - (d) **Repo survey 2026-10-21 (agent):** $0, no-ruling candidates, in order. #171/#175 is DONE (`cea4544`; it
   found 3 accidental registry matches, now null). Next:
-  - ~~#159 multi-seed~~ DONE (EXP-057, `734a627`): both rules help at 5/5 seeds; the rule choice is the owner's. b650 copies
+  - ~~#159 multi-seed~~ DONE (EXP-057, `734a627`): both rules help at 5/5 seeds; plain max RULED 2026-10-21 (item 1b). b650 copies
     `runs/maxrule159` and `runs/exp056` are finished runs: delete them after a snapshot later than 10-21 19:00;
   - H-OC4: count the rule shapes in v9's tail-prompt labels;
   - #179 item 1: audit the agreement figures that are raw %;

@@ -210,3 +210,27 @@ class TraceableTokenTest(unittest.TestCase):
         r = run_against(e)
         self.assertNotEqual(r.returncode, 0)
         self.assertIn("names the root", r.stdout)
+
+
+class TraceableReviewFixesTest(unittest.TestCase):
+    """Review 2026-10-21 of the #171/#175 hardening."""
+
+    def test_a_DROPPED_SIGN_does_not_count(self):
+        self.assertFalse(cer.traceable("0.017", "spec -0.017")[0])
+        self.assertFalse(cer.traceable("0.017", "spec −0.017")[0])
+        self.assertTrue(cer.traceable("-0.017", "spec −0.017")[0])
+        self.assertTrue(cer.traceable("0.0342", "delta +0.0342")[0])
+
+    def test_RANGES_and_FRACTIONS_count(self):
+        for v, t in (("0.059", "+0.034..+0.059"), ("0.034", "0.034..0.059"), ("-0.017", "-0.006..-0.017"),
+                     ("76", "recall 76/83"), ("83", "recall 76/83")):
+            self.assertTrue(cer.traceable(v, t)[0], (v, t))
+
+    def test_a_number_glued_into_a_LARGER_token_does_not_count(self):
+        for t in ("4,000 rows", "a 4x4 grid", "4e5 tokens"):
+            self.assertFalse(cer.traceable(4, t)[0], t)
+
+    def test_the_date_cache_is_keyed_by_text_not_id(self):
+        for i in range(500):
+            t = "".join(["on 2026-10-0", str(i % 9 + 1), " we saw ", str(i)])
+            self.assertTrue(cer.traceable(i, t)[0], t)

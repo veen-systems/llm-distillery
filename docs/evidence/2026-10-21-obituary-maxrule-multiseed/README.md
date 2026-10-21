@@ -16,8 +16,10 @@ seed in `SEED_SET` (EXP-034's protocol). Eval: the leak-free obituary heldout, n
   seed's effect on the shared head; the paired difference is the rule's.
 - **Plain max:** at every seed it catches 11–19 more obituaries for 7–21 more clean articles blocked.
 - **The 0.99 gate:** it catches 3–8 more for 0–6 more blocked.
-- **Positive control:** the seed-42 refit against the shipped v5 gives corr 0.9954, with 12 of 1,562 flips at 0.85
-  (EXP-034: 0.9952).
+- **Positive control:** the seed-42 refit against the shipped v5 gives corr 0.9954 with 12 of 1,562 flips at 0.85.
+  EXP-034 got 0.9952 with 10 flips: close, NOT identical. The likely cause is the GPU change (3090 Ti → 5090);
+  sklearn's MLP is not bit-reproducible across environments.
+- `result.txt` is produced by `make_result.py` from the run's JSON.
 
 ## Predictions, scored
 

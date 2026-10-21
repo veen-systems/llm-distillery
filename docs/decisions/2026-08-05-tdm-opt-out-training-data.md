@@ -330,5 +330,5 @@ training a model on their outputs. Nobody has read the current terms. This rulin
 owner's too, so ask before treating any FUTURE Claude output as training labels. The EXP-055 Claude seat is
 evaluation only and does not need it.
 
-**Revisit triggers:** a vendor objects; a vendor changes its terms in a way someone notices; any model trained here
-is shared outside this pipeline.
+**Revisit trigger (ruled):** a vendor objects. *The session's suggested additions, NOT ruled:* a vendor changes its
+terms in a way someone notices; any model trained here is shared outside this pipeline.

@@ -4,6 +4,11 @@
 
 *⚠️ **Entries dated before 2026-10-13 live in (except the 10-12 `cp -r` entry, kept while its resolution is fresh) [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md)**, verbatim (the 10-12 ones moved 2026-10-15, #163 round 5; the 10-01 → 10-08 ones moved 2026-10-12 by a second owner-approved MID-MONTH pass, `--before 2026-10-09`, #163 round 2; the 09-01 → 09-16 ones moved 2026-09-27 by an owner-approved MID-MONTH pass, `--before 2026-09-17`; earlier ones moved 2026-09-24; into `archive/` 2026-09-26 so curate's size measurement stops counting it, #163; the month-dated Feb–May entries followed on 2026-09-26). Next pass: `python3 scripts/maintenance/retire_memory.py gotcha --before <first of this month> --apply` (dry run without `--apply`). It retires top-level entries only; the `###` entries inside the catalogue are kept by rule and counted (⚠️ superseded 2026-10-09: 43 of them moved by date; see the note under the catalogue heading). The unreachable-mechanism catalogue stayed here. For a recurrence match, grep both: `grep -n <term> memory/gotcha-log.md memory/archive/gotcha-log-archive.md` (a `memory/gotcha-log*.md` glob does NOT reach the archive). Was: `grep -n <term> memory/gotcha-log*.md`.*
 
+## A COST ESTIMATE BUILT FROM ANOTHER VENDOR'S TOKENIZER CAME IN 2.4× LOW (2026-10-21)
+**Problem**: the Claude panel seat was quoted to the owner and to infra at ~$1.75. That used Gemini's measured ~12.2K input tokens per item and infra's cached price card. `count_tokens` gave 18,151 per item (1.5×), and two runs cost $4.12.
+**Root cause**: a token count is a property of the TOKENIZER, not of the text, and the price card was a second-hand cache.
+**Fix**: before quoting a Claude cost, run `count_tokens` on 3 items and read the price at the vendor page; quote only after both. Same family as "nothing verifies an estimate".
+
 ## A 429 READ AS "TOO MUCH CONCURRENCY" WAS A FREE-TIER DAILY QUOTA (2026-10-21)
 **Problem**: EXP-055's Gemini pilot hit four HTTP 429s at concurrency 4. I dropped to concurrency 1, called it a rate limit, projected the full run's cost and launched it. 80 more 429s followed. The body said `generate_content_free_tier_requests, limit: 20`, `retry in 23h`: `gemini_api_key` is a FREE-TIER key, and the prepaid `gemini_billing_api_key` was already depleted (402).
 **Root cause**: the scorer logs `Max retries: HTTP 429` and drops the body, and a status code names a CLASS, not a cause. The cost projection rested on a key nobody had established was paid.
@@ -14,25 +19,13 @@
 **Root cause**: a dated precondition written as an EVENT ("after the snapshot") reads as satisfied once the date passes.
 **Fix**: write the precondition as a CHECK (`restic ls <snap> --recursive <path>` names the files), and run it. Never let the calendar stand in for the event.
 
-## A DATE CUTOFF COMPARED AS A STRING LET FOUR DATE FORMATS THROUGH (2026-10-19) [RESOLVED: parsed in `_date_of`]
-**Problem**: `split_validator` decided "new row" by `analyzed_at >= "2026-10-20T00:00:00Z"` as text. A space separator, a date-only value, an epoch and a `-05:00` offset all sort BELOW the cutoff, so an unstamped new row passed as legacy. 30 tests and 12/12 mutants were green: every fixture used the one ISO-Z format.
-**Root cause**: a fixture set drawn from one writer's format, so the mutation run never varied the INPUT shape (rung 5, data shapes).
-**Fix**: parse to a UTC datetime; an unparseable date raises. ⚠️ The adversarial lens's own epoch example (1792000000) was 2026-10-14, BEFORE the cutoff — a reviewer's repro is a claim too: recompute its premise before writing the test.
+## A DATE CUTOFF COMPARED AS A STRING LET FOUR DATE FORMATS THROUGH (2026-10-19) [RESOLVED: parsed in `_date_of`] — MOVED 2026-10-21 (#163 round 12, resolved) to [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md)
 
-## TWO DEFINITIONS OF "DONE" LEFT AN OLDER CANARY PASS ADMITTING (2026-10-19) [RESOLVED: 4a92805]
-**Problem**: review found that a canary whose set came back with a scrape-junk row ended with no record, so an older unused PASS kept admitting labelling runs.
-**Root cause**: the resume loop counted a row as done when it lacked an `error` key; `run_scores` counts only rows carrying the analysis. The junk row (`{"skipped": …}`) passed the first and failed the second, and the evaluator's "incomplete" exit was not routed through the NO-VERDICT writer.
-**Fix**: one definition (row carries the analysis field) in both places, and every way out of `canary.py run` records NO-VERDICT (`NoVerdict` class; tests seeded with the junk row and a crash).
+## TWO DEFINITIONS OF "DONE" LEFT AN OLDER CANARY PASS ADMITTING (2026-10-19) [RESOLVED: 4a92805] — MOVED 2026-10-21 (#163 round 12, resolved) to [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md)
 
-## GUARDING A DEFAULT TURNED TWO POSITIVE CONTROLS INTO MACHINE-STATE TESTS (2026-10-19) [RESOLVED: 6ca23cb]
-**Problem**: `test_deepseek_model_guard`'s alias controls failed after cd v5's canary went live, because they stopped at the canary.
-**Root cause**: they ran the scorer with its DEFAULT prompt (cd v5), and had only ever passed because no canary covered it. Their outcome depended on the pass records on the machine, and the alias control would have consumed a live unused PASS.
-**Fix**: the controls pass `--skip-canary` (the model-id guard runs before the gate). When you guard something by default, grep the tests that run the real entry point with defaults.
+## GUARDING A DEFAULT TURNED TWO POSITIVE CONTROLS INTO MACHINE-STATE TESTS (2026-10-19) [RESOLVED: 6ca23cb] — MOVED 2026-10-21 (#163 round 12, resolved) to [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md)
 
-## AN IN-PLACE MUTANT OUTLIVED ITS RESTORE IN A `.pyc` AND FAILED THE SUITE (2026-10-16) [RESOLVED: mechanized]
-**Problem**: after a mutation pass, `test_canary_run_resumes…` failed on correct source: Python ran `MAX_PASSES = 1`.
-**Root cause**: the mutant was compiled, then the source restored within the same second at the same size, so the cached bytecode still looked valid.
-**Fix**: `tests/conftest.py` sets `sys.dont_write_bytecode` (pinned by `tests/unit/test_no_bytecode_from_tests.py`; seeded with the exact failure). Mutation drivers also set `PYTHONDONTWRITEBYTECODE=1`.
+## AN IN-PLACE MUTANT OUTLIVED ITS RESTORE IN A `.pyc` AND FAILED THE SUITE (2026-10-16) [RESOLVED: mechanized] — MOVED 2026-10-21 (#163 round 12, resolved) to [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md)
 
 ## TWO NEAR-DUPLICATE INSTRUMENTS, TWO OPPOSITE MISSES (2026-10-16)
 **Problem**: a first-600-chars text comparison called a ScienceDaily copy of a training row "not a leak" (#176); a review found it.

@@ -73,7 +73,8 @@ SSH_OPTS = r"(?:-[bcDEeFIiJLlmOopQRSWw]\s*\S+\s+|-\w+\s+)*"
 def patterns(hosts):
     alts = "|".join(re.escape(h) for h in sorted(hosts, key=len, reverse=True))
     host = rf"(?<![\w.-])(?<!//)`?({alts})`?(?![\w.-])"
-    cite = re.compile(host + r":`?['\"]?((?:~|\$\{?HOME\}?)?/?[\w.~/*{},$-]*)", re.IGNORECASE)
+    # `(?!\*\*)`: a markdown bold label like "**b650:**" is prose, not a host path (2026-10-21 false positive).
+    cite = re.compile(host + r":(?!\*\*)`?['\"]?((?:~|\$\{?HOME\}?)?/?[\w.~/*{},$-]*)", re.IGNORECASE)
     bare = re.compile(rf"(?:\bssh\s+{SSH_OPTS}|\b(?:on|from|at)\s+)`?({alts})`?(?![\w.-])"
                       rf"|(?<![\w.-])`?({alts})`?\s+only\b", re.IGNORECASE)
     return cite, bare

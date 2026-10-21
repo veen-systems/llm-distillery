@@ -384,3 +384,8 @@ unless it says otherwise. The one repeat measured: 3/110 verdicts flip with the 
 
 *`H-BV6` (closed: RULED 2026-10-02 by the owner) — MOVED 2026-10-19 to [`archive/hypothesis-ledger-archive.md`](archive/hypothesis-ledger-archive.md) § *Moved 2026-10-19*.*
 
+## Moved 2026-10-21 (2) — closed by owner ruling (#159). Verbatim.
+
+| id | hypothesis | status |
+|---|---|---|
+| H-DET5 | `max(title, full)` recovers the body-dilution class at acceptable cost | ✅ **EFFECT CONFIRMED ACROSS SEEDS (EXP-057, 2026-10-21); 'acceptable' is the owner's #159 call.** v5 retrained at 5 seeds, paired against full text at 0.85: plain max Δrecall +0.0342 to +0.0590 (5/5) for Δspec −0.0058 to −0.0173 (+7 to +21 FP); the 0.99 gate +0.0093 to +0.0248 (5/5) for −0.0049 to 0.0000 (0 to +6 FP). Recall-first → plain max; ADR-023 → the gate. `docs/evidence/2026-10-21-obituary-maxrule-multiseed/` |

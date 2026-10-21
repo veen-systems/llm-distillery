@@ -1,0 +1,26 @@
+{
+ "lab_root": "$LD_LAB (default ~/lab/llm-distillery, on situla)",
+ "entries": [
+  {
+   "path": "experiments/2026-10-21-obituary-maxrule-multiseed/run/maxrule_multiseed.json",
+   "sha256": "7f3005ec53abc4e157506b02300585c958558581880207b65f228ade08ae6df2",
+   "size": 2208,
+   "origin": "b650-gpu:/home/jeroen/llm-distillery/runs/maxrule159/maxrule_multiseed.json",
+   "pulled_at": "2026-10-21T17:56:05+02:00"
+  },
+  {
+   "path": "experiments/2026-10-21-obituary-maxrule-multiseed/run/maxrule_multiseed.py",
+   "sha256": "8ed97a8ea9f67d989e0413289ea02947a08ed29abd489fddfe07f3b05edffed6",
+   "size": 3103,
+   "origin": "b650-gpu:/home/jeroen/llm-distillery/runs/maxrule159/maxrule_multiseed.py",
+   "pulled_at": "2026-10-21T17:56:05+02:00"
+  },
+  {
+   "path": "experiments/2026-10-21-obituary-maxrule-multiseed/run/run.log",
+   "sha256": "030a7285727320d25c80c3b1101dcab523b344ecfd06d0e8a171eccca5bdce9a",
+   "size": 876,
+   "origin": "b650-gpu:/home/jeroen/llm-distillery/runs/maxrule159/run.log",
+   "pulled_at": "2026-10-21T17:56:05+02:00"
+  }
+ ]
+}

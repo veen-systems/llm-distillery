@@ -7977,3 +7977,26 @@ Same family as `feedback-a-marker-is-a-claim` (auto-memory): a TODO line is a cl
 | 2026-10-09 | A hook whose script is missing exits **2** (python3 on a missing file), which Claude Code reads as BLOCK, so moving the script would have blocked every Bash call | `tests/unit/test_pattern_kill_hook.py::test_missing_script_does_not_block_every_bash_call` runs the settings command itself with an empty project dir. Seeded: the previous settings command → red | live | 0 |
 | 2026-10-09 | A regex fix that nests a repeated group inside a repeated group backtracks EXPONENTIALLY on input that almost matches: round 2's hook regex took 13 s on 25 × `ssh h ` and 61 s on a sudo/env/nice chain, in a hook that runs before every Bash call. 78 green tests never fed it a long near-miss (adversarial lens, round 3) | `tests/unit/test_pattern_kill_hook.py::test_no_catastrophic_backtracking` runs the hook in a subprocess on 2000 × six near-miss shapes with a 5 s timeout; the hook is now a `shlex` tokenizer, not a regex. Seeded: the round-2 regex → 5 of 6 red. Fuzz: 60,000 random inputs, 0 exceptions, worst 2 ms | live | 0 |
 | 2026-10-09 | A marker that checks only "not committed" counts a MISSPELLED path as deliberate | `run.sh` seed 45 (the absent-here label); seeded: label removed → red | live | 0 |
+
+## Moved 2026-10-21 — resolved entries of 2026-10-16..19 (#163 round 12). Verbatim.
+
+## A DATE CUTOFF COMPARED AS A STRING LET FOUR DATE FORMATS THROUGH (2026-10-19) [RESOLVED: parsed in `_date_of`]
+**Problem**: `split_validator` decided "new row" by `analyzed_at >= "2026-10-20T00:00:00Z"` as text. A space separator, a date-only value, an epoch and a `-05:00` offset all sort BELOW the cutoff, so an unstamped new row passed as legacy. 30 tests and 12/12 mutants were green: every fixture used the one ISO-Z format.
+**Root cause**: a fixture set drawn from one writer's format, so the mutation run never varied the INPUT shape (rung 5, data shapes).
+**Fix**: parse to a UTC datetime; an unparseable date raises. ⚠️ The adversarial lens's own epoch example (1792000000) was 2026-10-14, BEFORE the cutoff — a reviewer's repro is a claim too: recompute its premise before writing the test.
+
+## TWO DEFINITIONS OF "DONE" LEFT AN OLDER CANARY PASS ADMITTING (2026-10-19) [RESOLVED: 4a92805]
+**Problem**: review found that a canary whose set came back with a scrape-junk row ended with no record, so an older unused PASS kept admitting labelling runs.
+**Root cause**: the resume loop counted a row as done when it lacked an `error` key; `run_scores` counts only rows carrying the analysis. The junk row (`{"skipped": …}`) passed the first and failed the second, and the evaluator's "incomplete" exit was not routed through the NO-VERDICT writer.
+**Fix**: one definition (row carries the analysis field) in both places, and every way out of `canary.py run` records NO-VERDICT (`NoVerdict` class; tests seeded with the junk row and a crash).
+
+## GUARDING A DEFAULT TURNED TWO POSITIVE CONTROLS INTO MACHINE-STATE TESTS (2026-10-19) [RESOLVED: 6ca23cb]
+**Problem**: `test_deepseek_model_guard`'s alias controls failed after cd v5's canary went live, because they stopped at the canary.
+**Root cause**: they ran the scorer with its DEFAULT prompt (cd v5), and had only ever passed because no canary covered it. Their outcome depended on the pass records on the machine, and the alias control would have consumed a live unused PASS.
+**Fix**: the controls pass `--skip-canary` (the model-id guard runs before the gate). When you guard something by default, grep the tests that run the real entry point with defaults.
+
+## AN IN-PLACE MUTANT OUTLIVED ITS RESTORE IN A `.pyc` AND FAILED THE SUITE (2026-10-16) [RESOLVED: mechanized]
+**Problem**: after a mutation pass, `test_canary_run_resumes…` failed on correct source: Python ran `MAX_PASSES = 1`.
+**Root cause**: the mutant was compiled, then the source restored within the same second at the same size, so the cached bytecode still looked valid.
+**Fix**: `tests/conftest.py` sets `sys.dont_write_bytecode` (pinned by `tests/unit/test_no_bytecode_from_tests.py`; seeded with the exact failure). Mutation drivers also set `PYTHONDONTWRITEBYTECODE=1`.
+

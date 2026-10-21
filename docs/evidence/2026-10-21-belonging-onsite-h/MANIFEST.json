@@ -1,0 +1,159 @@
+{
+ "lab_root": "$LD_LAB (default ~/lab/llm-distillery, on situla)",
+ "entries": [
+  {
+   "path": "experiments/2026-10-21-belonging-onsite-h/pages/belonging_20261015T1430Z.html",
+   "sha256": "75ca827ca6ffb3f59e50cef8e0e61e38651236b03a064bcf2504ea37cb529a7e",
+   "size": 801788,
+   "origin": "local:/tmp/claude-1000/-home-jeroen-repos-veen-systems-llm-distillery/0debf55e-bc42-4689-a5ea-7f13704be231/scratchpad/exp056/pages/belonging_20261015T1430Z.html",
+   "pulled_at": "2026-10-21T17:12:52+02:00"
+  },
+  {
+   "path": "experiments/2026-10-21-belonging-onsite-h/pages/belonging_20261016T1430Z.html",
+   "sha256": "ce917f65c328a3b1c812f60ea69c55c0faa92bfd8f127344afbc94eca6c1e5d2",
+   "size": 791019,
+   "origin": "local:/tmp/claude-1000/-home-jeroen-repos-veen-systems-llm-distillery/0debf55e-bc42-4689-a5ea-7f13704be231/scratchpad/exp056/pages/belonging_20261016T1430Z.html",
+   "pulled_at": "2026-10-21T17:12:52+02:00"
+  },
+  {
+   "path": "experiments/2026-10-21-belonging-onsite-h/pages/belonging_20261017T1430Z.html",
+   "sha256": "2213f68ce61368c93c64acc14e13855756a60c17b3dd5035a00e1da107f3560b",
+   "size": 759301,
+   "origin": "local:/tmp/claude-1000/-home-jeroen-repos-veen-systems-llm-distillery/0debf55e-bc42-4689-a5ea-7f13704be231/scratchpad/exp056/pages/belonging_20261017T1430Z.html",
+   "pulled_at": "2026-10-21T17:12:52+02:00"
+  },
+  {
+   "path": "experiments/2026-10-21-belonging-onsite-h/pages/belonging_20261018T1430Z.html",
+   "sha256": "361ec50f1585c110206e094f4ff61025b7182f4d23943592dab81c6c6f534682",
+   "size": 707798,
+   "origin": "local:/tmp/claude-1000/-home-jeroen-repos-veen-systems-llm-distillery/0debf55e-bc42-4689-a5ea-7f13704be231/scratchpad/exp056/pages/belonging_20261018T1430Z.html",
+   "pulled_at": "2026-10-21T17:12:52+02:00"
+  },
+  {
+   "path": "experiments/2026-10-21-belonging-onsite-h/pages/belonging_20261019T1430Z.html",
+   "sha256": "44ae9a3d171c1817dd01d19cc425a834c8949adb3b437f45c3ff3b6ffa030119",
+   "size": 692859,
+   "origin": "local:/tmp/claude-1000/-home-jeroen-repos-veen-systems-llm-distillery/0debf55e-bc42-4689-a5ea-7f13704be231/scratchpad/exp056/pages/belonging_20261019T1430Z.html",
+   "pulled_at": "2026-10-21T17:12:52+02:00"
+  },
+  {
+   "path": "experiments/2026-10-21-belonging-onsite-h/pages/belonging_20261020T1430Z.html",
+   "sha256": "b2503ec37a0df48a0e617e96bde3b0a62318917607370f5f6ba60c05f92834e1",
+   "size": 701268,
+   "origin": "local:/tmp/claude-1000/-home-jeroen-repos-veen-systems-llm-distillery/0debf55e-bc42-4689-a5ea-7f13704be231/scratchpad/exp056/pages/belonging_20261020T1430Z.html",
+   "pulled_at": "2026-10-21T17:12:52+02:00"
+  },
+  {
+   "path": "experiments/2026-10-21-belonging-onsite-h/pages/belonging_20261021T1430Z.html",
+   "sha256": "c3f2ada0f0a431bfe15cf977c223d9a2dad04a7db5c5ca452172538b706f9c87",
+   "size": 695205,
+   "origin": "local:/tmp/claude-1000/-home-jeroen-repos-veen-systems-llm-distillery/0debf55e-bc42-4689-a5ea-7f13704be231/scratchpad/exp056/pages/belonging_20261021T1430Z.html",
+   "pulled_at": "2026-10-21T17:12:52+02:00"
+  },
+  {
+   "path": "experiments/2026-10-21-belonging-onsite-h/run/tag-control/input.jsonl",
+   "sha256": "38e0acb0940143aa3a1a1c382e54fca9a1b5792eead0e66bbe3cf7218212cb39",
+   "size": 40626,
+   "origin": "b650-gpu:/home/jeroen/llm-distillery/runs/exp056/tag-control/input.jsonl",
+   "pulled_at": "2026-10-21T17:16:15+02:00"
+  },
+  {
+   "path": "experiments/2026-10-21-belonging-onsite-h/run/tag-control/out.jsonl",
+   "sha256": "7b37b0cafe46d790647401466adb5cec1cf2bf90188549abc7824e269a5663f9",
+   "size": 4174,
+   "origin": "b650-gpu:/home/jeroen/llm-distillery/runs/exp056/tag-control/out.jsonl",
+   "pulled_at": "2026-10-21T17:16:15+02:00"
+  },
+  {
+   "path": "experiments/2026-10-21-belonging-onsite-h/run/tag-control/run.log",
+   "sha256": "09a63293f5af6b1a19f2ca4e3cebe485ab4dad6f01d7971fd0e67a2db12f39ec",
+   "size": 471,
+   "origin": "b650-gpu:/home/jeroen/llm-distillery/runs/exp056/tag-control/run.log",
+   "pulled_at": "2026-10-21T17:16:15+02:00"
+  },
+  {
+   "path": "experiments/2026-10-21-belonging-onsite-h/run/tag-control/system.txt",
+   "sha256": "f3283f25789bad9dc1b27a6511bb4a12e240691de5fbb63316050a0ca2844bd1",
+   "size": 1813,
+   "origin": "b650-gpu:/home/jeroen/llm-distillery/runs/exp056/tag-control/system.txt",
+   "pulled_at": "2026-10-21T17:16:15+02:00"
+  },
+  {
+   "path": "experiments/2026-10-21-belonging-onsite-h/run/tag-control/tag_qwen.py",
+   "sha256": "3c898158cade850413045d36cfe8b818e68a5550479e3a80c8bf15c32fa32e15",
+   "size": 1512,
+   "origin": "b650-gpu:/home/jeroen/llm-distillery/runs/exp056/tag-control/tag_qwen.py",
+   "pulled_at": "2026-10-21T17:16:15+02:00"
+  },
+  {
+   "path": "experiments/2026-10-21-belonging-onsite-h/run/tag/input.jsonl",
+   "sha256": "4eb413951d44fc681e081a01551049d47de2c7f2665e01be68c4635d04fdfb00",
+   "size": 462395,
+   "origin": "b650-gpu:/home/jeroen/llm-distillery/runs/exp056/tag/input.jsonl",
+   "pulled_at": "2026-10-21T17:16:15+02:00"
+  },
+  {
+   "path": "experiments/2026-10-21-belonging-onsite-h/run/tag/out.jsonl",
+   "sha256": "5151a603b6aa7ffb8e9288f8f8b1ac153e1233ddec2ad83ed7eff86d2d0925db",
+   "size": 32603,
+   "origin": "b650-gpu:/home/jeroen/llm-distillery/runs/exp056/tag/out.jsonl",
+   "pulled_at": "2026-10-21T17:16:15+02:00"
+  },
+  {
+   "path": "experiments/2026-10-21-belonging-onsite-h/run/tag/run.log",
+   "sha256": "99eaf21eae15369035a8c473e8c6b71dd62cac9fbb9bf3af3916cadea7aa724e",
+   "size": 3396,
+   "origin": "b650-gpu:/home/jeroen/llm-distillery/runs/exp056/tag/run.log",
+   "pulled_at": "2026-10-21T17:16:15+02:00"
+  },
+  {
+   "path": "experiments/2026-10-21-belonging-onsite-h/run/tag/system.txt",
+   "sha256": "f3283f25789bad9dc1b27a6511bb4a12e240691de5fbb63316050a0ca2844bd1",
+   "size": 1813,
+   "origin": "b650-gpu:/home/jeroen/llm-distillery/runs/exp056/tag/system.txt",
+   "pulled_at": "2026-10-21T17:16:15+02:00"
+  },
+  {
+   "path": "experiments/2026-10-21-belonging-onsite-h/run/tag/tag_qwen.py",
+   "sha256": "3c898158cade850413045d36cfe8b818e68a5550479e3a80c8bf15c32fa32e15",
+   "size": 1512,
+   "origin": "b650-gpu:/home/jeroen/llm-distillery/runs/exp056/tag/tag_qwen.py",
+   "pulled_at": "2026-10-21T17:16:15+02:00"
+  },
+  {
+   "path": "experiments/2026-10-21-belonging-onsite-h/selection/ids.txt",
+   "sha256": "bd1a8ffd11fac1e4b5a93a7f2da47d63210ba5360ec976d08ab23701c5dda837",
+   "size": 7638,
+   "origin": "local:/tmp/claude-1000/-home-jeroen-repos-veen-systems-llm-distillery/0debf55e-bc42-4689-a5ea-7f13704be231/scratchpad/exp056/sel/ids.txt",
+   "pulled_at": "2026-10-21T17:19:17+02:00"
+  },
+  {
+   "path": "experiments/2026-10-21-belonging-onsite-h/selection/reused.json",
+   "sha256": "a1be1db7e42a66449660695b66ccca8e01dda3d345cffa772ba8f479e21c46aa",
+   "size": 12846,
+   "origin": "local:/tmp/claude-1000/-home-jeroen-repos-veen-systems-llm-distillery/0debf55e-bc42-4689-a5ea-7f13704be231/scratchpad/exp056/sel/reused.json",
+   "pulled_at": "2026-10-21T17:19:17+02:00"
+  },
+  {
+   "path": "experiments/2026-10-21-belonging-onsite-h/selection/rows.jsonl",
+   "sha256": "3474a17933a6677b71e6b94485ecd429808179bf1d9137114e36c79c10d7f75f",
+   "size": 1145168,
+   "origin": "local:/tmp/claude-1000/-home-jeroen-repos-veen-systems-llm-distillery/0debf55e-bc42-4689-a5ea-7f13704be231/scratchpad/exp056/sel/rows.jsonl",
+   "pulled_at": "2026-10-21T17:19:17+02:00"
+  },
+  {
+   "path": "experiments/2026-10-21-belonging-onsite-h/selection/selection.json",
+   "sha256": "7686609400318f59dc778d3dc01a2d6f8e426087b4514bb32abce11ab1ca2977",
+   "size": 9544,
+   "origin": "local:/tmp/claude-1000/-home-jeroen-repos-veen-systems-llm-distillery/0debf55e-bc42-4689-a5ea-7f13704be231/scratchpad/exp056/sel/selection.json",
+   "pulled_at": "2026-10-21T17:19:17+02:00"
+  },
+  {
+   "path": "experiments/2026-10-21-belonging-onsite-h/selection/top60.json",
+   "sha256": "92d5ad03c84f751ea325bc6d536ee825984fc6fd1e3e26f97665336ea2e42552",
+   "size": 17676,
+   "origin": "local:/tmp/claude-1000/-home-jeroen-repos-veen-systems-llm-distillery/0debf55e-bc42-4689-a5ea-7f13704be231/scratchpad/exp056/sel/top60.json",
+   "pulled_at": "2026-10-21T17:19:17+02:00"
+  }
+ ]
+}
