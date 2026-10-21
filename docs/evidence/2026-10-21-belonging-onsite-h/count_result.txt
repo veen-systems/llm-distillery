@@ -1,0 +1,14 @@
+determinism control: 10/10 re-tagged ids match their earlier tag (reuse STANDS)
+
+build      N  skipped  personal  group  unparsed  other
+20261015  30  -               7     23         0      0
+20261016  30  -               8     22         0      0
+20261017  30  -               8     22         0      0
+20261018  30  -               9     21         0      0
+20261019  30  -               7     23         0      0
+20261020  30  -               8     22         0      0
+20261021  30  -               8     22         0      0
+
+in-range builds 7/7; WEEKLY qwen mean 7.86; worst day 9 (20261018); best day 7 (20261015)
+presence control: PASS
+verdict vs the bar (<= 6 weekly, qwen is a FLOOR): FAILS the bar (a floor above 6; almost certain, see README)

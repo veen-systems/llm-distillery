@@ -34,4 +34,4 @@ print(f"\nin-range builds {len(inr)}/{len(sel)}; WEEKLY qwen mean {m:.2f}; worst
       f"({max(inr, key=inr.get)}); best day {min(inr.values())} ({min(inr, key=inr.get)})")
 print("presence control:", "PASS" if any(inr.values()) else "FAIL (a week of zeros is an instrument failure)")
 print(f"verdict vs the bar (<= 6 weekly, qwen is a FLOOR): "
-      f"{'FAILS the bar (conclusive: a floor above 6)' if m > 6 else 'UNDETERMINED (a floor at or below 6; the owner count decides)'}")
+      f"{'FAILS the bar (a floor above 6; almost certain, see README)' if m > 6 else 'UNDETERMINED (a floor at or below 6; the owner count decides)'}")

@@ -4,10 +4,15 @@
 
 *▶ **NEXT SESSION (set 2026-10-21 close; `/curate` done, all pushed). "continue" = these, in order:***
 
-**(1) Item 0a: the on-site re-baseline of belonging v3 on the live H page. Dated on or after 2026-10-22.** The steps are
-in 0a below: PREREGISTRATION.md FIRST, then `lab.py move` the 7 pages, then tag with EXP-049's qwen tagger. ⚠️ b650 is
-infra's SovereignStack slot from 00:00 to 07:00. Before loading a model, `curl -s
-http://jwasys-b650-eagle-ax.taileb31bb.ts.net:11434/api/ps` must show no model we did not load.
+**(1) Item 0a: DONE 2026-10-21 (EXP-056). v3 almost certainly FAILS the bar on the live H page:** qwen weekly
+mean 7.86, every day 7–9, against ≤ 6 (`docs/evidence/2026-10-21-belonging-onsite-h/`, one review lens: counts
+reproduced). ▶ **OWNER, to decide:**
+- (a) give your own count on one page, which settles the floor caveat;
+- (b) say whether to post it on ducroq/ovr.news#391, which closes on this count;
+- (c) the response itself: over 6 is NOT an automatic rollback. The training lever is CLOSED (c2c and c2d), so what
+  is left is ranking or editorial, or accepting it.
+The b650 copy `~/llm-distillery/runs/exp056` is a finished run: delete it once a snapshot later than 10-21 17:30
+holds lab `experiments/2026-10-21-belonging-onsite-h/run` (b650 rule).
 
 **(2) Item 0's dated steps:** ovr's rollback panel on **10-23**, then the normalization refit **≥ 10-24** (the details are in 0).
 
