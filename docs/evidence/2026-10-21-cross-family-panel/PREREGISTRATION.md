@@ -82,9 +82,15 @@ member would measure the prompt, not the family.
 
 ## Run notes (fixed)
 
-- **P1** runs through `ground_truth.batch_scorer --llm gemini-flash` with `--skip-canary "cross-family panel
-  EXP-055 (#177): evaluation only"`. The prompt is guarded for the DeepSeek oracle, so the gate refuses Gemini
-  without the skip, and the skip reason is stamped on every row.
+- **P1** runs through the ORACLE's own scorer, `scripts/score_deepseek_production.py`, pointed at Gemini:
+  `--base-url https://generativelanguage.googleapis.com/v1beta/openai/chat/completions --key-name gemini_api_key
+  --model gemini-2.5-flash`, with the baseline's `--config` and `--prompt`, and `--skip-canary "cross-family panel
+  EXP-055 (#177): evaluation only"` (the gate refuses any other oracle; the reason is stamped on every row).
+  That makes the prompt text, the request body and the temperature (0.3) identical to the oracle's; only the model
+  differs. (Amended before any call, 2026-10-21: the first draft named `batch_scorer`, which builds the request
+  differently.)
+- **Cost check:** the pilot's measured tokens are priced at $0.30/M input and $2.50/M output, Gemini 2.5 Flash's
+  paid realtime card as recalled. Before the full run, the operator re-checks that card at the vendor page.
 - **L1, L2 and L3** run through `scripts/score_ollama_oracle.py --provider ollama`, k = 2 each.
 - Pull everything back with `lab.py pull`; cite with `lab.py cite`.
 - **Registry id: EXP-055**, if it is still free when the run starts.
