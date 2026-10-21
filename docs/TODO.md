@@ -16,9 +16,8 @@ worst day, qwen 9; tags NOT shown). ▶ When the owner returns 30 P/G letters:
 The b650 copy `~/llm-distillery/runs/exp056` is a finished run: delete it once a snapshot later than 10-21 17:30
 holds lab `experiments/2026-10-21-belonging-onsite-h/run` (b650 rule).
 
-**(1b) #159: the obituary title rule. RECOMMENDED plain `max(title, full)` (2026-10-21, EXP-057).** The owner asked
-"what do you recommend?" and, after the recommendation, said "pls continue". ⚠️ **That is the session's reading of a go,
-NOT an explicit ruling. Get a plain yes before building.** The reasons given: the owner's recall-first ruling for this
+**(1b) #159: the obituary title rule. RULED by the owner 2026-10-21: plain `max(title, full)`** (EXP-057). ▶ BUILD next
+session, in the order below. The reasons given: the owner's recall-first ruling for this
 gate (2026-07-30); for a BLOCKER, the reader-visible error is the miss (ADR-023's own logic inverted); at most 1.7%
 more clean articles blocked (seed 101).
 The build touches THREE places:
