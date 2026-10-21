@@ -604,6 +604,11 @@ def main():
                             "raw_text": parsed.get("raw_text", "")[:300],
                         }
                     else:
+                        try:                     # #177: a label served another model than its PASS's stops the run
+                            oracle_canary.check_served(canary_stamp, parsed["served_model"])
+                        except oracle_canary.CanaryRefused:
+                            executor.shutdown(wait=True, cancel_futures=True)   # no further paid calls
+                            raise
                         successes += 1
                         total_input_tokens += parsed.get("_prompt_eval_count", 0)
                         total_output_tokens += parsed.get("_eval_count", 0)

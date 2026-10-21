@@ -992,6 +992,7 @@ class GenericBatchScorer:
                 analysis['prompt_sha256'] = self.prompt_sha256
                 analysis['canary'] = self.canary_stamp
                 analysis.update(served)    # served_model, system_fingerprint (#157)
+                oracle_canary.check_served(self.canary_stamp, served['served_model'])   # #177: a reroute stops the run
 
                 # Log success metrics
                 self._log_metrics(

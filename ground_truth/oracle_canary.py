@@ -15,11 +15,16 @@ by its RAW or STRIPPED digest (batch_scorer hashes the stripped template; review
   - no baseline for this prompt                                               -> stamp {"verdict": "no-set"} + banner
   - a baseline, but for ANOTHER oracle (model / endpoint / scorer)            -> REFUSE: no canary covers this oracle
   - the latest record is an unconsumed PASS younger than FRESH_HOURS          -> stamp {"verdict": "PASS"}, and the
-    record is CONSUMED: one PASS admits one labelling run ("every labelling run", owner 2026-10-16)
+    record is CONSUMED: one PASS admits one labelling run ("every labelling run", owner 2026-10-16). The claim is an
+    O_EXCL-created `<record>.claim` file, so two runs started together cannot both take one PASS
   - anything else (no record, FAIL, NO-VERDICT, consumed, stale)              -> REFUSE
+
+The PASS stamp carries the models the canary was SERVED. Each label's writer calls `check_served(stamp, served_model)`
+before writing it: a run served another model than its PASS's is stopped (#177 review, 2026-10-19).
 """
 import hashlib
 import json
+import os
 import statistics
 import sys
 import time
@@ -142,6 +147,20 @@ def record_path(filter_name, rec):
     return DATA_DIR / filter_name / "passes" / rec["record"]
 
 
+def claim_path(filter_name, rec):
+    return record_path(filter_name, rec).with_suffix(".claim")     # not *.json: latest_record never sees it
+
+
+def _consumed(filter_name, rec):
+    c = claim_path(filter_name, rec)
+    if rec.get("consumed") or not c.exists():
+        return rec.get("consumed")
+    try:                                 # a claim that exists is a use, whatever its body (empty, torn) says
+        return json.loads(c.read_text()) or {"at_utc": "?"}
+    except ValueError:
+        return {"at_utc": "?"}
+
+
 def latest_record(filter_name, prompt_sha256):
     d = DATA_DIR / filter_name / "passes"
     recs = sorted(d.glob(f"{prompt_sha256[:16]}_*.json")) if d.exists() else []
@@ -167,23 +186,47 @@ def gate(prompt_sha256, skip_reason=None, now=None, oracle=None):
             f"  Override: --skip-canary \"<reason>\" (stamped on every label)")
     rec = latest_record(b["filter"], b["prompt_sha256"])
     age_h = (now - rec["time"]) / 3600 if rec else None
-    if rec is None or rec["verdict"] != "PASS" or rec.get("consumed") or age_h > FRESH_HOURS:
+    used = _consumed(b["filter"], rec) if rec else None
+    if rec is None or rec["verdict"] != "PASS" or used or age_h > FRESH_HOURS:
         why = ("no canary run on record" if rec is None else
                f"the latest canary run is {rec['verdict']} ({rec.get('reason') or str(rec.get('flips')) + ' flips'})"
                if rec["verdict"] != "PASS" else
-               f"the latest PASS was already used by a labelling run ({rec['consumed']['at_utc']})"
-               if rec.get("consumed") else f"the latest PASS is {age_h:.1f} h old (> {FRESH_HOURS} h)")
-        raise CanaryRefused(
-            f"REFUSED by the oracle canary (#177): {why} for {b['filter']} prompt {prompt_sha256[:12]}….\n"
-            f"  Run:      python scripts/oracle/canary.py run --filter {b['filter']}\n"
-            f"  Override: --skip-canary \"<reason>\" (stamped on every label)")
-    rec["consumed"] = {"at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(now)), "oracle": oracle}
+               f"the latest PASS was already used by a labelling run ({used.get('at_utc')})"
+               if used else f"the latest PASS is {age_h:.1f} h old (> {FRESH_HOURS} h)")
+        raise _refused(why, b, prompt_sha256)
+    consumed = {"at_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(now)), "oracle": oracle}
+    try:                                 # the claim: exactly one of any number of concurrent runs creates it
+        fd = os.open(claim_path(b["filter"], rec), os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
+    except FileExistsError:
+        raise _refused("the latest PASS was already used by a labelling run (claimed concurrently)", b, prompt_sha256)
+    with os.fdopen(fd, "w") as fh:
+        fh.write(json.dumps(consumed) + "\n")
+    rec["consumed"] = consumed           # the record says so too, for whoever reads it; the claim file decides
     p = record_path(b["filter"], rec)
-    tmp = p.with_suffix(".tmp")
+    tmp = p.with_suffix(f".{os.getpid()}.tmp")
     tmp.write_text(json.dumps(rec, indent=1) + "\n")
-    tmp.replace(p)                       # atomic: a second run sees it consumed, never half-written
+    tmp.replace(p)
     return {"verdict": "PASS", "record": rec["record"], "flips": rec["flips"], "shift": rec["shift"],
-            "age_h": round(age_h, 2)}
+            "age_h": round(age_h, 2), "served_models": sorted({m for _, m in rec.get("served", [])})}
+
+
+def _refused(why, b, prompt_sha256):
+    return CanaryRefused(
+        f"REFUSED by the oracle canary (#177): {why} for {b['filter']} prompt {prompt_sha256[:12]}….\n"
+        f"  Run:      python scripts/oracle/canary.py run --filter {b['filter']}\n"
+        f"  Override: --skip-canary \"<reason>\" (stamped on every label)")
+
+
+def check_served(stamp, served_model):
+    """A label's writer calls this before writing it. A PASS vouches for the models its canary was served; a label
+    served by any other model (a reroute after the canary, or a PASS that recorded none) stops the run."""
+    if not stamp or stamp.get("verdict") != "PASS":
+        return
+    if served_model not in stamp["served_models"]:
+        raise CanaryRefused(
+            f"REFUSED by the oracle canary (#177): this run was served {served_model!r}, but its PASS "
+            f"({stamp['record']}) was served {stamp['served_models']} — the oracle moved after the canary.\n"
+            f"  Re-run the canary; labels already written by this run carry served_model and can be filtered on it.")
 
 
 def write_record(filter_name, prompt_sha256, result, served, now=None):
@@ -192,5 +235,7 @@ def write_record(filter_name, prompt_sha256, result, served, now=None):
     d.mkdir(parents=True, exist_ok=True)
     name = f"{prompt_sha256[:16]}_{time.strftime('%Y%m%dT%H%M%SZ', time.gmtime(now))}.json"
     rec = dict(result, time=now, record=name, prompt_sha256=prompt_sha256, served=sorted(served))
-    (d / name).write_text(json.dumps(rec, indent=1) + "\n")
+    tmp = (d / name).with_suffix(f".{os.getpid()}.tmp")
+    tmp.write_text(json.dumps(rec, indent=1) + "\n")
+    tmp.replace(d / name)                # a gate reading mid-write sees the old latest record, never a torn one
     return rec

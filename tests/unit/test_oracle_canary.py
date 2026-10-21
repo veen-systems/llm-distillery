@@ -497,3 +497,213 @@ def test_the_ollama_script_leaves_LOCAL_ollama_ungated_and_unstamped(dirs, tmp_p
     m.main()
     assert calls == [1]
     assert json.loads(out.read_text().splitlines()[0])["canary"] == {"skipped": "test"}
+
+
+# --- #177 review leftovers (2026-10-19): the claim is atomic, and a label's served model must be its PASS's -------
+
+def _pass_served(models, now):
+    return oc.write_record("f", SHA, {"verdict": "PASS", "flips": 0, "shift": 0.0}, {(SHA, m) for m in models},
+                           now=now - 60)
+
+
+def _race_child(cfg, data, barrier, out):
+    oc.CONFIG_DIR, oc.DATA_DIR = cfg, data
+    check = oc._consumed
+
+    def check_then_wait(*a):        # both runs finish the read-check BEFORE either claims: the race, forced
+        r = check(*a)
+        barrier.wait(timeout=20)
+        return r
+    oc._consumed = check_then_wait
+    try:
+        oc.gate(SHA, oracle=ORACLE)
+        out.put("admitted")
+    except oc.CanaryRefused as e:
+        out.put("refused: " + str(e).splitlines()[0])
+
+
+def test_two_runs_started_together_cannot_both_take_one_PASS(dirs):
+    """Seeded: a barrier holds both processes between the check and the claim, so the old read-check-write admitted
+    both every time. The O_EXCL claim admits exactly one."""
+    import multiprocessing as mp
+    _baseline(dirs[0]); _pass_served(["m"], time.time())
+    ctx = mp.get_context("fork")
+    barrier, out = ctx.Barrier(2), ctx.Queue()
+    procs = [ctx.Process(target=_race_child, args=(*dirs, barrier, out)) for _ in range(2)]
+    [p.start() for p in procs]; [p.join(30) for p in procs]
+    got = sorted(out.get(timeout=5) for _ in procs)
+    assert got[0] == "admitted" and got[1].startswith("refused") and "already used" in got[1], got
+
+
+def test_a_claim_file_alone_refuses_even_if_the_record_was_never_rewritten(dirs):
+    """A run that died between the claim and the record rewrite has still used the PASS."""
+    _baseline(dirs[0]); rec = _pass_served(["m"], time.time())
+    oc.claim_path("f", rec).parent.mkdir(parents=True, exist_ok=True)
+    oc.claim_path("f", rec).write_text('{"at_utc": "2026-10-21T07:00:00Z"}')
+    with pytest.raises(oc.CanaryRefused, match=r"already used by a labelling run \(2026-10-21T07:00:00Z\)"):
+        oc.gate(SHA, oracle=ORACLE)
+    oc.claim_path("f", rec).write_text('{"at_ut')          # torn: still a use, refused cleanly
+    with pytest.raises(oc.CanaryRefused, match="already used"):
+        oc.gate(SHA, oracle=ORACLE)
+
+
+def test_the_PASS_stamp_names_the_models_its_canary_was_served(dirs):
+    _baseline(dirs[0]); _pass_served(["deepseek-flash"], time.time())
+    assert oc.gate(SHA, oracle=ORACLE)["served_models"] == ["deepseek-flash"]
+
+
+class TestCheckServed:
+    STAMP = {"verdict": "PASS", "record": "r.json", "served_models": ["deepseek-flash"]}
+
+    def test_the_PASS_model_is_admitted(self):
+        oc.check_served(self.STAMP, "deepseek-flash")
+
+    def test_ANOTHER_served_model_is_REFUSED(self):
+        with pytest.raises(oc.CanaryRefused, match="oracle moved"):
+            oc.check_served(self.STAMP, "deepseek-v4-pro")
+
+    def test_a_PASS_that_recorded_no_served_model_vouches_for_none(self):
+        with pytest.raises(oc.CanaryRefused):
+            oc.check_served(dict(self.STAMP, served_models=[]), "deepseek-flash")
+
+    @pytest.mark.parametrize("stamp", [None, {"skipped": "why"}, {"verdict": "no-set"}])
+    def test_an_unguarded_run_is_not_checked(self, stamp):
+        oc.check_served(stamp, "anything")
+
+
+class _AnyDim(dict):
+    def __missing__(self, k):
+        return 5.0
+
+
+def test_the_deepseek_scorer_STOPS_on_a_reroute_and_writes_no_rerouted_label(dirs, tmp_path, monkeypatch):
+    """The PASS was served deepseek-flash; the run is served another model. Mutation: delete the scorer's
+    check_served call and this writes the label."""
+    import hashlib
+    sys.path.insert(0, str(ROOT / "scripts"))
+    import score_deepseek_production as sdp
+    prompt = ROOT / "filters/human_thriving/v8/prompt-candidate.md"
+    sha = hashlib.sha256(prompt.read_text(encoding="utf-8").encode()).hexdigest()
+    _baseline(dirs[0], sha, oracle=oc.oracle_key(sdp.DEEPSEEK_URL, "deepseek-chat"))
+    oc.write_record("f", sha, {"verdict": "PASS", "flips": 0, "shift": 0.0}, {(sha, "deepseek-flash")},
+                    now=time.time() - 60)
+    monkeypatch.setattr(sdp, "get_deepseek_key", lambda *a, **k: "sk-test")
+    monkeypatch.setattr(sdp, "call_deepseek", lambda *a, **k: {})
+    parsed = {"dims": _AnyDim(), "content_type": "x", "scope_verdict": "x", "dominant_subject": "", "usage": {},
+              "system_fingerprint": None}
+    out = tmp_path / "o.jsonl"
+    inp = tmp_path / "in.jsonl"
+    inp.write_text(json.dumps({"id": "r", "title": "t", "content": "word " * 100}) + "\n")
+    monkeypatch.setattr(sys, "argv", ["x", "--input", str(inp), "--output", str(out),
+                                      "--config", str(ROOT / "filters/uplifting/v7/config.yaml"),
+                                      "--prompt", str(prompt), "--concurrency", "1"])
+    monkeypatch.setattr(sdp, "parse_response", lambda r: dict(parsed, served_model="deepseek-v4-pro"))
+    with pytest.raises(oc.CanaryRefused, match="oracle moved"):
+        sdp.main()
+    assert not out.exists() or out.read_text() == ""
+
+
+def test_the_deepseek_scorer_WRITES_the_label_when_served_the_PASS_model(dirs, tmp_path, monkeypatch):
+    """Presence control for the test above: same run, served the PASS's model, one label written."""
+    import hashlib
+    sys.path.insert(0, str(ROOT / "scripts"))
+    import score_deepseek_production as sdp
+    prompt = ROOT / "filters/human_thriving/v8/prompt-candidate.md"
+    sha = hashlib.sha256(prompt.read_text(encoding="utf-8").encode()).hexdigest()
+    _baseline(dirs[0], sha, oracle=oc.oracle_key(sdp.DEEPSEEK_URL, "deepseek-chat"))
+    oc.write_record("f", sha, {"verdict": "PASS", "flips": 0, "shift": 0.0}, {(sha, "deepseek-flash")},
+                    now=time.time() - 60)
+    monkeypatch.setattr(sdp, "get_deepseek_key", lambda *a, **k: "sk-test")
+    monkeypatch.setattr(sdp, "call_deepseek", lambda *a, **k: {})
+    parsed = {"dims": _AnyDim(), "content_type": "x", "scope_verdict": "x", "dominant_subject": "", "usage": {},
+              "system_fingerprint": None, "served_model": "deepseek-flash"}
+    monkeypatch.setattr(sdp, "parse_response", lambda r: dict(parsed))
+    out, inp = tmp_path / "o.jsonl", tmp_path / "in.jsonl"
+    inp.write_text(json.dumps({"id": "r", "title": "t", "content": "word " * 100}) + "\n")
+    monkeypatch.setattr(sys, "argv", ["x", "--input", str(inp), "--output", str(out),
+                                      "--config", str(ROOT / "filters/uplifting/v7/config.yaml"),
+                                      "--prompt", str(prompt), "--concurrency", "1"])
+    sdp.main()
+    rows = [json.loads(l) for l in out.read_text().splitlines()]
+    assert len(rows) == 1 and "error" not in rows[0]
+
+
+@pytest.mark.parametrize("served,stops", [("gemini-2.5-flash", False), ("gemini-3-flash", True)])
+def test_batch_scorer_STOPS_on_a_reroute(dirs, tmp_path, monkeypatch, served, stops):
+    from ground_truth import batch_scorer as bs
+    prompt = tmp_path / "p.md"
+    prompt.write_text("Score this. Reply JSON. [Paste the summary of the article here]\n")
+    monkeypatch.setattr(bs.GenericBatchScorer, "_init_llm_client", lambda self, k: None)
+    s = bs.GenericBatchScorer(prompt_path=str(prompt), llm_provider="gemini-flash", api_key="k",
+                              output_dir=str(tmp_path / "o"), filter_name="f", skip_canary="test")
+    s.canary_stamp = {"verdict": "PASS", "record": "r.json", "served_models": ["gemini-2.5-flash"]}
+    monkeypatch.setattr(s, "_call_llm_with_timeout",
+                        lambda p, t: ('{"a": {"score": 5}}', {"served_model": served, "system_fingerprint": None}))
+    art = {"id": "r", "title": "t", "content": "word " * 100}
+    if stops:
+        with pytest.raises(oc.CanaryRefused, match="oracle moved"):
+            s.analyze_article(art)
+    else:
+        assert s.analyze_article(art)["served_model"] == served
+
+
+@pytest.mark.parametrize("pass_model,stops", [("srv", False), ("another", True)])
+def test_the_ollama_script_STOPS_a_paid_run_on_a_reroute(dirs, tmp_path, monkeypatch, pass_model, stops):
+    import hashlib
+    m, calls, out = _ollama_scorer(dirs, tmp_path, monkeypatch, "deepseek")
+    sha = hashlib.sha256((tmp_path / "p.md").read_text().encode()).hexdigest()
+    _baseline(dirs[0], sha, oracle=oc.oracle_key("score_ollama_oracle:deepseek", "deepseek-chat"))
+    oc.write_record("f", sha, {"verdict": "PASS", "flips": 0, "shift": 0.0}, {(sha, pass_model)},
+                    now=time.time() - 60)
+    _ok_parse(m, monkeypatch)                  # served_model "srv"
+    if stops:
+        with pytest.raises(oc.CanaryRefused, match="oracle moved"):
+            m.main()
+        assert not out.exists() or out.read_text() == ""
+    else:
+        m.main()
+        assert json.loads(out.read_text().splitlines()[0])["served_model"] == "srv"
+
+
+def test_a_reroute_CANCELS_the_queued_calls_instead_of_paying_for_them(dirs, tmp_path, monkeypatch):
+    """Review 2026-10-21: leaving `with ThreadPoolExecutor` on a raise waits for EVERY queued future, so without
+    cancel_futures each remaining article is sent and billed. 6 articles, 1 worker, slow calls."""
+    import hashlib
+    m, calls, out = _ollama_scorer(dirs, tmp_path, monkeypatch, "deepseek")
+    sha = hashlib.sha256((tmp_path / "p.md").read_text().encode()).hexdigest()
+    _baseline(dirs[0], sha, oracle=oc.oracle_key("score_ollama_oracle:deepseek", "deepseek-chat"))
+    oc.write_record("f", sha, {"verdict": "PASS", "flips": 0, "shift": 0.0}, {(sha, "another")},
+                    now=time.time() - 60)
+    (tmp_path / "in.jsonl").write_text("".join(
+        json.dumps({"id": f"r{i}", "title": "t", "content": "word " * 100}) + "\n" for i in range(6)))
+    monkeypatch.setattr(m, "call_deepseek", lambda *a, **k: calls.append(1) or time.sleep(0.1) or {})
+    _ok_parse(m, monkeypatch)
+    with pytest.raises(oc.CanaryRefused):
+        m.main()
+    assert len(calls) <= 2, calls             # the one that rerouted, at most one already running
+
+
+def test_the_deepseek_scorer_CANCELS_its_queued_calls_on_a_reroute(dirs, tmp_path, monkeypatch):
+    import hashlib
+    sys.path.insert(0, str(ROOT / "scripts"))
+    import score_deepseek_production as sdp
+    prompt = ROOT / "filters/human_thriving/v8/prompt-candidate.md"
+    sha = hashlib.sha256(prompt.read_text(encoding="utf-8").encode()).hexdigest()
+    _baseline(dirs[0], sha, oracle=oc.oracle_key(sdp.DEEPSEEK_URL, "deepseek-chat"))
+    oc.write_record("f", sha, {"verdict": "PASS", "flips": 0, "shift": 0.0}, {(sha, "deepseek-flash")},
+                    now=time.time() - 60)
+    calls = []
+    monkeypatch.setattr(sdp, "get_deepseek_key", lambda *a, **k: "sk-test")
+    monkeypatch.setattr(sdp, "call_deepseek", lambda *a, **k: calls.append(1) or time.sleep(0.1) or {})
+    parsed = {"dims": _AnyDim(), "content_type": "x", "scope_verdict": "x", "dominant_subject": "", "usage": {},
+              "system_fingerprint": None, "served_model": "deepseek-v4-pro"}
+    monkeypatch.setattr(sdp, "parse_response", lambda r: dict(parsed))
+    inp = tmp_path / "in.jsonl"
+    inp.write_text("".join(json.dumps({"id": f"r{i}", "title": "t", "content": "word " * 100}) + "\n"
+                           for i in range(6)))
+    monkeypatch.setattr(sys, "argv", ["x", "--input", str(inp), "--output", str(tmp_path / "o.jsonl"),
+                                      "--config", str(ROOT / "filters/uplifting/v7/config.yaml"),
+                                      "--prompt", str(prompt), "--concurrency", "1"])
+    with pytest.raises(oc.CanaryRefused):
+        sdp.main()
+    assert len(calls) <= 2, calls

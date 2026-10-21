@@ -3,10 +3,11 @@
 ## ▶️ START HERE — the ordered queue, as of 2026-10-19
 
 *▶ **NEXT SESSION (set 2026-10-19 second close; `/curate` done, all pushed). "continue" = these, in order:**
-**(1) #177 (the oracle canary) review leftovers, then the cross-family panel.** (a) The one-use PASS claim is
-read-check-write: two runs started together can both consume one PASS — make the claim atomic (`os.link`/`O_EXCL` on a
-claim file) with a seeded two-process test. (b) A labelling run does not compare its served model to the PASS's: stamp
-both and refuse a mismatch. (c) Then the cross-family panel (#177's issue body). A Claude panel member is possible: owner 2026-10-21 opened the
+**(1) #177 (the oracle canary): the cross-family panel.** (a)/(b) LANDED 2026-10-21: the PASS claim is an O_EXCL
+`<record>.claim` file (barrier-forced two-process test); the PASS stamp carries `served_models` and every label writer
+calls `oracle_canary.check_served` before writing, cancelling queued paid calls (9/9 mutants killed). ⚠️ The check sees
+the TIER (`deepseek-flash`), not a version swap; `score_ollama_oracle.py`'s check is unreachable until a canary PASS
+exists for its own oracle key. (c) The cross-family panel (#177's issue body). A Claude panel member is possible: owner 2026-10-21 opened the
 Anthropic API credit (Max plan, ~$100/month shared across projects, first credit ~10-26, no key yet) to named experiments
 he approves ONE BY ONE, production off it (infra `platform-watch.md` `e9ec4dc`). Before asking: read Anthropic's terms at
 the source under #174 (training on outputs) — evaluation-only, its outputs never become training labels. When (a)/(b) land, tell the pipeline-atlas session (veen-systems/pipeline-atlas#208, monitor row `ld-oracle-canary`; asked 10-19).
