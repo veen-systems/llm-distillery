@@ -18,9 +18,13 @@ Pairwise (pass/block): AC1 / kappa / raw, n
 Oracle against the panel majority (eligible members, oracle left out)
   all eligible                 n=86 (ties 14), panel positive rate 0.62 (53)
     oracle SPECIFICITY 1.000 [1.000, 1.000]   recall 0.528 [0.392, 0.661]  (priority: specificity, ADR-023)
+    exact 95% upper bound on the FP rate with 0/33: 0.106 (specificity >= 0.894) [added after review]
+    ⚠️ two members: the 'majority' is UNANIMITY; every disagreement is a tie and is left out
     oracle passes the panel blocks: 0; oracle blocks the panel passes: 25
     mean signed (oracle - panel mean score): -1.242
   Google as one (P1 dropped)   n=86 (ties 14), panel positive rate 0.62 (53)
     oracle SPECIFICITY 1.000 [1.000, 1.000]   recall 0.528 [0.392, 0.661]  (priority: specificity, ADR-023)
+    exact 95% upper bound on the FP rate with 0/33: 0.106 (specificity >= 0.894) [added after review]
+    ⚠️ two members: the 'majority' is UNANIMITY; every disagreement is a tie and is left out
     oracle passes the panel blocks: 0; oracle blocks the panel passes: 25
     mean signed (oracle - panel mean score): -1.242

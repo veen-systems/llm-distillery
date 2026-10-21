@@ -1,38 +1,49 @@
 # LLM Distillery - TODO
 
-## ▶️ START HERE — the ordered queue, as of 2026-10-19
+## ▶️ START HERE — the ordered queue, as of 2026-10-21
 
-*▶ **NEXT SESSION (set 2026-10-19 second close; `/curate` done, all pushed). "continue" = these, in order:**
-**(1) #177 (the oracle canary): the cross-family panel.** (a)/(b) LANDED 2026-10-21: the PASS claim is an O_EXCL
-`<record>.claim` file (barrier-forced two-process test); the PASS stamp carries `served_models` and every label writer
-calls `oracle_canary.check_served` before writing, cancelling queued paid calls (9/9 mutants killed). ⚠️ The check sees
-the TIER (`deepseek-flash`), not a version swap; `score_ollama_oracle.py`'s check is unreachable until a canary PASS
-exists for its own oracle key. (c) The cross-family panel (#177's issue body). A Claude panel member is possible: owner 2026-10-21 opened the
-Anthropic API credit (Max plan, ~$100/month shared across projects, first credit ~10-26, no key yet) to named experiments
-he approves ONE BY ONE, production off it (infra `platform-watch.md` `e9ec4dc`). Before asking: read Anthropic's terms at
-the source under #174 (training on outputs) — evaluation-only, its outputs never become training labels. When (a)/(b) land, tell the pipeline-atlas session (veen-systems/pipeline-atlas#208, monitor row `ld-oracle-canary`; asked 10-19).
-**(2) b650 cleanup: DONE 2026-10-21.** `runs/canary_177b` (149 MB) was removed after snapshot `361c72bd` (10-21 12:15)
-was confirmed to hold the seeded_control and frozen trees (27/27 files), and all 38 data files were re-hashed equal
-right before the rm. ⚠️ The backup unit reads `failed` since 10-21 because a stale restic lock (10-19 20:19) blocks its
-prune step, though snapshots still save. That's infra's to clear (told 10-21). **Also running: EXP-055** (the panel,
-#177 step 6). Gemini's free tier scores 20/day via `ld-exp055-p1.timer` through 10-25; then run `analyse.py` with all four
-members, `lab.py pull` P1 from the session scratchpad, and write the result + registry row (README in its evidence dir).
-**(3) #178 (datasheets per training dataset): FIRST ONE DRAFTED 2026-10-21, awaiting owner review.**
-`filters/human_thriving/v9/DATASHEET.md`, whose generated block comes from `scripts/analysis/datasheet_facts.py`
-(it raises if the split is not the model's or there is no runtime op-point). After review: the other five live
-filters, then the FILTER_PLAYBOOK requirement (#178 done-when). ⚠️ **Owner question:** v9's labels include
-Claude adjudication output (553 caps, the 186 positives' in-scope calls) from Claude Code subagents. #174 names only
-Gemini/DeepSeek, so which Anthropic terms govern this is OPEN.
-**(4) #163 round 12 (the read surface; owner 10-19 again: "pruning, thinning, mechanizing, retiring").** Round 11 left
-431,087; biggest now: `hypothesis-ledger` ~40K, `gotcha-log` ~32K, `stamp-contract` 21.7K, `score-batch` 21.3K,
-`nexusmind-data-sources` 20.8K, `oracle-pricing` 20.8K, `working-rules` 20.5K. Next levers: the ledger's H-HD/H-BV
-paragraph blocks → their source files; cross-file dedup of rules restated in 2+ files; `filter-status` vs CLAUDE.md's table.
-**#179 follow-ups: both LANDED 2026-10-21** (`score_ollama_oracle.py` stamps `analyzed_at`; a split row's `provenance` must agree with its own `oracle_meta`, all 16 splits on disk still pass). Item 0a stays dated ≥ 10-22, item 0 ≥ 10-23/24.*
+*▶ **NEXT SESSION (set 2026-10-21 close; `/curate` done, all pushed). "continue" = these, in order:***
 
-*A bare "continue" means this list, top down. Each line names the FIRST action. Item 0 is WAITING (dated, ≥ 10-23/24);
-item 0a's next action is dated ≥ 10-22 (the on-site count on live ranking H). Item 0b (#157, label provenance) LANDED
-2026-10-16. Item 1 is NexusMind's.
-Item 2 (#163, the read surface): keep pruning (owner 2026-10-14 and 10-15: "pruning, thinning, mechanizing, retiring").*
+**(1) Item 0a: the on-site re-baseline of belonging v3 on the live H page. Dated on or after 2026-10-22.** The steps are
+in 0a below: PREREGISTRATION.md FIRST, then `lab.py move` the 7 pages, then tag with EXP-049's qwen tagger. ⚠️ b650 is
+infra's SovereignStack slot from 00:00 to 07:00. Before loading a model, `curl -s
+http://jwasys-b650-eagle-ax.taileb31bb.ts.net:11434/api/ps` must show no model we did not load.
+
+**(2) Item 0's dated steps:** ovr's rollback panel on **10-23**, then the normalization refit **≥ 10-24** (the details are in 0).
+
+**(3) EXP-055, the cross-family panel (#177 step 6): finish ≥ 10-25 (morning).** `ld-exp055-p1b.timer` scores 20
+free-tier Gemini items a day into `~/lab/llm-distillery/inbox/situla/2026-10-21-exp055-P1-work/P1.jsonl`; its log is
+`P1_daily.log` there.
+- Steps: when all 100 ids are scored, `lab.py pull` that dir to `experiments/2026-10-21-cross-family-panel/P1`;
+  run `analyse.py` with all four members; write the result into the evidence README; add a registry row EXP-055;
+  update `H-OC6`; post on #177.
+- Interim (locals only, NOT a verdict): the oracle passes 30 of 100 against L2's 62 and L3's 55; specificity
+  1.000 (≥ 0.894 exact), recall 0.528.
+- ⚠️ The Gemini **prepay is depleted** (HTTP 402). `batch_scorer` picks the billing key first, so every Gemini
+  labelling run fails, belonging v3's Gemini canary included. The owner does not want another top-up; nothing
+  scheduled needs it. If a belonging relabel ever comes up, the recommendation (10-21) is to move it to DeepSeek
+  behind a parity check, NOT to Mistral (EXP-054: 21 flips, +0.51).
+
+**(4) Waiting on the OWNER (offer once, do not re-ask in a loop):**
+- (a) **#178:** review `filters/human_thriving/v9/DATASHEET.md` (the generator is `scripts/analysis/datasheet_facts.py`).
+  After the review: the other five live filters, then the FILTER_PLAYBOOK requirement.
+- (b) **#174:** v9's labels include Claude adjudication output (553 caps, plus the in-scope calls behind the 186
+  positives), made by Claude Code subagents. Which Anthropic terms apply is OPEN (posted on #174, 10-21).
+- (c) **Claude API credit:** the owner opened it 2026-10-21 to named experiments approved ONE BY ONE, production off
+  it, no key yet (infra `platform-watch.md` `e9ec4dc`). The candidate is a Claude member of the panel, evaluation
+  only. Ask only after (b).
+
+**(5) #163 round 13 (the read surface; owner 2026-10-21 again: "pruning, thinning, mechanizing, retiring").**
+- Round 12: 431,803 → see the commit (H-BV moved as superseded).
+- Biggest files: `gotcha-log` ~37K (its Mechanized table is a KEEP; only `live`, 0-occurrence rows move),
+  `hypothesis-ledger` ~38K, `stamp-contract` 21.7K, `score-batch` 21.3K, `nexusmind-data-sources` 20.8K,
+  `oracle-pricing` 20.8K, `working-rules` 20.5K.
+- No mechanical lever is left. The next cuts need a CLOSE ruling (H-HD rows) or cross-file dedup of rules restated
+  in 2+ files. Propose the cuts to the owner as a list; don't re-measure.
+
+*Done 2026-10-21 (detail in the commits): #177 (a)/(b) (atomic PASS claim, served-model check); the b650
+`canary_177b` cleanup; both #179 follow-ups; EXP-055 pre-registered and half-run. Item 1 below (the decision-0 sync)
+is NexusMind's.*
 
 0. ⏸ **BELONGING v3 is LIVE (since NexusMind run `bd00dad6`, 2026-10-09 00:08–01:24 CEST), replacing v1. Nothing to do before
    2026-10-23 unless ovr.news messages.** Read `filters/belonging/v3/STATUS.md` first (evidence, rollback rule, refit notes);

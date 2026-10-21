@@ -8003,3 +8003,40 @@ Items surfaced by the multi-agent code review of the migration commits (2026-04-
      community recall). The personal-story route is now ranking H + the on-site re-baseline (≥ 10-22). Trained packages: lab `experiments/2026-10-15-belonging-c2d/`.
    - Over 6 is the case for the next candidate, NOT an automatic rollback (v3's rollback rule predates the bar; owner's call).
    - Lab: the 10-10 `~/ld-lab/inbox/` heap (37 backlog citations) is still a later pass (#172, item 00 archived 2026-10-14).
+
+## Moved 2026-10-21 — the START HERE block of 2026-10-19 (with that day's 10-21 edits). Verbatim.
+
+## ▶️ START HERE — the ordered queue, as of 2026-10-19
+
+*▶ **NEXT SESSION (set 2026-10-19 second close; `/curate` done, all pushed). "continue" = these, in order:**
+**(1) #177 (the oracle canary): the cross-family panel.** (a)/(b) LANDED 2026-10-21: the PASS claim is an O_EXCL
+`<record>.claim` file (barrier-forced two-process test); the PASS stamp carries `served_models` and every label writer
+calls `oracle_canary.check_served` before writing, cancelling queued paid calls (9/9 mutants killed). ⚠️ The check sees
+the TIER (`deepseek-flash`), not a version swap; `score_ollama_oracle.py`'s check is unreachable until a canary PASS
+exists for its own oracle key. (c) The cross-family panel (#177's issue body). A Claude panel member is possible: owner 2026-10-21 opened the
+Anthropic API credit (Max plan, ~$100/month shared across projects, first credit ~10-26, no key yet) to named experiments
+he approves ONE BY ONE, production off it (infra `platform-watch.md` `e9ec4dc`). Before asking: read Anthropic's terms at
+the source under #174 (training on outputs) — evaluation-only, its outputs never become training labels. When (a)/(b) land, tell the pipeline-atlas session (veen-systems/pipeline-atlas#208, monitor row `ld-oracle-canary`; asked 10-19).
+**(2) b650 cleanup: DONE 2026-10-21.** `runs/canary_177b` (149 MB) was removed after snapshot `361c72bd` (10-21 12:15)
+was confirmed to hold the seeded_control and frozen trees (27/27 files), and all 38 data files were re-hashed equal
+right before the rm. ⚠️ The backup unit reads `failed` since 10-21 because a stale restic lock (10-19 20:19) blocks its
+prune step, though snapshots still save. That's infra's to clear (told 10-21). **Also running: EXP-055** (the panel,
+#177 step 6). Gemini's free tier scores 20/day via `ld-exp055-p1.timer` through 10-25; then run `analyse.py` with all four
+members, `lab.py pull` P1 from the session scratchpad, and write the result + registry row (README in its evidence dir).
+**(3) #178 (datasheets per training dataset): FIRST ONE DRAFTED 2026-10-21, awaiting owner review.**
+`filters/human_thriving/v9/DATASHEET.md`, whose generated block comes from `scripts/analysis/datasheet_facts.py`
+(it raises if the split is not the model's or there is no runtime op-point). After review: the other five live
+filters, then the FILTER_PLAYBOOK requirement (#178 done-when). ⚠️ **Owner question:** v9's labels include
+Claude adjudication output (553 caps, the 186 positives' in-scope calls) from Claude Code subagents. #174 names only
+Gemini/DeepSeek, so which Anthropic terms govern this is OPEN.
+**(4) #163 round 12 (the read surface; owner 10-19 again: "pruning, thinning, mechanizing, retiring").** Round 11 left
+431,087; biggest now: `hypothesis-ledger` ~40K, `gotcha-log` ~32K, `stamp-contract` 21.7K, `score-batch` 21.3K,
+`nexusmind-data-sources` 20.8K, `oracle-pricing` 20.8K, `working-rules` 20.5K. Next levers: the ledger's H-HD/H-BV
+paragraph blocks → their source files; cross-file dedup of rules restated in 2+ files; `filter-status` vs CLAUDE.md's table.
+**#179 follow-ups: both LANDED 2026-10-21** (`score_ollama_oracle.py` stamps `analyzed_at`; a split row's `provenance` must agree with its own `oracle_meta`, all 16 splits on disk still pass). Item 0a stays dated ≥ 10-22, item 0 ≥ 10-23/24.*
+
+*A bare "continue" means this list, top down. Each line names the FIRST action. Item 0 is WAITING (dated, ≥ 10-23/24);
+item 0a's next action is dated ≥ 10-22 (the on-site count on live ranking H). Item 0b (#157, label provenance) LANDED
+2026-10-16. Item 1 is NexusMind's.
+Item 2 (#163, the read surface): keep pruning (owner 2026-10-14 and 10-15: "pruning, thinning, mechanizing, retiring").*
+

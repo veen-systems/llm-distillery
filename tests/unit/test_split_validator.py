@@ -231,3 +231,12 @@ def test_a_provenance_dict_that_contradicts_its_own_oracle_meta_RAISES():
     sv.validate_rows([dict(base, provenance=dict(meta))], dims=["d"])                    # agrees: passes
     with pytest.raises(sv.SplitInvalid, match="disagrees"):
         sv.validate_rows([dict(base, provenance=dict(meta, served_model="deepseek-pro"))], dims=["d"])
+
+
+def test_an_UNSTAMPED_provenance_dict_beside_oracle_meta_is_re_derived_not_raised():
+    """Review 2026-10-21: the cross-check contradicted provenance_of(), which treats an unstamped dict as someone
+    else's field."""
+    from training import split_validator as sv
+    meta = {"prompt_sha256": "a" * 64, "served_model": "deepseek-flash", "analyzed_at": "2026-10-21T00:00:00Z"}
+    row = {"id": "r", "labels": [1.0], "dimension_names": ["d"], "oracle_meta": meta, "provenance": {"source": "rss"}}
+    assert sv.validate_rows([row], dims=["d"])["provenance_known"] == 1

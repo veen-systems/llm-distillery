@@ -61,7 +61,7 @@ by hand. Everything else is written by hand and cites where each fact is recorde
   measured here does not transfer.
 - **Oracle and judge are not independent.** The same rubric produced the oracle prompt and the adjudication. The
   2026-10-21 cross-family panel (EXP-055, interim, not a verdict) finds the oracle passes far fewer items than
-  two local models: 30 of 100 against 55 and 62.
+  two local models: 30 of 100 against 55 of 100 and 62 of 95 parsed.
 - **Positives are rare:** about 4.6% per split at 4.5, so any recall figure on `test` rests on about 33 rows.
 
 ## Intended use, and not for

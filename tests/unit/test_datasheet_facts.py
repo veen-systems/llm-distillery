@@ -79,3 +79,11 @@ def test_write_replaces_only_the_generated_block(tmp_path, monkeypatch):
     df.main()
     t = sheet.read_text()
     assert "keep me" in t and "and me" in t and "old" not in t and "| train | 3 |" in t
+
+
+def test_metadata_WITHOUT_the_count_keys_RAISES(tmp_path, monkeypatch):
+    _spec_ok(monkeypatch)
+    f, s = _pkg(tmp_path)
+    (f / "training_metadata.json").write_text("{}")
+    with pytest.raises(ValueError, match="cannot tie the split"):
+        df.facts(f, s)

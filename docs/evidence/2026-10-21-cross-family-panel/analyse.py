@@ -38,12 +38,17 @@ def read_member(path, spec):
     for line in open(path, encoding="utf-8"):
         r = json.loads(line)
         if FIELD in r:
+            if r["id"] in runs[1]:
+                raise ValueError(f"{path}: {r['id']} scored twice (a resumed run must not re-score)")
             a = r[FIELD]
             dims = {d: (v["score"] if isinstance(v, dict) else v) for d, v in a.items() if d in spec["dims"]}
             runs[1][r["id"]] = g._wa(dims, spec)
             shas.add(a.get("prompt_sha256"))
         elif r.get("dims"):
-            runs[r.get("run", 1)][r["id"]] = g._wa({d: r["dims"][d] for d in spec["dims"]}, spec)
+            run = r.get("run", 1)
+            if r["id"] in runs[run]:
+                raise ValueError(f"{path}: {r['id']} scored twice in run {run}")
+            runs[run][r["id"]] = g._wa({d: r["dims"][d] for d in spec["dims"]}, spec)
             shas.add(r.get("prompt_sha256"))
     return dict(runs), shas
 
@@ -138,6 +143,13 @@ def main():
               f"    oracle SPECIFICITY {sp:.3f} [{sl:.3f}, {sh:.3f}]   recall {rc:.3f} [{rl:.3f}, {rh:.3f}]  "
               f"(priority: specificity, ADR-023)")
         fp = [i for i in ids if pred[i] and not maj[i]]
+        # Added after review 2026-10-21, NOT pre-registered: a percentile bootstrap of a zero count is [x, x];
+        # print the exact (Clopper-Pearson) 95% upper bound on the oracle's false-positive rate beside it.
+        if not fp and neg:
+            print(f"    exact 95% upper bound on the FP rate with 0/{neg}: {1 - 0.025 ** (1 / neg):.3f} "
+                  f"(specificity >= {0.025 ** (1 / neg):.3f}) [added after review]")
+        if len(who) == 2:
+            print("    ⚠️ two members: the 'majority' is UNANIMITY; every disagreement is a tie and is left out")
         fn = [i for i in ids if not pred[i] and maj[i]]
         print(f"    oracle passes the panel blocks: {len(fp)}; oracle blocks the panel passes: {len(fn)}")
         print(f"    mean signed (oracle - panel mean score): "

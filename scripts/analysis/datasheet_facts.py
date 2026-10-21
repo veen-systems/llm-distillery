@@ -9,8 +9,10 @@ existing datasheet (it never creates one: the hand-written half is the part that
 
 RAISES rather than guessing:
   - the split fails training/split_validator.py (the one validator every reader runs)
-  - the split's train/val row counts differ from the package's training_metadata.json (so a datasheet cannot
-    describe a split the model was not trained on)
+  - the split's train/val row counts differ from the package's training_metadata.json, or it lacks those keys.
+    ⚠️ A COUNT check only: it catches a wrong split of a different size, NOT a re-shuffle at the same sizes, and
+    not two packages trained on one split (cultural_discovery v5 and v6 both record 6839/855). An id hash in
+    training_metadata would make it an identity check (review 2026-10-21).
   - normalization.json has no stats.raw_min (the runtime op-point, CLAUDE.md "four places")
 
 Every field the split does not record is printed as NOT RECORDED, never left out: a live split holds only
@@ -65,7 +67,9 @@ def facts(filter_dir, split_dir):
     meta = json.loads((filter_dir / "training_metadata.json").read_text())
     rows = {p: sv.read_jsonl(split_dir / f"{p}.jsonl") for p in PARTS if (split_dir / f"{p}.jsonl").exists()}
     for p, key in (("train", "train_examples"), ("val", "val_examples")):
-        if key in meta and len(rows.get(p, [])) != meta[key]:
+        if key not in meta:
+            raise ValueError(f"{filter_dir}/training_metadata.json has no {key}: cannot tie the split to the model")
+        if len(rows.get(p, [])) != meta[key]:
             raise ValueError(f"{split_dir}/{p}.jsonl has {len(rows.get(p, []))} rows, but "
                              f"{filter_dir}/training_metadata.json says {key} = {meta[key]}: not this model's split")
     allrows = [r for p in rows for r in rows[p]]
