@@ -25,10 +25,14 @@ The build touches THREE places:
   b650 real-model parity on 200 heldout rows: OFF is byte-identical to the old file; ON = max(full, title); 5 more
   blocks at 0.85. An empty title gets no title score. ⚠️ `MANIFEST.json` is NOT re-pinned: it describes the bytes
   production SERVES (ADR-024), so it is re-pinned AT deploy, from the served tree;
-- (ii) NexusMind's sync of `filters/common` (diff first; `.nexusmind-owns` is empty) and its `src/preprocessing/obituary.py`;
-- (iii) the GPU scorer (`gpu_client.predict_obituary` on the nexusmind-scorer image).
-Then: a flag flip in NexusMind config (ADR-022: one config flip), the RUNBOOK deploy, and a live-row check that
-`_obituary_score` reflects the max. Coordinate with the NexusMind session BEFORE (ii)/(iii).
+- (ii)+(iii) **NexusMind owns these (nexusmind-32, 2026-10-21).** One NM PR: sync `inference.py`; add the title pass to
+  the GPU scorer's OWN code (`deploy/gpu-server/main.py` `predict_batch`, ~l.505–560); config
+  `pipeline.obituary_detector.title_max` (default false), sent per request as `ObituaryRequest.title_max`; stamps
+  `_obituary_score_full` / `_obituary_score_title` declared in Contract B; a parity test. Then a scorer image + pipeline
+  image deploy, and the ON flip in a SEPARATE window. Queued behind NM's windows through about 10-27.
+  ▶ OURS: after NM's deploy, re-pin `filters/common/obituary_detector/v5/MANIFEST.json` with
+  `scripts/deployment/detector_manifest.py` from the SERVED tree (host:path), commit it, and send NM the hash. After
+  the ON flip: check live rows (`_obituary_score` = max of the two parts) and the block rate.
 
 **(2) Item 0's dated steps:** ovr's rollback panel on **10-23**, then the normalization refit **≥ 10-24** (the details are in 0).
 
