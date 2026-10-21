@@ -118,3 +118,18 @@ member would measure the prompt, not the family.
 
 **Analysis:** P2 joins `analyse.py` as a fifth member under the same eligibility rules. The parse bar for a k = 1
 member is the share of items scored. It is reported both inside and outside the panel majority.
+
+## Amendment 2 (2026-10-21 evening): P2 at k = 2. Committed BEFORE the second P2 call
+
+**Owner, 2026-10-21:** "Sonnet run 2", with llm-distillery's promo-credit cap raised to **$12 total**.
+
+- **What changes:** a second, identical Batch pass of P2 (same script, same parameters, a separate work dir).
+- **Why:** it measures P2's own run-to-run noise. At the API's default temperature that noise is unmeasured, and
+  the local members already get 2 runs.
+- **The same rules as the local members:**
+  - P2's self-flips between the two runs must stay within the canary's noise bar (7), or P2 is reported as too noisy
+    to judge with;
+  - P2's score is the mean of its two runs;
+  - its parse rate is the share of items scored in BOTH runs.
+- **Analysis:** `analyse.py` gains multi-file members (`--member P2=run1.jsonl,run2.jsonl`). A file is one run.
+  This is an amendment to the committed script, made before either P2 file is read.
