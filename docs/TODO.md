@@ -17,9 +17,12 @@ right before the rm. ⚠️ The backup unit reads `failed` since 10-21 because a
 prune step, though snapshots still save. That's infra's to clear (told 10-21). **Also running: EXP-055** (the panel,
 #177 step 6). Gemini's free tier scores 20/day via `ld-exp055-p1.timer` through 10-25; then run `analyse.py` with all four
 members, `lab.py pull` P1 from the session scratchpad, and write the result + registry row (README in its evidence dir).
-**(3) #178 (datasheets per training dataset).** Start from `training/split_validator.py`'s summary (provenance known /
-unknown per split) and `scripts/analysis/split_prompt_lineage.py` (prompt mix) — v9's README § Label provenance is the
-first worked example.
+**(3) #178 (datasheets per training dataset): FIRST ONE DRAFTED 2026-10-21, awaiting owner review.**
+`filters/human_thriving/v9/DATASHEET.md`, whose generated block comes from `scripts/analysis/datasheet_facts.py`
+(it raises if the split is not the model's or there is no runtime op-point). After review: the other five live
+filters, then the FILTER_PLAYBOOK requirement (#178 done-when). ⚠️ **Owner question:** v9's labels include
+Claude adjudication output (553 caps, the 186 positives' in-scope calls) from Claude Code subagents. #174 names only
+Gemini/DeepSeek, so which Anthropic terms govern this is OPEN.
 **(4) #163 round 12 (the read surface; owner 10-19 again: "pruning, thinning, mechanizing, retiring").** Round 11 left
 431,087; biggest now: `hypothesis-ledger` ~40K, `gotcha-log` ~32K, `stamp-contract` 21.7K, `score-batch` 21.3K,
 `nexusmind-data-sources` 20.8K, `oracle-pricing` 20.8K, `working-rules` 20.5K. Next levers: the ledger's H-HD/H-BV
