@@ -27,9 +27,7 @@ Gemini/DeepSeek, so which Anthropic terms govern this is OPEN.
 431,087; biggest now: `hypothesis-ledger` ~40K, `gotcha-log` ~32K, `stamp-contract` 21.7K, `score-batch` 21.3K,
 `nexusmind-data-sources` 20.8K, `oracle-pricing` 20.8K, `working-rules` 20.5K. Next levers: the ledger's H-HD/H-BV
 paragraph blocks → their source files; cross-file dedup of rules restated in 2+ files; `filter-status` vs CLAUDE.md's table.
-**Open #179 follow-ups (not ruled, low):** `score_ollama_oracle.py` writes no `analyzed_at`, so its rows can never count
-as "new" for the provenance rule; a split row arriving with a stamped `provenance` dict is trusted as given (prepare_data
-regenerates it; train/fit_calibration read it). Item 0a stays dated ≥ 10-22, item 0 ≥ 10-23/24.*
+**#179 follow-ups: both LANDED 2026-10-21** (`score_ollama_oracle.py` stamps `analyzed_at`; a split row's `provenance` must agree with its own `oracle_meta`, all 16 splits on disk still pass). Item 0a stays dated ≥ 10-22, item 0 ≥ 10-23/24.*
 
 *A bare "continue" means this list, top down. Each line names the FIRST action. Item 0 is WAITING (dated, ≥ 10-23/24);
 item 0a's next action is dated ≥ 10-22 (the on-site count on live ranking H). Item 0b (#157, label provenance) LANDED

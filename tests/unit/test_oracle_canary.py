@@ -707,3 +707,13 @@ def test_the_deepseek_scorer_CANCELS_its_queued_calls_on_a_reroute(dirs, tmp_pat
     with pytest.raises(oc.CanaryRefused):
         sdp.main()
     assert len(calls) <= 2, calls
+
+
+def test_an_ollama_row_carries_a_date_the_split_validator_reads(dirs, tmp_path, monkeypatch):
+    """#179 follow-up (2026-10-21): with no `analyzed_at` a row is LEGACY and its provenance never enforced."""
+    from training import split_validator as sv
+    m, calls, out = _ollama_scorer(dirs, tmp_path, monkeypatch, "ollama")
+    _ok_parse(m, monkeypatch)
+    m.main()
+    row = json.loads(out.read_text().splitlines()[0])
+    assert sv._date_of(row, "t") is not None

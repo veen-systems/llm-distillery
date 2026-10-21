@@ -628,6 +628,9 @@ def main():
                             "served_model": parsed["served_model"],
                             "system_fingerprint": parsed["system_fingerprint"],
                             "model_digest": model_digest,
+                            # #179 follow-up: without a date the split validator treats the row as LEGACY and
+                            # never enforces its provenance; the other two scorers stamp this too.
+                            "analyzed_at": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
                             **({"canary": canary_stamp} if canary_stamp is not None else {}),
                             "_prompt_eval_count": parsed["_prompt_eval_count"],
                             "_eval_count": parsed["_eval_count"],

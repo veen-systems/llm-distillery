@@ -109,6 +109,14 @@ def validate_rows(rows, dims=None, where="split", seen_ids=None):
             if isinstance(v, bool) or not isinstance(v, (int, float)) or not 0 <= v <= 10 or not math.isfinite(v):
                 raise SplitInvalid(f"{at}: {d} = {v!r} is not a finite score in [0, 10]")
         prov = provenance_of(row)
+        given, meta = row.get("provenance"), row.get("oracle_meta")
+        if isinstance(given, dict) and isinstance(meta, dict):
+            # #179 follow-up: a stamped `provenance` was trusted as given. Where the row also carries the block it
+            # was derived from, the two must agree on every stamp the block holds.
+            derived = {k: meta[k] for k in PROVENANCE_KEYS if meta.get(k) not in (None, "")}
+            bad = sorted(k for k in derived if given.get(k) != derived[k])
+            if bad:
+                raise SplitInvalid(f"{at}: provenance disagrees with its own oracle_meta on {bad}")
         date = _date_of(row, at)
         if date is not None and date >= cutoff:
             p = prov if isinstance(prov, dict) else {}

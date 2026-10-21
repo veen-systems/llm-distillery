@@ -220,3 +220,14 @@ def test_fit_calibration_validates_before_loading_the_scorer_and_no_longer_adopt
     p = REPO / "scripts" / "calibration" / "fit_calibration.py"
     _calls_before(p, "main", "validate_file", "load_scorer")
     assert "Using data dimension order" not in p.read_text(encoding="utf-8")
+
+
+def test_a_provenance_dict_that_contradicts_its_own_oracle_meta_RAISES():
+    """#179 follow-up (2026-10-21): a stamped provenance was trusted as given."""
+    import pytest
+    from training import split_validator as sv
+    meta = {"prompt_sha256": "a" * 64, "served_model": "deepseek-flash", "analyzed_at": "2026-10-21T00:00:00Z"}
+    base = {"id": "r", "labels": [1.0], "dimension_names": ["d"], "oracle_meta": meta}
+    sv.validate_rows([dict(base, provenance=dict(meta))], dims=["d"])                    # agrees: passes
+    with pytest.raises(sv.SplitInvalid, match="disagrees"):
+        sv.validate_rows([dict(base, provenance=dict(meta, served_model="deepseek-pro"))], dims=["d"])
