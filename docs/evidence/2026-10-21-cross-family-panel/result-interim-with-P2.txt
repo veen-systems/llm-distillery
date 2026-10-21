@@ -1,0 +1,30 @@
+EXP-055 — 100 items, op 4.5; oracle = 6-run baseline mean (deepseek-flash), 30 at >= op
+
+member   runs  parsed  pass@op  self-flips  prompt  eligible
+L1          2    0.85       17           5  ok      NO
+L2          2    0.95       62           3  ok      yes
+L3          2    1.00       55           6  ok      yes
+P2          2    1.00        9           3  ok      yes
+
+Krippendorff alpha (nominal = pass/block at op; interval = weighted average)
+  panel (eligible)                     nominal 0.199   interval 0.610   ['L2', 'L3', 'P2']
+  panel + oracle                       nominal 0.303   interval 0.660   ['L2', 'L3', 'P2', 'ORACLE']
+  panel, Google as one (P1 dropped)    nominal 0.199   interval 0.610   ['L2', 'L3', 'P2']
+
+Pairwise (pass/block): AC1 / kappa / raw, n
+  L2     L3      AC1 0.717  kappa 0.696  raw 0.853  n=95
+  L2     P2      AC1 -0.049  kappa 0.106  raw 0.442  n=95
+  L2     ORACLE  AC1 0.327  kappa 0.394  raw 0.663  n=95
+  L3     P2      AC1 0.186  kappa 0.150  raw 0.540  n=100
+  L3     ORACLE  AC1 0.433  kappa 0.442  raw 0.710  n=100
+  P2     ORACLE  AC1 0.694  kappa 0.375  raw 0.790  n=100
+
+Oracle against the panel majority (eligible members, oracle left out)
+  all eligible                 n=97 (ties 3), panel positive rate 0.52 (50)
+    oracle SPECIFICITY 0.957 [0.889, 1.000]   recall 0.560 [0.424, 0.702]  (priority: specificity, ADR-023)
+    oracle passes the panel blocks: 2; oracle blocks the panel passes: 22
+    mean signed (oracle - panel mean score): -0.648
+  Google as one (P1 dropped)   n=97 (ties 3), panel positive rate 0.52 (50)
+    oracle SPECIFICITY 0.957 [0.889, 1.000]   recall 0.560 [0.424, 0.702]  (priority: specificity, ADR-023)
+    oracle passes the panel blocks: 2; oracle blocks the panel passes: 22
+    mean signed (oracle - panel mean score): -0.648

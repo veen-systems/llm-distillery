@@ -21,6 +21,21 @@ agreement library refuses bools; it changes no measure.
 member is missing. "The oracle blocks what the panel passes" also fits a deliberately conservative oracle
 (memory: conservative oracle prompts produce better students). The final reading waits for P1.
 
+**Interim 2, with P2 (Claude Sonnet 5.5, k = 2): `result-interim-with-P2.txt`. Still NOT a verdict.**
+- P2 is ELIGIBLE: 100/100 parsed in both runs, and 3 self-flips (bar 7).
+- **P2 passes only 9 of 100, the STRICTEST member.** The oracle passes 30, L3 55 and L2 62. The families disagree on
+  WHERE the bar sits, not only on items.
+- **P2 is closest to the oracle:** P2–oracle AC1 0.694, raw 0.790. P2 against the local members: AC1 −0.049 (L2) and
+  0.186 (L3).
+- Panel alpha (pass/block) over L2, L3 and P2 is 0.199. That is poor agreement, so a majority of these three is a
+  weak anchor.
+- Against that majority (3 ties left out), the oracle's specificity is 0.957 [0.889, 1.000] and its recall 0.560.
+  "Panel positive" is driven by the two lenient local members.
+- **Reading:** the oracle sits BETWEEN a lenient local pair and a strict Claude. Nothing so far says the oracle is
+  wrong; it says the anchor is not settled. P1 (Gemini) is the tiebreak family.
+- **Spend:** P2 cost $4.12 of the promo credit (smoke $0.04 + 2 × $2.04, Batch card from returned usage); the cap
+  is $12. Lab: `experiments/2026-10-21-cross-family-panel/{P2-run1,P2-run2}`.
+
 **P1 (Gemini 2.5 Flash):** 20 of 100 items done.
 - The billing key's prepay is depleted (HTTP 402).
 - The other key is free tier, limited to 20 requests per day. The owner chose (2026-10-21) to finish on it
