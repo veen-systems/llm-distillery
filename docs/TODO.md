@@ -1,12 +1,12 @@
 # LLM Distillery - TODO
 
-## ▶️ START HERE — the ordered queue, as of 2026-10-22 (close)
+## ▶️ START HERE — the ordered queue, as of 2026-10-22 (second close)
 
-*▶ **NEXT SESSION (set 2026-10-22 close; all pushed). "continue" = these, in order:***
+*▶ **NEXT SESSION (set 2026-10-22 second close; all pushed). "continue" = these, in order:***
 
-**(0) THE READ SURFACE FIRST (#163, the read-surface issue). Owner 2026-10-22: "we need to start pruning, thinning, mechanizing, retiring!"** 430,797 chars over 34 files at the 2026-10-22 close (ceiling 439,708, 8,911 headroom; `check_index_budget.py --target surface`). The lite profile landed the same day (`d8f4ad7`, `docs/decisions/2026-10-22-framework-lite.md`): a lesson is kept only as a CHECK, and session records are frozen. So, in order:
-- (a) **Retire the frozen session records** (~18.5K, measured): `memory/session-log.md` (13.1K) and the two `memory/project_session_2026_10_*.md` move VERBATIM into `memory/archive/`. `retire_memory.py sessions --before 2026-10-23` handles the two session files; the log's path is hard-coded in `retire_memory.py` (`SESSION_LOG`), `check_doc_claims.py` (`SUITE_HISTORY`), `check_framework_language.py` (`FROZEN`) and `memory/MEMORY.md`, so update those and run the suite.
-- (b) **Apply the checks-only rule to the two biggest files**, `gotcha-log.md` (39.6K) and `hypothesis-ledger.md` (40.2K): an entry whose lesson already has a check becomes one line naming the check; a closed or superseded entry moves verbatim to its archive. The owner rules the `H-HD` rows row by row (see (5) below; ruled 2026-10-21).
+**(0) THE READ SURFACE FIRST (#163, the read-surface issue). Owner 2026-10-22: "we need to start pruning, thinning, mechanizing, retiring!"** **415,918 chars over 32 files at the 2026-10-22 second close (ceiling ratcheted to 423,043; `check_index_budget.py --target surface`)**, down from 431,668 that morning. The lite profile landed the same day (`d8f4ad7`, `docs/decisions/2026-10-22-framework-lite.md`): a lesson is kept only as a CHECK, and session records are frozen. So, in order:
+- (a) ✅ **DONE 2026-10-22** (−16,919 chars): `retire_memory.py sessions` + `sessionlog --before 2026-10-22 --apply` moved 2 session files and 18 log entries verbatim (reconstruction check passed). `session-log.md` keeps a 1.2K stub with one entry, so no hard-coded path had to change.
+- (b) ▶ **NEXT. Apply the checks-only rule to the two biggest files**, `gotcha-log.md` (42.0K) and `hypothesis-ledger.md` (40.7K): an entry whose lesson already has a check becomes one line naming the check; a closed or superseded entry moves verbatim to its archive. The owner rules the `H-HD` rows row by row (see (5) below; ruled 2026-10-21).
 - (c) Then the next biggest: `stamp-contract` 21.9K, `score-batch` 21.6K, `oracle-pricing` 21.2K, `nexusmind-data-sources` 21.0K, `working-rules` 20.8K. Thin to the operative rule plus a pointer to the evidence.
 - Done when the surface is well under the ceiling and every move is verbatim. Report the before and after chars.
 
