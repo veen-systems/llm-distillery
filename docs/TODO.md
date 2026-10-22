@@ -1,6 +1,6 @@
 # LLM Distillery - TODO
 
-## ▶️ START HERE — the ordered queue, as of 2026-10-21 (second close)
+## ▶️ START HERE — the ordered queue, as of 2026-10-21 (third close)
 
 *▶ **NEXT SESSION (set 2026-10-21 second close; `/curate` done, all pushed). "continue" = these, in order:***
 
@@ -75,7 +75,8 @@ free-tier Gemini items a day into `~/lab/llm-distillery/inbox/situla/2026-10-21-
   #145 (prepare_data's unweighted mean) needs the owner first.
 
 **(5) #163 round 13 (the read surface; owner 2026-10-21 again: "pruning, thinning, mechanizing, retiring").**
-- Round 12: 431,803 → see the commit (H-BV moved as superseded).
+- Round 12: 431,803 → see the commit (H-BV moved as superseded). Third close 2026-10-21: **430,555 chars, 9,153 under
+  the ceiling** — nothing retired (month rule: nothing before 10-01 left); the H-HD row rulings below are the next cut.
 - Biggest files: `gotcha-log` ~37K (its Mechanized table is a KEEP; only `live`, 0-occurrence rows move),
   `hypothesis-ledger` ~38K, `stamp-contract` 21.7K, `score-batch` 21.3K, `nexusmind-data-sources` 20.8K,
   `oracle-pricing` 20.8K, `working-rules` 20.5K.
