@@ -59,6 +59,23 @@ free-tier Gemini items a day into `~/lab/llm-distillery/inbox/situla/2026-10-21-
   scheduled needs it. If a belonging relabel ever comes up, the recommendation (10-21) is to move it to DeepSeek
   behind a parity check, NOT to Mistral (EXP-054: 21 flips, +0.51).
 
+**(3b) THREE Fable runs on the Anthropic promo credit: owner GO 2026-10-22 ("go ahead with all three", queued, not
+run).** Cap raised to **$40** (infra-35, owner-approved 10-22; infra `ai-tooling/stack.md`); $7.72 spent → ~$32.28 left.
+⚠️ **Credit EXPIRES 2026-10-28 UTC: finish all three by 10-27.** Rules for each: evaluation only, never training labels;
+before the run, write a claim line (experiment, model, max $) in infra `ai-tooling/stack.md`; afterwards, write the
+actual cost from `usage`. Key `~/.config/anthropic/api_key`, read per run, never exported. Tagger + recipe: lab
+`experiments/2026-10-21-belonging-onsite-h/run/tag-fable/tag_api.py` (`claude-fable-5-1`, effort low, no fallbacks;
+measured ~$0.035/article).
+- (i) **Fable as a seat on EXP-055's panel** (#177 step 6), ~$3–4 for 100 items. ⚠️ Added AFTER interim results were
+  read, so record it as a post-hoc amendment in the pre-registration, and report it beside the four pre-registered
+  members, never pooled with them.
+- (ii) **Fable counts the NEXT week's Belonging pages** (captures 10-22 → 10-27, top 30 each), ~$3, using EXP-056's
+  selection and `compare_taggers.py` unchanged, plus qwen on b650 for the same pages. Shows whether the count over 6
+  holds for a second week.
+- (iii) **Fable judges which tab each card belongs on** (H-LA2), using the five-tab captures in
+  `~/lab/llm-distillery/inbox/ovr-lens-pages/`, ~$5–10. Pre-register first (sample, prompt, prediction). ⚠️ This is
+  another JUDGE reading; H-LA2's open test is the OWNER's reaction, which this does not replace.
+
 **(4) Waiting on the OWNER (offer once, do not re-ask in a loop):**
 - (a) **#178: template APPROVED by the owner 2026-10-21** (v9's `DATASHEET.md`). ▶ Write the other five live
   filters' datasheets (~~belonging v3~~ DONE 2026-10-21, split `belonging_c2b`; cultural_discovery v5, solutions v6,
@@ -71,7 +88,7 @@ free-tier Gemini items a day into `~/lab/llm-distillery/inbox/situla/2026-10-21-
 - (c) **Claude panel seat (EXP-055 P2): DONE 2026-10-21, k = 2.** Both batches 100/100; $4.12 spent of
   llm-distillery's $12 promo cap (infra told; credit expires 10-28). Interim 2: Claude passes 9/100, the strictest
   member (oracle 30, locals 55–62); panel alpha 0.199. Lab `experiments/2026-10-21-cross-family-panel/P2-run{1,2}`.
-  About $7.9 remains, unassigned: any new use needs the owner's go and a line to infra first.
+  Cap now $40 (10-22); spent $7.72; the remainder is assigned to item (3b).
 - (d) **Repo survey 2026-10-21 (agent):** $0, no-ruling candidates, in order. #171/#175 is DONE (`cea4544`; it
   found 3 accidental registry matches, now null). Next:
   - ~~#159 multi-seed~~ DONE (EXP-057, `734a627`): both rules help at 5/5 seeds; plain max RULED 2026-10-21 (item 1b). b650 copies
