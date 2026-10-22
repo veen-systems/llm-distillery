@@ -1,8 +1,16 @@
 # LLM Distillery - TODO
 
-## ▶️ START HERE — the ordered queue, as of 2026-10-21 (third close)
+## ▶️ START HERE — the ordered queue, as of 2026-10-22 (close)
 
-*▶ **NEXT SESSION (set 2026-10-21 second close; `/curate` done, all pushed). "continue" = these, in order:***
+*▶ **NEXT SESSION (set 2026-10-22 close; all pushed). "continue" = these, in order:***
+
+**(0) THE READ SURFACE FIRST (#163, the read-surface issue). Owner 2026-10-22: "we need to start pruning, thinning, mechanizing, retiring!"** 430,797 chars over 34 files at the 2026-10-22 close (ceiling 439,708, 8,911 headroom; `check_index_budget.py --target surface`). The lite profile landed the same day (`d8f4ad7`, `docs/decisions/2026-10-22-framework-lite.md`): a lesson is kept only as a CHECK, and session records are frozen. So, in order:
+- (a) **Retire the frozen session records** (~18.5K, measured): `memory/session-log.md` (13.1K) and the two `memory/project_session_2026_10_*.md` move VERBATIM into `memory/archive/`. `retire_memory.py sessions --before 2026-10-23` handles the two session files; the log's path is hard-coded in `retire_memory.py` (`SESSION_LOG`), `check_doc_claims.py` (`SUITE_HISTORY`), `check_framework_language.py` (`FROZEN`) and `memory/MEMORY.md`, so update those and run the suite.
+- (b) **Apply the checks-only rule to the two biggest files**, `gotcha-log.md` (39.6K) and `hypothesis-ledger.md` (40.2K): an entry whose lesson already has a check becomes one line naming the check; a closed or superseded entry moves verbatim to its archive. The owner rules the `H-HD` rows row by row (see (5) below; ruled 2026-10-21).
+- (c) Then the next biggest: `stamp-contract` 21.9K, `score-batch` 21.6K, `oracle-pricing` 21.2K, `nexusmind-data-sources` 21.0K, `working-rules` 20.8K. Thin to the operative rule plus a pointer to the evidence.
+- Done when the surface is well under the ceiling and every move is verbatim. Report the before and after chars.
+
+**(0b) 📅 ≥ 2026-10-29: read `H-CX5`** (does the lite profile raise the rate of caught failures?). Count the BASELINE first, from commits before `85309b3`. Revert path: the decision record.
 
 **(1) Item 0a: DONE 2026-10-21 (EXP-056). v3 almost certainly FAILS the bar on the live H page:** qwen weekly
 mean 7.86, every day 7–9, against ≤ 6. Posted on ducroq/ovr.news#391. **Owner ruled 2026-10-21: "count a page
@@ -74,7 +82,7 @@ free-tier Gemini items a day into `~/lab/llm-distillery/inbox/situla/2026-10-21-
   - H-OC5: the 350 vs 186.
   #145 (prepare_data's unweighted mean) needs the owner first.
 
-**(5) #163 round 13 (the read surface; owner 2026-10-21 again: "pruning, thinning, mechanizing, retiring").**
+**(5) #163 round 13: detail for item (0) above** (owner 2026-10-21 and again 10-22: "pruning, thinning, mechanizing, retiring").
 - Round 12: 431,803 → see the commit (H-BV moved as superseded). Third close 2026-10-21: **430,555 chars, 9,153 under
   the ceiling** — nothing retired (month rule: nothing before 10-01 left); the H-HD row rulings below are the next cut.
 - Biggest files: `gotcha-log` ~37K (its Mechanized table is a KEEP; only `live`, 0-occurrence rows move),

@@ -27,7 +27,7 @@ not each line.**
 
 | Item | Before | After |
 |---|---|---|
-| `CLAUDE.md` | 19,397 B | ~11.9 KB: Hard Constraints' operative clauses, working rules, the parsed tables, one pointer row per kept topic file |
+| `CLAUDE.md` | 19,397 B | 15,185 B: Hard Constraints' operative clauses, working rules, the parsed tables, one pointer row per kept topic file (11,994 B at `d8f4ad7`; ~30 dropped clauses restored after review, next commit) |
 | User auto-memory `MEMORY.md` | 13,141 B, carrying findings | pointers only |
 | Repo `memory/MEMORY.md` | index + 4-entry session log + rotation rules | the project index, pointers only |
 | `memory/session-log.md` | rotated by `/curate` | FROZEN; the last four index entries moved in verbatim |
@@ -52,6 +52,8 @@ Its answers are taken from the v1.49.2 templates. Policy questions are pending i
 - **P6 accepted:** review-changes only needs `.claude/review-profile.md` to exist.
 - **Unmeasured by both sides:** what breaks when newer global skills run against this frozen repo's older local
   surfaces.
+
+Always-loaded layer at the close: 32,538 → 19,670 B (`check_index_budget.py --target loaded`).
 
 ## How to tell whether it worked
 
