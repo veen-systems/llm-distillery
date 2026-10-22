@@ -61,6 +61,17 @@ undecided), never a sentence.
 
 ---
 
+## 2026-10-22 — ⛔ STAMP FROZEN at v1.49.2 (lite profile); deviation recorded
+
+**The reason a behind stamp is reconciled here:** the owner moved this repo to a lite profile
+([`2026-10-22-framework-lite.md`](2026-10-22-framework-lite.md)) after negotiating with the agent-ready-projects
+session. The stamp stays at v1.49.2 and is NOT bumped release by release; `/update-drift` will keep listing the
+gap, and that listing is expected, not drift to repair. Un-freezing is a decision for the owner, not a triage step.
+Local deviations from the v1.49.2 templates: no session log (frozen), auto-memory index is pointers only,
+lessons are promoted only as checks, `/review-changes` is used only for the project lenses.
+
+---
+
 ## 2026-09-27 — `/update-drift`: **2 releases behind (v1.49.0 → v1.49.2)**; both already in force; stamp → v1.49.2
 
 Found by `/curate`'s verify runner: `check_framework_stamp.sh` FAILED (curate 6 lines and audit-context 2 lines
