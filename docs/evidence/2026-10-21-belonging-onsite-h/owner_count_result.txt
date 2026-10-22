@@ -1,0 +1,6 @@
+owner letters: GPPPPGGGPPGGPGPPGPPGPPPGPPGGPG
+owner personal: 17 of 30
+qwen: personal 9; agree 20/30; owner P, qwen G: rows [3, 4, 10, 13, 15, 16, 18, 23, 26]; owner G, qwen P: rows [17]
+fable: personal 8; agree 21/30; owner P, fable G: rows [3, 4, 10, 13, 15, 16, 18, 23, 26]; owner G, fable P: rows []
+mistral: personal 10; agree 19/30; owner P, mistral G: rows [3, 4, 10, 13, 15, 16, 18, 23, 26]; owner G, mistral P: rows [8, 17]
+owner P rows that all three taggers call G: 9, rows [3, 4, 10, 13, 15, 16, 18, 23, 26]

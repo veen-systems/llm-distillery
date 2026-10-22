@@ -62,11 +62,11 @@ The miss on 1 is informative: EXP-049's offline replay of H predicted 5.20 (date
 
 **Not pre-registered**: the owner asked on 2026-10-22 for "a different oracle to count via API", after qwen's 7.86 was
 known. Same prompt (`system.txt`, byte-identical copy), same user-message shape, same 101 unique ids (the 78 freshly
-tagged plus the 23 reused from EXP-049). `tag_api.py` (here; the Fable path differs from the Mistral copy only in the
-docstring) and `compare_taggers.py` (output: `compare_taggers_result.txt`, which reproduces qwen's 7.86).
+tagged plus the 23 reused from EXP-049). `tag_api.py` (here, the version the Mistral run used) and `tag_api_fable.py` (the earlier version the Fable run used: no
+`top_p`, no list-content parsing, no `raw` key; the Fable request path is the same) and `compare_taggers.py` (output: `compare_taggers_result.txt`, which reproduces qwen's 7.86).
 
 - **Fable**: `claude-fable-5-1`, effort low, structured JSON, no fallbacks (a fallback model would be a different
-  instrument). 101 calls + 3 probe calls (the probe rows are the first 3 of the 101, not re-run). $3.60 at list
+  instrument). 101 calls (the first 3 were a cost probe; they are the first 3 rows, not re-run). $3.60 at list
   price (303,527 in / 11,358 out), on the Anthropic promo credit (logged in infra `ai-tooling/stack.md`).
 - **Mistral**: `mistral-large-4-0`, temperature 0 + top_p 1, JSON mode, reasoning ON (the reply carries thinking
   chunks). 0 unparsed. A first attempt (4 rows, list content not parsed) was deleted before the run; one 600 s
@@ -79,10 +79,15 @@ docstring) and `compare_taggers.py` (output: `compare_taggers_result.txt`, which
 | Mistral | 9.14 | 7 of 7 |
 
 Pairwise agreement on 101 ids: qwen–Fable agree 95/101, qwen–Mistral agree 94/101, Fable–Mistral agree 96/101.
-Mistral is the strictest (5 ids personal where Fable says group, 0 the other way).
+Mistral tags the most stories personal (5 ids personal where Fable says group, 0 the other way).
 
 **Reading.** Three taggers from three model families all put v3 above the bar, so the failure is not a qwen artefact.
 qwen is not a strict floor against Fable (Fable is lower on 10-19 and 10-20), but every tagger is above 6. All three
-share one prompt, so a prompt that leans "personal" would move them together; only the owner's count tests that.
+share one prompt, so a prompt bias would move them together; only the owner's count tests that.
+
+**Then the owner's count (2026-10-22, EXP-059):** 17 of 30 personal on the 10-18 page, where the taggers say 8–10. All
+three taggers call the same 9 of the owner's P rows G (`owner_count_result.txt`, `score_owner_count.py`); qwen and
+Mistral also call 1–2 owner-G rows P. So the shared prompt does lean: on net it reads "personal" more narrowly than the
+owner, and the tagger counts understate the owner's. The owner then accepted v3 (decision record § *v3 ACCEPTED*).
 Data: lab `experiments/2026-10-21-belonging-onsite-h/run/{tag-fable,tag-mistral}` (written on situla directly, no
 scratch host), `run/TAGGERS.md`.

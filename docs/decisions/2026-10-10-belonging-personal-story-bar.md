@@ -81,14 +81,17 @@ at a fixed time; the baseline used 14:30Z for its rebuilt days and the live 06:5
 ## v3 ACCEPTED as it is — RULED 2026-10-22 (owner)
 
 The owner's words: "i will just accept. this is taking too much time". v3 stays live on ranking H; no ranking fix is asked
-of ovr.news, and no rollback.
+of ovr.news, and v3 is not rolled back over this bar.
 
 What the owner saw first: the owner's own blind count of the 10-18 page was **17 of 30** personal (letters in lab
 `experiments/2026-10-21-belonging-onsite-h/owner_count_20261018.md`). The three taggers counted 8–10 on that page and
-7.43–9.14 averaged over the week (EXP-056, EXP-058). All three called the same 9 of the owner's P rows G, so the
-tagger prompt is narrower than the owner's reading. The owner added: "some of them are annoyingly personal, while
+7.43–9.14 averaged over the week (EXP-056, EXP-058). All three called the same 9 of the owner's P rows G (qwen and
+Mistral also called 1–2 owner-G rows P), so on net the tagger prompt reads "personal" more narrowly than the owner
+(`docs/evidence/2026-10-21-belonging-onsite-h/owner_count_result.txt`). The owner added: "some of them are annoyingly personal, while
 others actually makes sense. i think i am overreacting".
 
 *Gloss, not ruled:* the ≤ 6 bar is not met and is not revised; v3 is accepted in spite of it. The owner did not
 pick between "only the annoying ones count" and "the count does not matter enough". Anyone re-opening this should
 ask that first, and should not re-run a tagger count with the current prompt: on the owner's own count it misses 9 of 17.
+The acceptance covers this bar only. v3's separate rollback rule (`filters/belonging/v3/STATUS.md`, ovr's panel on
+10-23) and the normalization refit (≥ 10-24) are not part of it and stay scheduled.

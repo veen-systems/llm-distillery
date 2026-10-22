@@ -8040,3 +8040,32 @@ item 0a's next action is dated ≥ 10-22 (the on-site count on live ranking H). 
 2026-10-16. Item 1 is NexusMind's.
 Item 2 (#163, the read surface): keep pruning (owner 2026-10-14 and 10-15: "pruning, thinning, mechanizing, retiring").*
 
+## Moved 2026-10-22 — item 1 and item 0a as they stood before the owner accepted v3 (verbatim)
+
+**(1) ✅ CLOSED 2026-10-22: the owner ACCEPTED v3 as it is** (decision record `docs/decisions/2026-10-10-belonging-personal-story-bar.md` § *v3 ACCEPTED*; owner count 17/30 on 10-18; EXP-058). Nothing left but the b650 cleanup below. *History:* **Item 0a: DONE 2026-10-21 (EXP-056). v3 almost certainly FAILS the bar on the live H page:** qwen weekly
+mean 7.86, every day 7–9, against ≤ 6. Posted on ducroq/ovr.news#391. **Owner ruled 2026-10-21: "count a page
+first".** The blind worksheet is lab `experiments/2026-10-21-belonging-onsite-h/owner_count_20261018.md` (10-18, the
+worst day, qwen 9; tags NOT shown). ▶ When the owner returns 30 P/G letters:
+- score them against qwen (the agreement, and the owner's personal count against 6);
+- update EXP-056's README, the registry row and H-BB6;
+- post the owner's count on ovr.news#391;
+- THEN put the response question to the owner. The options laid out 10-21: ranking fix via ovr / accept / roll back
+  to v1 (⚠️ v1 is unmeasured against the bar).
+The b650 copy `~/llm-distillery/runs/exp056` is a finished run: delete it once a snapshot later than 10-21 17:30
+holds lab `experiments/2026-10-21-belonging-onsite-h/run` (b650 rule).
+
+0a. **BELONGING v3's TOP OF PAGE vs the owner's bar (≤ 6 of 30 single-person stories, judged as a WEEKLY AVERAGE,
+   ruled 2026-10-14).** Bar + rulings: `docs/decisions/2026-10-10-belonging-personal-story-bar.md`; ledger H-BB6–H-BB8;
+   history: TODO-archive § *Moved 2026-10-14* and § *Moved 2026-10-15* (the full 0a text of 2026-10-15, verbatim).
+   State: v3 fails on the owner's one count (10/30, 10-12, old ranking). Ranking H is LIVE since 2026-10-15 (first build
+   07:40:42Z; ovr.news commit `07cdb7e0`, ducroq/ovr.news#391, veen-systems/pipeline-atlas#170). Offline replay EXP-049:
+   on the qwen floor the OLD ranking fails the bar (6.40, dated, post hoc), H is undetermined (5.20). The training lever
+   is CLOSED (owner 2026-10-15): c2c (EXP-048) and c2d (EXP-050) both failed the community recall guard.
+   - ▶ **FIRST ACTION, on or after 2026-10-22: the on-site re-baseline of v3 on the LIVE H page.** Pages: the daily
+     capture in `~/lab/llm-distillery/inbox/ovr-lens-pages/` (`belonging_<UTC>.html`, 10-15 → 10-21, 7 builds). Steps: (1) write
+     `PREREGISTRATION.md` BEFORE reading any page's tags (bar = weekly mean ≤ 6; a qwen mean ≤ 6 is undetermined, > 6 is
+     conclusive; predictions); (2) `lab.py move` the 7 pages into a lab `experiments/` tree; (3) parse each page's top 30
+     ids, tag on b650 with EXP-049's qwen tagger unchanged (`tag_qwen.py`, `system.txt`, reuse rule + 10-id determinism
+     control), report the weekly mean and the worst day. ⚠️ The 10-15 T0750Z/T0755Z files were captured by hand that
+     morning; the 16:30 ones are the daily series. Owner's own count is the stronger instrument: offer it.
+   - **Over 6 is NOT an automatic rollback** (v3's rollback rule predates the bar; owner's call).
