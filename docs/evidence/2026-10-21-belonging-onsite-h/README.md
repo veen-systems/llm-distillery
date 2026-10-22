@@ -57,3 +57,32 @@ The miss on 1 is informative: EXP-049's offline replay of H predicted 5.20 (date
   (`~/llm-distillery/runs/exp056`) is a FINISHED run: delete it once a snapshot holds the pull (b650 rule).
 - The selection inputs are lab `selection/`: `top60.json`, the sadalsuud `rows.jsonl` (version stamps + text, lab
   only), `selection.json`, `reused.json`. This was added after review, so the all-v3 claim is checkable from the lab.
+
+## Addendum 2026-10-22: two cloud taggers beside qwen (EXP-058)
+
+**Not pre-registered**: the owner asked on 2026-10-22 for "a different oracle to count via API", after qwen's 7.86 was
+known. Same prompt (`system.txt`, byte-identical copy), same user-message shape, same 101 unique ids (the 78 freshly
+tagged plus the 23 reused from EXP-049). `tag_api.py` (here; the Fable path differs from the Mistral copy only in the
+docstring) and `compare_taggers.py` (output: `compare_taggers_result.txt`, which reproduces qwen's 7.86).
+
+- **Fable**: `claude-fable-5-1`, effort low, structured JSON, no fallbacks (a fallback model would be a different
+  instrument). 101 calls + 3 probe calls (the probe rows are the first 3 of the 101, not re-run). $3.60 at list
+  price (303,527 in / 11,358 out), on the Anthropic promo credit (logged in infra `ai-tooling/stack.md`).
+- **Mistral**: `mistral-large-4-0`, temperature 0 + top_p 1, JSON mode, reasoning ON (the reply carries thinking
+  chunks). 0 unparsed. A first attempt (4 rows, list content not parsed) was deleted before the run; one 600 s
+  timeout, resumed by id. Paid from Mistral's monthly API allowance.
+
+| tagger | weekly mean (bar ≤ 6) | days > 6 |
+|---|---|---|
+| qwen | 7.86 | 7 of 7 |
+| Fable | 7.43 | 6 of 7 (5 on 10-19) |
+| Mistral | 9.14 | 7 of 7 |
+
+Pairwise agreement on 101 ids: qwen–Fable agree 95/101, qwen–Mistral agree 94/101, Fable–Mistral agree 96/101.
+Mistral is the strictest (5 ids personal where Fable says group, 0 the other way).
+
+**Reading.** Three taggers from three model families all put v3 above the bar, so the failure is not a qwen artefact.
+qwen is not a strict floor against Fable (Fable is lower on 10-19 and 10-20), but every tagger is above 6. All three
+share one prompt, so a prompt that leans "personal" would move them together; only the owner's count tests that.
+Data: lab `experiments/2026-10-21-belonging-onsite-h/run/{tag-fable,tag-mistral}` (written on situla directly, no
+scratch host), `run/TAGGERS.md`.

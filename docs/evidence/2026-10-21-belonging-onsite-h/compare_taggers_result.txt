@@ -1,0 +1,12 @@
+day             qwen     fable   mistral
+20261015        7         8         9   
+20261016        8         8        10   
+20261017        8         8        10   
+20261018        9         8        10   
+20261019        7         5         7   
+20261020        8         7         8   
+20261021        8         8        10   
+mean            7.86      7.43      9.14
+qwen vs fable: agree 95/101; both personal 22; qwen-only personal 4; fable-only personal 2
+qwen vs mistral: agree 94/101; both personal 24; qwen-only personal 2; mistral-only personal 5
+fable vs mistral: agree 96/101; both personal 24; fable-only personal 0; mistral-only personal 5
