@@ -12,7 +12,7 @@
 
 **(0b) 📅 ≥ 2026-10-29: read `H-CX5`** (does the lite profile raise the rate of caught failures?). Count the BASELINE first, from commits before `85309b3`. Revert path: the decision record.
 
-**(1) Item 0a: DONE 2026-10-21 (EXP-056). v3 almost certainly FAILS the bar on the live H page:** qwen weekly
+**(1) ✅ CLOSED 2026-10-22: the owner ACCEPTED v3 as it is** (decision record `docs/decisions/2026-10-10-belonging-personal-story-bar.md` § *v3 ACCEPTED*; owner count 17/30 on 10-18; EXP-058). Nothing left but the b650 cleanup below. *History:* **Item 0a: DONE 2026-10-21 (EXP-056). v3 almost certainly FAILS the bar on the live H page:** qwen weekly
 mean 7.86, every day 7–9, against ≤ 6. Posted on ducroq/ovr.news#391. **Owner ruled 2026-10-21: "count a page
 first".** The blind worksheet is lab `experiments/2026-10-21-belonging-onsite-h/owner_count_20261018.md` (10-18, the
 worst day, qwen 9; tags NOT shown). ▶ When the owner returns 30 P/G letters:
@@ -69,7 +69,7 @@ measured ~$0.035/article).
 - (i) **Fable as a seat on EXP-055's panel** (#177 step 6), ~$3–4 for 100 items. ⚠️ Added AFTER interim results were
   read, so record it as a post-hoc amendment in the pre-registration, and report it beside the four pre-registered
   members, never pooled with them.
-- (ii) **Fable counts the NEXT week's Belonging pages** (captures 10-22 → 10-27, top 30 each), ~$3, using EXP-056's
+- (ii) ⚠️ **Purpose gone after the 10-22 acceptance; ask the owner before running it.** **Fable counts the NEXT week's Belonging pages** (captures 10-22 → 10-27, top 30 each), ~$3, using EXP-056's
   selection and `compare_taggers.py` unchanged, plus qwen on b650 for the same pages. Shows whether the count over 6
   holds for a second week.
 - (iii) **Fable judges which tab each card belongs on** (H-LA2), using the five-tab captures in
