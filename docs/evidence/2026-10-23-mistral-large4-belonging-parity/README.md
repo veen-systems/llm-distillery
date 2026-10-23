@@ -61,3 +61,21 @@ are close to Gemini's (≈5,900 in, ≈250 out), as the owner hoped; the quality
 `result.txt`, `MANIFEST.json` (lab citations). Raw rows: lab
 `experiments/2026-10-23-mistral-large4-belonging-parity/raw/` (`_LAB_MANIFEST.json`). Gemini's billing key returned
 HTTP 402 on a 2026-10-23 check call, so the baseline itself could not be re-run; none was needed.
+
+## Follow-up (EXP-061, $0): a lower Mistral threshold does not rescue it
+
+Owner asked on 2026-10-23 to test a lower Mistral threshold on existing Gemini data. Before spending, `remap_check.py`
+(output `remap_result.txt`) fitted the threshold IN-SAMPLE on this canary set, the most favourable case:
+
+- Best plain threshold: **1.40**, still **12 flips** per 100 (11 Gemini-pass / Mistral-block, 1 the other way).
+- A per-dimension linear remap before the weighted average lands on the same floor: 12 flips.
+- The bar, Gemini against itself single run vs single run (all 15 pairs of B1–B6): max 4, mean 2.27.
+
+So no threshold or per-dimension linear remap gets within the bar even when fitted on the test items themselves; a
+held-out set can only do worse in expectation. The out-of-sample run (about 260 Gemini-stamped rows in
+`datasets/scored/belonging_v1_{prodheldout,control}_20261001`, none in the canary set) was therefore NOT run.
+
+The remap's intercepts are about +2 on every dimension: where Mistral scores ~0 (out of scope), Gemini gives modest
+scores. The 12 remaining flips are articles the two rank differently (Spearman 0.86 on the weighted averages, an
+inline check), which no threshold can fix. Not pre-registered: the fit rule (fewest flips, ties to the higher
+threshold) was chosen at the time, on data already seen.

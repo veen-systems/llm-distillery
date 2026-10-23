@@ -1,0 +1,4 @@
+items 100; bar: Gemini single run vs single run, 15 pairs: flips max 4 mean 2.27
+plain threshold on Mistral's weighted average: best threshold 1.40 (ties to the higher, ADR-023)  flips 12  (Mistral passes / Gemini blocks 1; Mistral blocks / Gemini passes 11)
+per-dimension linear remap, then threshold: best threshold 3.35 (ties to the higher, ADR-023)  flips 12  (Mistral passes / Gemini blocks 1; Mistral blocks / Gemini passes 11)
+remap slope/intercept per dimension: intergenerational_bonds 0.95/+1.78, community_fabric 0.87/+2.44, reciprocal_care 0.83/+1.96, rootedness 0.83/+2.20, purpose_beyond_self 0.88/+2.34, slow_presence 0.87/+1.84
