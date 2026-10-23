@@ -1,0 +1,47 @@
+{
+ "lab_root": "$LD_LAB (default ~/lab/llm-distillery, on situla)",
+ "entries": [
+  {
+   "path": "experiments/2026-10-23-mistral-large4-belonging-parity/raw/M1.jsonl",
+   "sha256": "d1aca0804e62955757df0b4fd2e6e76222e01cec8eb8e11bed934f98b00d0b58",
+   "size": 75773,
+   "origin": "local:/tmp/claude-1000/-home-jeroen-repos-veen-systems-llm-distillery/749de78b-4f12-450a-a6f9-c5952b051506/scratchpad/exp060_raw/M1.jsonl",
+   "pulled_at": "2026-10-23T09:03:57+02:00"
+  },
+  {
+   "path": "experiments/2026-10-23-mistral-large4-belonging-parity/raw/M2.jsonl",
+   "sha256": "4426d5264b20ef84c8a76cb5aafdc4d390afbac5fc7aabeb303956d9ab144fab",
+   "size": 76416,
+   "origin": "local:/tmp/claude-1000/-home-jeroen-repos-veen-systems-llm-distillery/749de78b-4f12-450a-a6f9-c5952b051506/scratchpad/exp060_raw/M2.jsonl",
+   "pulled_at": "2026-10-23T09:03:57+02:00"
+  },
+  {
+   "path": "experiments/2026-10-23-mistral-large4-belonging-parity/raw/M3.jsonl",
+   "sha256": "b1b4fa178bb4dc8ae2e9e52a68e1415717143c0fb767eaf8da3a4f4e7499e5a5",
+   "size": 75713,
+   "origin": "local:/tmp/claude-1000/-home-jeroen-repos-veen-systems-llm-distillery/749de78b-4f12-450a-a6f9-c5952b051506/scratchpad/exp060_raw/M3.jsonl",
+   "pulled_at": "2026-10-23T09:03:57+02:00"
+  },
+  {
+   "path": "experiments/2026-10-23-mistral-large4-belonging-parity/raw/probe1_default.jsonl",
+   "sha256": "13d462191ef6b1142d06657526e92e2594c1384f985f13f2b30aa5aa6b166ecc",
+   "size": 749,
+   "origin": "local:/tmp/claude-1000/-home-jeroen-repos-veen-systems-llm-distillery/749de78b-4f12-450a-a6f9-c5952b051506/scratchpad/exp060_raw/probe1_default.jsonl",
+   "pulled_at": "2026-10-23T09:03:57+02:00"
+  },
+  {
+   "path": "experiments/2026-10-23-mistral-large4-belonging-parity/raw/probe2_reasoning_none.jsonl",
+   "sha256": "696fab1e96b91b9acccd5aafabec536a87790fd315900afca5a0dbd3cc6c38fa",
+   "size": 766,
+   "origin": "local:/tmp/claude-1000/-home-jeroen-repos-veen-systems-llm-distillery/749de78b-4f12-450a-a6f9-c5952b051506/scratchpad/exp060_raw/probe2_reasoning_none.jsonl",
+   "pulled_at": "2026-10-23T09:03:57+02:00"
+  },
+  {
+   "path": "experiments/2026-10-23-mistral-large4-belonging-parity/raw/probe3_reasoning_none.jsonl",
+   "sha256": "b5ce9a50473bb6595063903d79ef4eb80869f04413ff28d6849a9def68d8dd7a",
+   "size": 755,
+   "origin": "local:/tmp/claude-1000/-home-jeroen-repos-veen-systems-llm-distillery/749de78b-4f12-450a-a6f9-c5952b051506/scratchpad/exp060_raw/probe3_reasoning_none.jsonl",
+   "pulled_at": "2026-10-23T09:03:57+02:00"
+  }
+ ]
+}

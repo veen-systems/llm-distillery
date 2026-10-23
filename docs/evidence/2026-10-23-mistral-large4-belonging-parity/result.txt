@@ -1,0 +1,27 @@
+baseline: batch_scorer|gemini-flash served gemini-2.5-flash, op 4.0, 47/100 at >= op
+
+== PRIMARY: mean of M1-M3, k=3 bar
+FAIL  n 100  flips 30 (fail > 2 + 1)  shift -1.9144 (fail |.| > 0.0496 + 0.15)  stamps [('99ea1765a7eaa6a470cdcd3ef0d6d766b41ecfb01e88f694158f3414976254d0', 'mistral-large-4-0')]
+
+== SECONDARY: each run alone, k=1 bar
+M1: FAIL  flips 31  shift -1.9074
+M2: FAIL  flips 29  shift -1.8811
+M3: FAIL  flips 30  shift -1.9549
+
+== Mistral against itself: each run vs the mean of the other two
+M1: flips 1  shift +0.0106   (Gemini's own k=1 F = 3)
+M2: flips 1  shift +0.0500   (Gemini's own k=1 F = 3)
+M3: flips 1  shift -0.0606   (Gemini's own k=1 F = 3)
+
+flips by direction: Mistral passes / Gemini blocks 0; Mistral blocks / Gemini passes 30
+at >= op: Mistral mean 17, Gemini 47 (same 100 items)
+|delta| median 1.00  max 5.94
+
+== instrument
+M1: calls 100  scored 100  errors Counter()  finish Counter({'stop': 100})  served Counter({'mistral-large-4-0': 100})  tokens in 589,453 out 25,103 reasoning 0
+M2: calls 101  scored 100  errors Counter({'bad json': 1})  finish Counter({'stop': 100, 'error': 1})  served Counter({'mistral-large-4-0': 100})  tokens in 595,466 out 25,926 reasoning 0
+M3: calls 100  scored 100  errors Counter()  finish Counter({'stop': 100})  served Counter({'mistral-large-4-0': 100})  tokens in 589,453 out 24,768 reasoning 0
+
+== cost ESTIMATE (every call incl. probes, at $1.36/$4.18 per M, UNVERIFIED price)
+billed calls 304  tokens in 1,792,067 out 81,867  $2.78 ~ EUR 2.40
+per article (M1-M3 calls, reasoning off) EUR 0.0078  -> about 3,261 articles per EUR 25.50 monthly allowance
