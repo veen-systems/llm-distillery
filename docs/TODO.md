@@ -51,7 +51,10 @@ free-tier Gemini items a day into `~/lab/llm-distillery/inbox/situla/2026-10-21-
 - ⚠️ The Gemini **prepay is depleted** (HTTP 402). `batch_scorer` picks the billing key first, so every Gemini
   labelling run fails, belonging v3's Gemini canary included. The owner does not want another top-up; nothing
   scheduled needs it. If a belonging relabel ever comes up, the recommendation (10-21) is to move it to DeepSeek
-  behind a parity check, NOT to Mistral (EXP-054: 21 flips, +0.51).
+  behind a parity check, NOT to Mistral (EXP-054: 21 flips, +0.51). Still 402 on 10-23. Mistral **Large 4** fails
+  too: EXP-060 (30 flips, shift −1.91) and EXP-061 (no threshold gets under 12 flips). **Owner 2026-10-23 (infra
+  session, infra `ai-tooling/stack.md` §4): belonging v3's oracle is PARKED until a run needs it.** No top-up, no
+  DeepSeek parity check now; a run that needs it goes to the owner first.
 
 **(3b) THREE Fable runs on the Anthropic promo credit: owner GO 2026-10-22 ("go ahead with all three", queued, not
 run).** Cap raised to **$40** (infra-35, owner-approved 10-22; infra `ai-tooling/stack.md`); $7.72 spent → ~$32.28 left.
