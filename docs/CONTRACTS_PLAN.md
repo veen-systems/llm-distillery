@@ -10,6 +10,14 @@ instrument defects that constrain how these numbers may be quoted are in
 
 ## ✅ STATUS 2026-08-14: PHASE 0 APPROVED BY THE OWNER. Phases 1–3 are NOT.
 
+⭐ **2026-10-24, owner rulings on NM#721 (NexusMind's contract review): they supersede
+the phase 1–3 hold below FOR THAT WORK ONLY.** FluxusSource owns Contract A and
+NexusMind vendors it; NexusMind carries every FluxusSource field through and never
+drops one; Contract B declares at least what consumers read (LD's read set was sent
+to NexusMind the same day). **Reader-before-stricter still stands.** Rulings:
+https://github.com/ducroq/NexusMind/issues/721#issuecomment-6381641580 and
+https://github.com/ducroq/NexusMind/issues/721#issuecomment-6381777291
+
 **Approved:** build the check in **reporting mode**, write the artefact, install its
 timer on sadalsuud, and ship pipeline-atlas's reader. **Owner explicitly approved the
 systemd unit install**, which NexusMind had correctly refused to do without it.
@@ -35,6 +43,10 @@ See `CONTRACTS_PLAN-rounds-archive.md` § *Round 3* for the four peer answers an
   fired. See `CONTRACTS_PLAN-rounds-archive.md` § *Round 4*. **Reported-by-hand and reported-by-the-caller are different
   events, and only the plan's own sequencing rule ("the CALLER, then W2.2") separates
   them.**
+  ➡️ **2026-10-24 (owner): HANDED TO FLUXUSSOURCE; LD no longer holds it.** FluxusSource
+  owns Contract A since NM#721, so when to declare `source_group` is its call. The
+  reason above travels with it: this field is the only proof the check detects. LD
+  never confirmed whether the timer's automatic fire reported it.
 - 🔒 **Do NOT make any check stricter** until its drops reach a reader — see
   *reader before stricter*.
 
@@ -880,6 +892,8 @@ things and fails on each, positive-controlled all three ways:
 
 ### Category 1 — figures this plan's own success will falsify
 
+⚠️ *As of 2026-08-15, not re-checked (marked 2026-10-24): don't quote.*
+
 Listed so nobody quotes them after the fix lands. Each **reads as an indictment and
 becomes a lie on the first commit**: `priority` over `maximum: 8` (**2,774**, zeroed
 by W2.1 by construction); `word_count`/`priority` absent (**267**/**928**, which stop
@@ -899,6 +913,8 @@ local time** — a language specification, not a measurement, and safe forever.
 ---
 
 ### Standing after round 4
+
+⚠️ *As of 2026-08-15, not re-checked (marked 2026-10-24): don't quote. The `source_group` row is superseded: see the 2026-10-24 note under the standing holds.*
 
 | | |
 |---|---|
