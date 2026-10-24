@@ -43,10 +43,17 @@ See `CONTRACTS_PLAN-rounds-archive.md` § *Round 3* for the four peer answers an
   fired. See `CONTRACTS_PLAN-rounds-archive.md` § *Round 4*. **Reported-by-hand and reported-by-the-caller are different
   events, and only the plan's own sequencing rule ("the CALLER, then W2.2") separates
   them.**
-  ➡️ **2026-10-24 (owner): HANDED TO FLUXUSSOURCE; LD no longer holds it.** FluxusSource
-  owns Contract A since NM#721, so when to declare `source_group` is its call. The
-  reason above travels with it: this field is the only proof the check detects. LD
-  never confirmed whether the timer's automatic fire reported it.
+  ✅ **RESOLVED 2026-08-15 — this plan missed it until 2026-10-24.** NexusMind
+  `567e684` (contracts 1.26.0, "declare source_group, spending the acceptance
+  control") declared it, named the replacement control (a fixture-path one,
+  `tests/fixtures/contract_a_eval_query_control.jsonl.gz`) and moved
+  `edges_not_covered` in the same commit (`NexusMind/contracts/CHANGELOG.md` §1.26.0).
+  `nexusmind-contract-check.service` first ran 15:20 that day, `found_violations`
+  (FluxusSource's `journalctl` on sadalsuud, relayed 2026-10-24, not re-read here);
+  NexusMind says that run was a HAND start, not the timer. Which classes it named is unproven.
+  ⚠️ Since then "clean" means clean against a schema with no undeclared live field:
+  the only acceptance control left is fixture-path. (On 10-24 this line first said
+  "handed to FluxusSource"; FluxusSource found the 08-15 commit, re-checked here.)
 - 🔒 **Do NOT make any check stricter** until its drops reach a reader — see
   *reader before stricter*.
 
@@ -523,7 +530,7 @@ than leaving it naive. *"Add an offset" reads like a one-liner and is not.*
 | # | item | why here |
 |---|---|---|
 | W2.1 | Fix Contract A's three wrong declarations | enum → producer's vocabulary; `maximum: 8` → **10**; drop `word_count` + `priority` from `required` (267 and 928 rows legitimately omit them) |
-| W2.2 | Declare `source_group` (+ decide `eval_query`) | Arrives tonight; NM#304 argues `eval_query` should stay failing since ADR-007 retires the eval arms — **that is a decision to record, not an omission** |
+| W2.2 | Declare `source_group` (+ decide `eval_query`) | ✅ `source_group` DONE 2026-08-15 (NexusMind `567e684`). Arrives tonight; NM#304 argues `eval_query` should stay failing since ADR-007 retires the eval arms — **that is a decision to record, not an omission** |
 | W2.3 | Declare the 34 undeclared metadata keys, with status | Principle 1. Include "declared, no known consumer" as an explicit status |
 | 🔨 **W2.4 BUILT, NOT MERGED** (`b8a191c`, NM#357, branch `fix/357-…`) — see round 2 | Fix `validate_production_contract.py`'s grouping + labelling | It counts **errors, not rows**, and merges distinct `required` failures into one line — which hid the `priority` defect for five days. No baseline file exists, so zero migration cost. **Must land with a test**: one row missing two required properties → two distinct groups |
 | W2.5 | Record Contract B's top-level-openness tradeoff | Deliberate-by-policy, defended nowhere in `NexusMind/contracts/CHANGELOG.md`, and it means **B structurally cannot detect a `source_group`-class event**. May well be the right call for B — but it should be a written decision |
@@ -914,12 +921,12 @@ local time** — a language specification, not a measurement, and safe forever.
 
 ### Standing after round 4
 
-⚠️ *As of 2026-08-15, not re-checked (marked 2026-10-24): don't quote. The `source_group` row is superseded: see the 2026-10-24 note under the standing holds.*
+⚠️ *As of 2026-08-15, not re-checked (marked 2026-10-24): don't quote. The `source_group` row is wrong: it was declared 2026-08-15 (NexusMind `567e684`); see the note under the standing holds.*
 
 | | |
 |---|---|
 | Canary | ✅ merged, installed, armed, **has reported the control** — first automatic fire 02:22 |
-| W2.2 `source_group` | ⛔ **held to that fire**; replacement control named, `edges_not_covered` must move in the same commit |
+| W2.2 `source_group` | ✅ declared 2026-08-15 (NexusMind `567e684`); was: ⛔ **held to that fire**; replacement control named, `edges_not_covered` must move in the same commit |
 | `eval_query` / NM#367 | ✅ ruled — stays undeclared, closes as a decision |
 | `content_meta.truncated` | ✅ ruled — out of Contract A, re-filed to enrichment |
 | Track B `content_meta.kind` | ⏳ split landed, **owner: merge + deploy** |
