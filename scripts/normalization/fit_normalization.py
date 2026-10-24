@@ -227,23 +227,44 @@ class Stage1LowInFitError(RuntimeError):
     """A stage1_low row reached the fit population."""
 
 
-def _refuse_stage1_low(n_stage1_low: int, min_score: float) -> None:
-    """Raise if any stage1_low row cleared min_score.
+# Values filters/common/hybrid_scorer.py writes; None is an invalid article.
+KNOWN_STAGE_USED = (None, "stage1_low", "stage2")
+
+
+def _check_stage_used(
+    n_stage1_low: int, n_stage_unknown: int, min_score: float, refuse_stage1_low: bool,
+) -> None:
+    """Act on the stage1_low and unknown-stage_used rows a loader excluded at/above min_score.
 
     A stage1_low row's raw_weighted_average is the e5 probe's estimate, not a model
-    score (hybrid_scorer.py). It is kept out of the fit only because every Stage-1
-    threshold sits below its op-point (tests/unit/test_stage1_threshold_below_op_point.py),
-    so such a row falls under min_score. Measured on NM#721 (2026-10-24): 0 of
-    922,542 production stage1_low rows reach an op-point. A count here means that
-    invariant broke, or the stamped value is not what hybrid_scorer.py writes.
+    score (filters/common/hybrid_scorer.py). On the deploy path (min_score is the
+    op-point) such a row cannot occur, because every runtime Stage-1 threshold sits
+    below its op-point (tests/unit/test_stage1_threshold_below_op_point.py). Measured
+    2026-10-24 on ducroq/NexusMind#721: 0 of 926,269 stage1_low rows, over the 7
+    lens-versions tabulated there, reach the op-point. So a count here means that
+    invariant broke, or the stamped value is not what hybrid_scorer.py writes: refuse.
+    Below the op-point (an --allow-below-op-point analysis fit) probe rows are
+    expected, so they are excluded and counted, never pooled.
+    An unknown stage_used value always refuses: it cannot be classified either way.
     """
-    if n_stage1_low > 0:
+    if n_stage_unknown > 0:
+        raise Stage1LowInFitError(
+            f"{n_stage_unknown} rows at/above min_score={min_score} carry a stage_used "
+            f"value outside {KNOWN_STAGE_USED}; cannot tell model scores from probe estimates."
+        )
+    if n_stage1_low == 0:
+        return
+    if refuse_stage1_low:
         raise Stage1LowInFitError(
             f"{n_stage1_low} stage_used=stage1_low rows score >= min_score={min_score}. "
             f"Their raw_weighted_average is an e5 probe estimate, not a model score, and "
             f"must not enter the CDF. A stage1_low row should sit below the Stage-1 "
             f"threshold, which sits below the op-point: find which of the two broke."
         )
+    logger.warning(
+        f"Excluded {n_stage1_low} stage1_low rows (e5 probe estimates) at/above "
+        f"min_score={min_score}; expected only below the op-point."
+    )
 
 
 def load_weighted_averages_local(
@@ -251,6 +272,7 @@ def load_weighted_averages_local(
     filter_name: str,
     min_score: float,
     filter_version: str | None = None,
+    refuse_stage1_low: bool = True,
 ) -> list:
     """Load weighted averages from local filtered JSONL files."""
     was = []
@@ -261,6 +283,7 @@ def load_weighted_averages_local(
     n_foreign = 0
     n_nonfinite = 0
     n_stage1_low = 0
+    n_stage_unknown = 0
     # Match only THIS filter's attribute block. An article scored by several
     # filters carries several blocks; iterating them all blends foreign filters'
     # score distributions into the CDF whenever version strings coincide.
@@ -306,8 +329,12 @@ def load_weighted_averages_local(
                             if wa < min_score:
                                 n_below_threshold += 1
                                 continue
-                            if analysis.get("stage_used") == "stage1_low":
+                            stage = analysis.get("stage_used")
+                            if stage == "stage1_low":
                                 n_stage1_low += 1
+                                continue
+                            if stage not in KNOWN_STAGE_USED:
+                                n_stage_unknown += 1
                                 continue
                             if raw is not None:
                                 n_raw += 1
@@ -317,7 +344,7 @@ def load_weighted_averages_local(
                 except (json.JSONDecodeError, KeyError):
                     continue
 
-    _refuse_stage1_low(n_stage1_low, min_score)
+    _check_stage_used(n_stage1_low, n_stage_unknown, min_score, refuse_stage1_low)
     if n_foreign > 0:
         logger.info(f"Excluded {n_foreign} attribute blocks belonging to other filters (matching {want!r})")
     if n_nonfinite > 0:
@@ -349,6 +376,7 @@ def load_weighted_averages_ssh(
     filter_name: str,
     min_score: float,
     filter_version: str | None = None,
+    refuse_stage1_low: bool = True,
 ) -> list:
     """Load weighted averages from a remote host via SSH."""
     # Write extraction script to temp file, scp to remote, execute, retrieve results.
@@ -368,6 +396,7 @@ n_wrong_version = 0
 n_foreign = 0
 n_nonfinite = 0
 n_stage1_low = 0
+n_stage_unknown = 0
 # Read flat JSONL files (NexusMind#144: flat output, no tier subdirs)
 files = sorted(glob.glob(os.path.join(remote_dir, "filtered_*.jsonl")))
 for fp in files:
@@ -392,8 +421,12 @@ for fp in files:
                         if wa < min_score:
                             n_below += 1
                             continue
-                        if v.get("stage_used") == "stage1_low":
+                        stage = v.get("stage_used")
+                        if stage == "stage1_low":
                             n_stage1_low += 1
+                            continue
+                        if stage not in (None, "stage1_low", "stage2"):  # KNOWN_STAGE_USED
+                            n_stage_unknown += 1
                             continue
                         if raw is not None:
                             n_raw += 1
@@ -404,7 +437,7 @@ for fp in files:
                 pass
 for w in was:
     print(w)
-print("META:raw=%d,fallback=%d,below=%d,wrong_version=%d,foreign=%d,nonfinite=%d,stage1_low=%d" % (n_raw, n_fallback, n_below, n_wrong_version, n_foreign, n_nonfinite, n_stage1_low), file=sys.stderr)
+print("META:raw=%d,fallback=%d,below=%d,wrong_version=%d,foreign=%d,nonfinite=%d,stage1_low=%d,stage_unknown=%d" % (n_raw, n_fallback, n_below, n_wrong_version, n_foreign, n_nonfinite, n_stage1_low, n_stage_unknown), file=sys.stderr)
 """
     with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
         f.write(script_content)
@@ -437,41 +470,42 @@ print("META:raw=%d,fallback=%d,below=%d,wrong_version=%d,foreign=%d,nonfinite=%d
     # Parse field-usage metadata from remote script stderr
     import re
     meta_match = re.search(
-        r"META:raw=(\d+),fallback=(\d+),below=(\d+),wrong_version=(\d+),foreign=(\d+),nonfinite=(\d+),stage1_low=(\d+)",
+        r"META:raw=(\d+),fallback=(\d+),below=(\d+),wrong_version=(\d+),foreign=(\d+),nonfinite=(\d+),stage1_low=(\d+),stage_unknown=(\d+)",
         result.stderr or "",
     )
-    # Without META the stage1_low guard below cannot run; refuse rather than skip it.
+    # Without META the stage_used check below cannot run; refuse rather than skip it.
     if not meta_match:
         raise RuntimeError(f"Remote extraction printed no META line; stderr: {result.stderr!r}")
-    _refuse_stage1_low(int(meta_match.group(7)), min_score)
-    if meta_match:
-        n_raw = int(meta_match.group(1))
-        n_fallback = int(meta_match.group(2))
-        n_below = int(meta_match.group(3))
-        n_wrong_version = int(meta_match.group(4))
-        n_foreign = int(meta_match.group(5))
-        n_nonfinite = int(meta_match.group(6))
-        if n_foreign > 0:
-            logger.info(f"Excluded {n_foreign} attribute blocks belonging to other filters")
-        if n_nonfinite > 0:
-            logger.warning(f"Excluded {n_nonfinite} articles with non-finite/non-numeric scores")
-        if n_wrong_version > 0:
-            logger.info(f"Excluded {n_wrong_version} articles not matching filter_version={filter_version}")
-        if n_below > 0:
-            logger.info(f"Excluded {n_below} articles below min_score={min_score}")
-        if n_fallback > 0 and n_raw > 0:
-            logger.warning(
-                f"Mixed fields: {n_raw} articles used raw_weighted_average, "
-                f"{n_fallback} used weighted_average (possibly normalized). "
-                f"CDF may blend raw and normalized scores."
-            )
-        elif n_fallback > 0:
-            logger.warning(
-                f"raw_weighted_average not found in any article — using weighted_average "
-                f"for all {n_fallback} articles. Check for double-normalization risk."
-            )
-        else:
-            logger.info(f"Using raw_weighted_average for all {n_raw} articles")
+    _check_stage_used(
+        int(meta_match.group(7)), int(meta_match.group(8)), min_score, refuse_stage1_low,
+    )
+    n_raw = int(meta_match.group(1))
+    n_fallback = int(meta_match.group(2))
+    n_below = int(meta_match.group(3))
+    n_wrong_version = int(meta_match.group(4))
+    n_foreign = int(meta_match.group(5))
+    n_nonfinite = int(meta_match.group(6))
+    if n_foreign > 0:
+        logger.info(f"Excluded {n_foreign} attribute blocks belonging to other filters")
+    if n_nonfinite > 0:
+        logger.warning(f"Excluded {n_nonfinite} articles with non-finite/non-numeric scores")
+    if n_wrong_version > 0:
+        logger.info(f"Excluded {n_wrong_version} articles not matching filter_version={filter_version}")
+    if n_below > 0:
+        logger.info(f"Excluded {n_below} articles below min_score={min_score}")
+    if n_fallback > 0 and n_raw > 0:
+        logger.warning(
+            f"Mixed fields: {n_raw} articles used raw_weighted_average, "
+            f"{n_fallback} used weighted_average (possibly normalized). "
+            f"CDF may blend raw and normalized scores."
+        )
+    elif n_fallback > 0:
+        logger.warning(
+            f"raw_weighted_average not found in any article — using weighted_average "
+            f"for all {n_fallback} articles. Check for double-normalization risk."
+        )
+    else:
+        logger.info(f"Using raw_weighted_average for all {n_raw} articles")
 
     return was
 
@@ -776,6 +810,10 @@ def main():
             f"Override with --filter-version, or --all-versions to disable scoping."
         )
 
+    # A stage1_low row at/above the op-point is a broken invariant (refuse); below it,
+    # on an --allow-below-op-point analysis fit, probe rows are expected (exclude, warn).
+    refuse_stage1_low = op_point is None or args.min_score >= op_point
+
     # Load production weighted averages
     score_label = f"raw_weighted_average >= {args.min_score}"
     version_label = f", filter_version={args.filter_version}" if args.filter_version else ""
@@ -785,12 +823,14 @@ def main():
         was = load_weighted_averages_ssh(
             args.ssh, args.remote_dir, filter_name,
             min_score=args.min_score, filter_version=args.filter_version,
+            refuse_stage1_low=refuse_stage1_low,
         )
     else:
         logger.info(f"Loading production data ({score_label}{version_label}) from {args.data_dir}")
         source_desc = f"production {score_label}{version_label} from {args.data_dir}"
         was = load_weighted_averages_local(
             args.data_dir, filter_name, min_score=args.min_score, filter_version=args.filter_version,
+            refuse_stage1_low=refuse_stage1_low,
         )
 
     if len(was) < MIN_NORMALIZATION_ARTICLES:

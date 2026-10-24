@@ -8,9 +8,10 @@ checks hold that:
 - the config invariant: each package's RUNTIME Stage-1 threshold is below its op-point
   (`DEFAULT_THRESHOLD` in inference_hybrid.py; human_thriving v8/v9 read config.yaml,
   whose `hybrid_inference.stage1.threshold` is inert everywhere else);
-- the fit-time refusal: both loaders raise if a stage1_low row clears min_score.
+- the fit-time refusal: both loaders raise if a stage1_low row clears min_score at
+  the op-point (below it, on an analysis fit, they exclude and warn).
 
-Measured on NM#721: 0 of 922,542 production stage1_low rows reach an op-point.
+The production measurement is cited once, in fit_normalization._check_stage_used.
 """
 
 import ast
@@ -47,18 +48,38 @@ def runtime_stage1_threshold(package: Path) -> float:
     """The Stage-1 threshold the package actually runs at. Raises if unresolvable."""
     source = (package / "inference_hybrid.py").read_text(encoding="utf-8")
     tree = ast.parse(source)
+    ctor_default = _init_threshold_default(package, tree)
     for node in tree.body:
         if isinstance(node, ast.Assign) and any(
             isinstance(t, ast.Name) and t.id == "DEFAULT_THRESHOLD" for t in node.targets
         ):
+            # A module constant the constructor does not default to is not the runtime value.
+            assert isinstance(ctor_default, ast.Name) and ctor_default.id == "DEFAULT_THRESHOLD", (
+                f"{package}: __init__'s threshold default is not DEFAULT_THRESHOLD"
+            )
             return float(ast.literal_eval(node.value))
     if any(isinstance(n, ast.FunctionDef) and n.name == "load_stage1_config" for n in tree.body):
+        assert isinstance(ctor_default, ast.Constant) and ctor_default.value is None, (
+            f"{package}: config-wired package, but __init__'s threshold default is not None"
+        )
         config = yaml.safe_load((package / "config.yaml").read_text(encoding="utf-8")) or {}
         return float(config["hybrid_inference"]["stage1"]["threshold"])
     raise AssertionError(
         f"{package}: no module-level DEFAULT_THRESHOLD and no load_stage1_config — "
         f"cannot tell what Stage-1 threshold this package runs at."
     )
+
+
+def _init_threshold_default(package: Path, tree: ast.Module):
+    """The default of the `threshold` parameter of the scorer class's __init__."""
+    for cls in (n for n in tree.body if isinstance(n, ast.ClassDef)):
+        for fn in cls.body:
+            if isinstance(fn, ast.FunctionDef) and fn.name == "__init__":
+                args = fn.args.args[-len(fn.args.defaults):] if fn.args.defaults else []
+                for arg, default in zip(args, fn.args.defaults):
+                    if arg.arg == "threshold":
+                        return default
+    raise AssertionError(f"{package}: no __init__ with a defaulted `threshold` parameter")
 
 
 def test_hybrid_packages_found():
@@ -99,6 +120,7 @@ def _write(tmp_path, rows):
 
 ROWS_OK = [_row("stage2", 5.0), _row("stage2", 6.5), _row("stage1_low", 0.9)]
 ROWS_BAD = ROWS_OK + [_row("stage1_low", 4.6)]
+ROWS_UNKNOWN = ROWS_OK + [_row("Stage1_Low", 6.0)]
 
 
 class TestLocalLoader:
@@ -110,6 +132,20 @@ class TestLocalLoader:
         _write(tmp_path, ROWS_BAD)
         with pytest.raises(fitter.Stage1LowInFitError, match="1 stage_used=stage1_low"):
             fitter.load_weighted_averages_local(tmp_path, "uplifting", 4.5)
+
+    def test_analysis_fit_below_op_point_excludes_probe_rows(self, tmp_path):
+        _write(tmp_path, ROWS_OK)
+        got = fitter.load_weighted_averages_local(
+            tmp_path, "uplifting", 0.5, refuse_stage1_low=False,
+        )
+        assert got == [5.0, 6.5]
+
+    def test_unknown_stage_used_raises_even_on_analysis_fit(self, tmp_path):
+        _write(tmp_path, ROWS_UNKNOWN)
+        with pytest.raises(fitter.Stage1LowInFitError, match="outside"):
+            fitter.load_weighted_averages_local(
+                tmp_path, "uplifting", 4.5, refuse_stage1_low=False,
+            )
 
 
 class TestSshLoader:
@@ -143,3 +179,57 @@ class TestSshLoader:
         _write(tmp_path, ROWS_BAD)
         with pytest.raises(fitter.Stage1LowInFitError, match="1 stage_used=stage1_low"):
             fitter.load_weighted_averages_ssh("host", str(tmp_path), "uplifting", 4.5)
+
+    def test_analysis_fit_below_op_point_excludes_probe_rows(self, tmp_path, fake_ssh):
+        _write(tmp_path, ROWS_OK)
+        got = fitter.load_weighted_averages_ssh(
+            "host", str(tmp_path), "uplifting", 0.5, refuse_stage1_low=False,
+        )
+        assert got == [5.0, 6.5]
+
+    def test_unknown_stage_used_raises(self, tmp_path, fake_ssh):
+        _write(tmp_path, ROWS_UNKNOWN)
+        with pytest.raises(fitter.Stage1LowInFitError, match="outside"):
+            fitter.load_weighted_averages_ssh("host", str(tmp_path), "uplifting", 4.5)
+
+    def test_missing_meta_line_raises(self, monkeypatch):
+        def run(args, **kwargs):  # a remote that prints nothing at all
+            return subprocess.CompletedProcess(args, 0, "", "")
+
+        monkeypatch.setattr(fitter.subprocess, "run", run)
+        with pytest.raises(RuntimeError, match="no META line"):
+            fitter.load_weighted_averages_ssh("host", "/nowhere", "uplifting", 4.5)
+
+
+class TestCliWiring:
+    """main() decides refuse vs exclude from min_score vs the op-point; run the real CLI."""
+
+    FITTER = REPO_ROOT / "scripts" / "normalization" / "fit_normalization.py"
+    FILTER_DIR = REPO_ROOT / "filters" / "human_thriving" / "v8"  # op-point 4.5
+
+    def _run(self, tmp_path, rows, *extra):
+        d = tmp_path / "data"
+        d.mkdir()
+        _write(d, rows)
+        return subprocess.run(
+            [sys.executable, str(self.FITTER), "--filter", str(self.FILTER_DIR),
+             "--data-dir", str(d), "--out", str(tmp_path / "out.json"), *extra],
+            capture_output=True, text=True, cwd=str(REPO_ROOT),
+            env={**__import__("os").environ, "PYTHONPATH": str(REPO_ROOT)},
+        )
+
+    def test_deploy_path_refuses_a_stage1_low_row_at_the_op_point(self, tmp_path):
+        rows = [_row("stage2", 4.6 + i / 100, "human_thriving", "8.0") for i in range(250)]
+        rows.append(_row("stage1_low", 4.7, "human_thriving", "8.0"))
+        proc = self._run(tmp_path, rows)
+        assert proc.returncode != 0
+        assert "Stage1LowInFitError" in proc.stderr
+        assert not (tmp_path / "out.json").exists()
+
+    def test_analysis_fit_below_op_point_excludes_and_warns(self, tmp_path):
+        rows = [_row("stage2", 1.0 + i / 100, "human_thriving", "8.0") for i in range(250)]
+        rows.append(_row("stage1_low", 1.5, "human_thriving", "8.0"))
+        proc = self._run(tmp_path, rows, "--min-score", "1.0", "--allow-below-op-point",
+                         "--analysis-only")
+        assert "Stage1LowInFitError" not in proc.stderr, proc.stderr
+        assert "Excluded 1 stage1_low rows" in proc.stderr

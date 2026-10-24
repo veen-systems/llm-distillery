@@ -119,6 +119,10 @@ Each clause exists because violating it produced a real failure:
   reference population (#161, §5.1). The fitter resolves the op-point from `base_scorer.py`
   `TIER_THRESHOLDS` via AST parse (the runtime source; `config.yaml` is documentation, is
   cross-checked, and has shipped stale values — 3.0 vs a live 4.0 on two filters).
+- **Model scores only** — a `stage_used: stage1_low` row carries the e5 probe's estimate, not a
+  model score. It sits below the Stage-1 threshold, which sits below the op-point, so the floor
+  already drops it; the fitter refuses one at/above the op-point and excludes and warns below it
+  (`_check_stage_used`; NM#721, ducroq/NexusMind).
 - **One version** — different versions are different models with different distributions; a
   blend is bimodal and ranks this version's articles against another model's population. The
   live rolling window straddles cutovers: fitting nature_recovery v4 unscoped would pull in
@@ -200,6 +204,7 @@ producing a deployable file.
 | fitter, pre-fit | `--min-score` > op-point refused on deploy path | deliberate visible-band exclusion |
 | fitter, pre-fit | anchor > 4.5 refused (advice: fix `TIER_THRESHOLDS`, not `--min-score`) | op-point itself above the loader bound |
 | fitter, pre-fit | `--all-versions` / `--allow-thin-fit` ⇒ analysis-only; `--out` cannot target another package's `normalization.json` | version blends, thin fits, cross-package writes |
+| fitter, load | `stage1_low` row at/above the op-point, or an unknown `stage_used`, refused; below the op-point (analysis) `stage1_low` excluded with a warning. Pinned by `tests/unit/test_stage1_threshold_below_op_point.py`, which also pins every Stage-1 threshold below its op-point | probe estimates pooled into the CDF |
 | fitter, load | non-finite scores excluded (they pass `wa < min_score` and would inflate the article floor); only this filter's attribute block matched (hyphen/underscore-normalized) | NaN-shrunk fits, foreign-filter blends |
 | fitter, post-fit | `abs(raw_min − op_point) ≤ 0.01`; `sample_min - anchor ≤ MAX_SAMPLE_GAP (0.5)` — **not** the absolute 4.5, #154 | anything that slipped through; biased samples (§5.2) |
 | fitter, post-fit | advisory only: unobserved `[anchor, sample_min)` > 5% of the fitted span | shallow bias under the hard limit — warns, never blocks |

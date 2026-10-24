@@ -8000,3 +8000,20 @@ Same family as `feedback-a-marker-is-a-claim` (auto-memory): a TODO line is a cl
 **Root cause**: the mutant was compiled, then the source restored within the same second at the same size, so the cached bytecode still looked valid.
 **Fix**: `tests/conftest.py` sets `sys.dont_write_bytecode` (pinned by `tests/unit/test_no_bytecode_from_tests.py`; seeded with the exact failure). Mutation drivers also set `PYTHONDONTWRITEBYTECODE=1`.
 
+## Moved 2026-10-24 (#163): two entries whose lesson is a check, and one Mechanized row (`live`, 0 occurrences). Verbatim.
+
+## A SUBSET TEST RUN SHIPPED A PACKAGED-DETECTOR EDIT WITH A STALE MANIFEST, AND I CALLED THAT CORRECT (2026-10-21)
+**Problem**: `ffe6a4a` edited `obituary_detector/v5/inference.py`, ran 3 test files, and stated "the MANIFEST pins SERVED bytes, so re-pin at deploy". It was pushed and told to NexusMind that way. The full suite's `test_every_packaged_detector_is_stageable_from_git` failed: the stager reads the COMMITTED manifest.
+**Root cause**: a docstring's backfill wording ("describe the bytes production SERVES") was read as the rule for every edit, and the check that encodes the real rule was outside the subset run.
+**Fix**: after touching any file under a packaged detector (`PACKAGES` in `detector_manifest.py`), re-pin its MANIFEST entry in the same commit and run the FULL suite before pushing. Correction sent to NexusMind (`3270405`).
+
+
+## TWO NEAR-DUPLICATE INSTRUMENTS, TWO OPPOSITE MISSES (2026-10-16)
+**Problem**: a first-600-chars text comparison called a ScienceDaily copy of a training row "not a leak" (#176); a review found it.
+**Root cause**: ScienceDaily puts a Date/Source/Summary header before the body. The full-text shingle share fixed that, then mis-called a templated NYT Connections page a leak and missed an agency rewrite (share 0.13).
+**Fix**: compare FULL text, and report both a text instrument and a reading; gate on their union (EXP-051 `gate_excluded.py`).
+
+
+| Date | Finding shape | Check | Status | Occurrences |
+|------|---------------|-------|--------|-------------|
+| 2026-10-12 | An account-level refusal (402 balance, 401/403 auth) handled as a per-row error, so every queued row retries against a dead account (2026-09-01: 6,586 doomed calls). `score_deepseek_production.py` was fixed then; `score_ollama_oracle.py` was not (402 fell through to retries, 401/403 used a `SystemExit` the executor drains past) | `tests/unit/test_scorer_run_fatal.py` + `tests/unit/test_ollama_oracle_run_fatal.py`; seeded 402 → one call, no later calls; mutants (402 dropped, pre-call check off, flag never set) all red | live (both DeepSeek callers; NOT `ground_truth/batch_scorer.py`'s Gemini path) | 0 |

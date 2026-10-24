@@ -92,20 +92,9 @@ small `--cycles`.** Before calling anything from check A dead, either raise
 `content_length` **100% populated in all six filters** (2,189–2,647 rows each),
 up from 0 of 50,605. `stage_used` / `stage1_estimate` likewise 100% (LD#88).
 <!-- verify: bash scripts/verification/check_content_length_populated.sh -->
-<!-- verify: manual — the probe-never-surfaces result below is a property of the CURRENT thresholds, not a law. Re-run the stage_used vs op-point cross-check after any filter version bump or probe-threshold change. -->
+<!-- verify: .venv/bin/python -m pytest -q tests/unit/test_stage1_threshold_below_op_point.py -->
 
-**Unprompted result from the first cycle that carried `stage_used`: no surfacing
-article is ever probe-scored.** `stage1_low` rows peak at raw **0.75–1.50**
-against op-points of 2.25 (`solutions`) and 3.75-4.5 (the rest — 4.0 for
-`belonging` / `cultural_discovery`, 3.75 `nature_recovery`, 4.25
-`investment_risk`, 4.5 `uplifting`; this line read "4.0 (the rest)" until
-2026-08-16, correct when written and stale from the 08-11 moves. The finding
-is unaffected: every move but one was UPWARD, and 3.75 is still far above the
-stage1_low peak), so
-`surfacing AND stage1_low` is **0** in every filter. Probe-derived scores cannot
-reach the visible band, which is the hybrid design's core safety claim and had
-never been checked on production rows. It also means any analysis of surfacing
-scores is measuring **student output only**, not a mixture.
+**No surfacing article is ever probe-scored**: a `stage1_low` row sits below its Stage-1 threshold, which sits below the op-point. Now a CHECK, not a re-run: `tests/unit/test_stage1_threshold_below_op_point.py` pins every runtime threshold below its op-point, and `fit_normalization.py` refuses a `stage1_low` row at/above it. Measured 2026-10-24 on all retained sadalsuud rows: 0 (table on ducroq/NexusMind#721; first seen 2026-08-08). So an analysis of surfacing scores measures **student output only**, not a mixture.
 
 **My pass criterion was the wrong shape** (2026-08-08: a per-filter `stage1_low` share judged against an unattributed journal aggregate) — MOVED to [`archive/stamp-contract-integrity-archive.md`](archive/stamp-contract-integrity-archive.md) (2026-10-16).
 

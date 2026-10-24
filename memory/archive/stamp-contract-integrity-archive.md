@@ -292,3 +292,21 @@ NM#253) while the other 2 are in no source config. Over **237,132 distinct artic
 (510 files, 08-11 .. 08-25) `override`'s minimum credibility is **3.8**, and all **204**
 sub-3.0 articles are `verified` tier, which the predicate excludes. **The two halves of
 the AND are anti-correlated by policy, two repos upstream.**
+
+## Moved 2026-10-24 (#163): the probe-never-surfaces paragraph, now a check (`tests/unit/test_stage1_threshold_below_op_point.py`). Verbatim.
+
+<!-- verify: manual — the probe-never-surfaces result below is a property of the CURRENT thresholds, not a law. Re-run the stage_used vs op-point cross-check after any filter version bump or probe-threshold change. -->
+
+**Unprompted result from the first cycle that carried `stage_used`: no surfacing
+article is ever probe-scored.** `stage1_low` rows peak at raw **0.75–1.50**
+against op-points of 2.25 (`solutions`) and 3.75-4.5 (the rest — 4.0 for
+`belonging` / `cultural_discovery`, 3.75 `nature_recovery`, 4.25
+`investment_risk`, 4.5 `uplifting`; this line read "4.0 (the rest)" until
+2026-08-16, correct when written and stale from the 08-11 moves. The finding
+is unaffected: every move but one was UPWARD, and 3.75 is still far above the
+stage1_low peak), so
+`surfacing AND stage1_low` is **0** in every filter. Probe-derived scores cannot
+reach the visible band, which is the hybrid design's core safety claim and had
+never been checked on production rows. It also means any analysis of surfacing
+scores is measuring **student output only**, not a mixture.
+

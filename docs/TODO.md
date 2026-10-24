@@ -4,10 +4,7 @@
 
 *▶ **NEXT SESSION (set 2026-10-24 close; all pushed). "continue" = these, in order:***
 
-**2026-10-24 session (contracts, no queue item moved):** answered NexusMind's NM#721 contract review. LD's read set went to
-NexusMind, which will declare `nexus_mind_attributes.<lens>.stage_used` + `short_content_cap_applied` in Contract B with a test
-pinning our set. Fixed paths are recorded as NM dependencies. `docs/CONTRACTS_PLAN.md` now records the owner's NM#721 rulings, and
-that `source_group` was declared 2026-08-15 (NexusMind `567e684`). Nothing waits on LD. (0)(b) started: two closed ledger rows moved.
+**2026-10-24 sessions (contracts; no queue item moved; all pushed):** answered NexusMind's NM#721 contract review (ducroq/NexusMind; Contract B 1.25.0 now declares `stage_used` and pins LD's seven per-lens keys). `CONTRACTS_PLAN.md` records the owner's rulings; `source_group` was declared 2026-08-15 (NexusMind `567e684`). The second session made `fit_normalization.py` refuse a `stage1_low` (probe) row at/above the op-point, and pinned every runtime Stage-1 threshold below its op-point (`tests/unit/test_stage1_threshold_below_op_point.py`). NexusMind measured 0 such rows (table on NM#721). ⚠️ For item (2)'s refit: the local `NexusMind/data/filtered` copy predates `stage_used`, so fit over `--ssh` from sadalsuud. Nothing waits on LD. (0)(b): two more gotcha entries, one Mechanized row and the stamp-contract probe paragraph moved (now a check); surface 414,257 → 413,395.
 
 **(0) THE READ SURFACE FIRST (#163, the read-surface issue). Owner 2026-10-22: "we need to start pruning, thinning, mechanizing, retiring!"** **415,918 chars over 32 files at the 2026-10-22 second close (ceiling ratcheted to 423,043; `check_index_budget.py --target surface`)**, down from 431,668 that morning. The lite profile landed the same day (`d8f4ad7`, `docs/decisions/2026-10-22-framework-lite.md`): a lesson is kept only as a CHECK, and session records are frozen. So, in order:
 - (a) ✅ **DONE 2026-10-22** (−16,919 chars): `retire_memory.py sessions` + `sessionlog --before 2026-10-22 --apply` moved 2 session files and 18 log entries verbatim (reconstruction check passed). `session-log.md` keeps a 1.2K stub with one entry, so no hard-coded path had to change.

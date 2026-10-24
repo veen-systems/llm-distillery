@@ -4,6 +4,11 @@
 
 *⚠️ **Entries dated before 2026-10-13 live in (except the 10-12 `cp -r` entry, kept while its resolution is fresh) [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md)**, verbatim (the 10-12 ones moved 2026-10-15, #163 round 5; the 10-01 → 10-08 ones moved 2026-10-12 by a second owner-approved MID-MONTH pass, `--before 2026-10-09`, #163 round 2; the 09-01 → 09-16 ones moved 2026-09-27 by an owner-approved MID-MONTH pass, `--before 2026-09-17`; earlier ones moved 2026-09-24; into `archive/` 2026-09-26 so curate's size measurement stops counting it, #163; the month-dated Feb–May entries followed on 2026-09-26). Next pass: `python3 scripts/maintenance/retire_memory.py gotcha --before <first of this month> --apply` (dry run without `--apply`). It retires top-level entries only; the `###` entries inside the catalogue are kept by rule and counted (⚠️ superseded 2026-10-09: 43 of them moved by date; see the note under the catalogue heading). The unreachable-mechanism catalogue stayed here. For a recurrence match, grep both: `grep -n <term> memory/gotcha-log.md memory/archive/gotcha-log-archive.md` (a `memory/gotcha-log*.md` glob does NOT reach the archive). Was: `grep -n <term> memory/gotcha-log*.md`.*
 
+## A PEER'S TOTAL CITED AS THE DENOMINATOR OF A TABLE IT DID NOT COME FROM (2026-10-24)
+**Problem**: `ddba83b` cited "0 of 922,542 stage1_low rows" in three places. 922,542 was NexusMind's census total in its message, but the 0 came from a 7-row table on NM#721 summing to 926,269. A review lens caught it.
+**Root cause**: the number was copied from the message that ASKED the question, not from the table that ANSWERED it.
+**Fix**: cite the count from the table that holds the verdict, keep it in ONE place (here `_check_stage_used`), and have the other copies point to it.
+
 ## THREE TAGGERS ON ONE PROMPT AGREED 94–96/101, AND I CALLED THAT "AS STRONG AS AI COUNTING GETS"; THE OWNER COUNTED 17 WHERE THEY SAID 8–10 (2026-10-22)
 **Problem**: EXP-058 re-tagged EXP-056's pages with Fable 5.1 and Mistral Large 4 on qwen's prompt. I told the owner that the owner's count was "no longer needed to settle" the verdict. The owner's count (EXP-059) was 17/30; all three taggers called the same 9 of the owner's P rows G.
 **Root cause**: models sharing ONE prompt are one instrument, not three. Their agreement measures the prompt's consistency, never its match to the judge the bar belongs to. (Same class as *establish what a source excludes*: a shared prompt excludes every reading the prompt does not encode.)
@@ -19,10 +24,7 @@
 **Root cause**: the join matches an article id in any upstream `*.jsonl` under the roots, and one article is scored by several lenses. `hashes` means "prompts that ever scored this article", not "this filter's prompt".
 **Fix**: read `label-match` as lineage, and name each hash's owner (`config/canary/*.baseline.json` `prompt_sha256_stripped`) before attributing it. Not mechanized: the tool could take `--filter` and flag foreign hashes.
 
-## A SUBSET TEST RUN SHIPPED A PACKAGED-DETECTOR EDIT WITH A STALE MANIFEST, AND I CALLED THAT CORRECT (2026-10-21)
-**Problem**: `ffe6a4a` edited `obituary_detector/v5/inference.py`, ran 3 test files, and stated "the MANIFEST pins SERVED bytes, so re-pin at deploy". It was pushed and told to NexusMind that way. The full suite's `test_every_packaged_detector_is_stageable_from_git` failed: the stager reads the COMMITTED manifest.
-**Root cause**: a docstring's backfill wording ("describe the bytes production SERVES") was read as the rule for every edit, and the check that encodes the real rule was outside the subset run.
-**Fix**: after touching any file under a packaged detector (`PACKAGES` in `detector_manifest.py`), re-pin its MANIFEST entry in the same commit and run the FULL suite before pushing. Correction sent to NexusMind (`3270405`).
+## A SUBSET TEST RUN SHIPPED A PACKAGED-DETECTOR EDIT WITH A STALE MANIFEST (2026-10-21) — check: `test_every_packaged_detector_is_stageable_from_git` (full suite); MOVED 2026-10-24 (#163) to [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md)
 
 ## A COST ESTIMATE BUILT FROM ANOTHER VENDOR'S TOKENIZER CAME IN 2.4× LOW (2026-10-21)
 **Problem**: the Claude panel seat was quoted to the owner and to infra at ~$1.75. That used Gemini's measured ~12.2K input tokens per item and infra's cached price card. `count_tokens` gave 18,151 per item (1.5×), and two runs cost $4.12.
@@ -47,10 +49,7 @@
 
 ## AN IN-PLACE MUTANT OUTLIVED ITS RESTORE IN A `.pyc` AND FAILED THE SUITE (2026-10-16) [RESOLVED: mechanized] — MOVED 2026-10-21 (#163 round 12, resolved) to [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md)
 
-## TWO NEAR-DUPLICATE INSTRUMENTS, TWO OPPOSITE MISSES (2026-10-16)
-**Problem**: a first-600-chars text comparison called a ScienceDaily copy of a training row "not a leak" (#176); a review found it.
-**Root cause**: ScienceDaily puts a Date/Source/Summary header before the body. The full-text shingle share fixed that, then mis-called a templated NYT Connections page a leak and missed an agency rewrite (share 0.13).
-**Fix**: compare FULL text, and report both a text instrument and a reading; gate on their union (EXP-051 `gate_excluded.py`).
+## TWO NEAR-DUPLICATE INSTRUMENTS, TWO OPPOSITE MISSES (2026-10-16) — check: EXP-051 `gate_excluded.py` (text instrument ∪ reading); MOVED 2026-10-24 (#163) to [`archive/gotcha-log-archive.md`](archive/gotcha-log-archive.md)
 
 ## "ALL 9 NOT FOUND" WAS MY PARSER, NOT THE LAB (2026-10-16)
 **Problem**: a hash check reported every ld-scratch file missing from the lab.
@@ -300,7 +299,7 @@ false finding in the reference audit, which trains readers to dismiss that audit
 
 | Date | Finding shape | Check | Status | Occurrences |
 |------|---------------|-------|--------|-------------|
-| 2026-10-12 | An account-level refusal (402 balance, 401/403 auth) handled as a per-row error, so every queued row retries against a dead account (2026-09-01: 6,586 doomed calls). `score_deepseek_production.py` was fixed then; `score_ollama_oracle.py` was not (402 fell through to retries, 401/403 used a `SystemExit` the executor drains past) | `tests/unit/test_scorer_run_fatal.py` + `tests/unit/test_ollama_oracle_run_fatal.py`; seeded 402 → one call, no later calls; mutants (402 dropped, pre-call check off, flag never set) all red | live (both DeepSeek callers; NOT `ground_truth/batch_scorer.py`'s Gemini path) | 0 |
+| 2026-10-24 | A guard safe only by an IMPLICIT invariant between values in two files: stage1_low (probe) rows stay out of the normalization fit only because each Stage-1 threshold sits below its op-point; nothing pinned either, and a constructor default could bypass the module constant (NM#721, ducroq/NexusMind) | `tests/unit/test_stage1_threshold_below_op_point.py` + `fit_normalization._check_stage_used`; 9 mutants red (either loader guard, CLI wiring both ways, unknown `stage_used`, no-META, ctor default, DEFAULT_THRESHOLD) | live | 0 |
 | 2026-10-09 | A `run.sh` assertion grepping a SUBSTRING (`COVERS NO PATH`) that a newer message also contains, so the old check passed on the new one's output (shell lens, shown by mutation) | the tightened grep in `tests/fixtures/reference-integrity/run.sh`; seeded: removing the placeholder message → red. The general class (one finding text a substring of another) needs a check over all finding strings in `refcheck.py`: `tests/lint/check_finding_texts_distinct.py` <!-- placeholder --> | proposed | — |
 | 2026-10-09 | `pkill -f` / `pgrep -f` matches the shell that carries its own pattern, so it kills that shell or reports it as "running" (5 occurrences while the rule was written in CLAUDE.md, `working-rules.md` and this log) | `scripts/hooks/block_pattern_kill.py`, a PreToolUse Bash hook wired in `.claude/settings.json`; `tests/unit/test_pattern_kill_hook.py` (25 tests when the row was written: 13 block, 10 pass incl. mentions and a markdown code span, malformed input, wiring; rewritten as a tokenizer in review round 3 — count with `pytest --collect-only -q`, do not copy one here). Seeded: 5 mutants killed (never-block → 13 red, no `-f` requirement → 2, quote-anywhere → 1, backtick trigger → 1, unwired → 1); a live `pgrep -f` was refused by the harness in the session that built it | live | 1 (2026-10-09: its first draft blocked the heredoc writing this row: a backtick trigger, now removed and pinned) |
 | 2026-10-01 | A deletion that turns a kwarg value into a raise misses callers still passing it — one inside `except: pytest.skip`, which would hide the raise as a skip (decision 0: 3 callers missed) | `tests/unit/test_no_per_lens_prefilters.py::test_no_caller_asks_for_use_prefilter_true` — AST walk for `use_prefilter=True` keywords; seeded positive: it went red on the real missed caller `scripts/verification/verify_belonging_v1.py:222` | live | 1 |

@@ -604,7 +604,7 @@ there. The Stage-1 threshold decides ROUTING, and ADR-023 explicitly **does not 
 probe is a recall-safe screen where the false negative is the expensive error
 (`train_probe.py --objective recall`).
 
-⛔ **On every filter except `human_thriving v8`, `hybrid_inference.stage1.threshold` in
+⛔ **On every filter except `human_thriving v8` and `v9`, `hybrid_inference.stage1.threshold` in
 `config.yaml` is INERT** (verified 2026-08-21). The runtime value is a module-level
 `DEFAULT_THRESHOLD` in each `inference_hybrid.py`, and on two filters the config disagrees
 with it — `nature_recovery v4` ships 3.225 against a runtime **0.75**, `thriving v1` ships
