@@ -223,6 +223,29 @@ def resolve_op_point(filter_dir: Path, config: dict) -> Optional[float]:
     return from_code
 
 
+class Stage1LowInFitError(RuntimeError):
+    """A stage1_low row reached the fit population."""
+
+
+def _refuse_stage1_low(n_stage1_low: int, min_score: float) -> None:
+    """Raise if any stage1_low row cleared min_score.
+
+    A stage1_low row's raw_weighted_average is the e5 probe's estimate, not a model
+    score (hybrid_scorer.py). It is kept out of the fit only because every Stage-1
+    threshold sits below its op-point (tests/unit/test_stage1_threshold_below_op_point.py),
+    so such a row falls under min_score. Measured on NM#721 (2026-10-24): 0 of
+    922,542 production stage1_low rows reach an op-point. A count here means that
+    invariant broke, or the stamped value is not what hybrid_scorer.py writes.
+    """
+    if n_stage1_low > 0:
+        raise Stage1LowInFitError(
+            f"{n_stage1_low} stage_used=stage1_low rows score >= min_score={min_score}. "
+            f"Their raw_weighted_average is an e5 probe estimate, not a model score, and "
+            f"must not enter the CDF. A stage1_low row should sit below the Stage-1 "
+            f"threshold, which sits below the op-point: find which of the two broke."
+        )
+
+
 def load_weighted_averages_local(
     data_dir: Path,
     filter_name: str,
@@ -237,6 +260,7 @@ def load_weighted_averages_local(
     n_wrong_version = 0
     n_foreign = 0
     n_nonfinite = 0
+    n_stage1_low = 0
     # Match only THIS filter's attribute block. An article scored by several
     # filters carries several blocks; iterating them all blends foreign filters'
     # score distributions into the CDF whenever version strings coincide.
@@ -282,6 +306,9 @@ def load_weighted_averages_local(
                             if wa < min_score:
                                 n_below_threshold += 1
                                 continue
+                            if analysis.get("stage_used") == "stage1_low":
+                                n_stage1_low += 1
+                                continue
                             if raw is not None:
                                 n_raw += 1
                             else:
@@ -290,6 +317,7 @@ def load_weighted_averages_local(
                 except (json.JSONDecodeError, KeyError):
                     continue
 
+    _refuse_stage1_low(n_stage1_low, min_score)
     if n_foreign > 0:
         logger.info(f"Excluded {n_foreign} attribute blocks belonging to other filters (matching {want!r})")
     if n_nonfinite > 0:
@@ -339,6 +367,7 @@ n_below = 0
 n_wrong_version = 0
 n_foreign = 0
 n_nonfinite = 0
+n_stage1_low = 0
 # Read flat JSONL files (NexusMind#144: flat output, no tier subdirs)
 files = sorted(glob.glob(os.path.join(remote_dir, "filtered_*.jsonl")))
 for fp in files:
@@ -363,6 +392,9 @@ for fp in files:
                         if wa < min_score:
                             n_below += 1
                             continue
+                        if v.get("stage_used") == "stage1_low":
+                            n_stage1_low += 1
+                            continue
                         if raw is not None:
                             n_raw += 1
                         else:
@@ -372,7 +404,7 @@ for fp in files:
                 pass
 for w in was:
     print(w)
-print("META:raw=%d,fallback=%d,below=%d,wrong_version=%d,foreign=%d,nonfinite=%d" % (n_raw, n_fallback, n_below, n_wrong_version, n_foreign, n_nonfinite), file=sys.stderr)
+print("META:raw=%d,fallback=%d,below=%d,wrong_version=%d,foreign=%d,nonfinite=%d,stage1_low=%d" % (n_raw, n_fallback, n_below, n_wrong_version, n_foreign, n_nonfinite, n_stage1_low), file=sys.stderr)
 """
     with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
         f.write(script_content)
@@ -405,9 +437,13 @@ print("META:raw=%d,fallback=%d,below=%d,wrong_version=%d,foreign=%d,nonfinite=%d
     # Parse field-usage metadata from remote script stderr
     import re
     meta_match = re.search(
-        r"META:raw=(\d+),fallback=(\d+),below=(\d+),wrong_version=(\d+),foreign=(\d+),nonfinite=(\d+)",
+        r"META:raw=(\d+),fallback=(\d+),below=(\d+),wrong_version=(\d+),foreign=(\d+),nonfinite=(\d+),stage1_low=(\d+)",
         result.stderr or "",
     )
+    # Without META the stage1_low guard below cannot run; refuse rather than skip it.
+    if not meta_match:
+        raise RuntimeError(f"Remote extraction printed no META line; stderr: {result.stderr!r}")
+    _refuse_stage1_low(int(meta_match.group(7)), min_score)
     if meta_match:
         n_raw = int(meta_match.group(1))
         n_fallback = int(meta_match.group(2))
